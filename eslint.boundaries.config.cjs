@@ -116,6 +116,8 @@ const rules = {
     },
   ],
 
+  "boundaries/no-unknown-files": "error",
+
   "check-file/filename-naming-convention": [
     "error",
     {
