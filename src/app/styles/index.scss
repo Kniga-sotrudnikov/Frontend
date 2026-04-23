@@ -1,3 +1,24 @@
-body {
+@import "./typography.scss";
+@import "./fonts.scss";
+@import "./variables.scss";
+
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-body-l);
+  line-height: 28px;
+  color: var(--color-black);
+}
+
+.hero {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-hero);
+  line-height: 64px;
 }
