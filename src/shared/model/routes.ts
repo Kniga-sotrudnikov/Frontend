@@ -23,9 +23,9 @@ export const ROUTES = {
 } as const;
 
 export type PathParams = {
-  // [ROUTES.NAME_PAGE_1]: {
-  //   id: string;
-  // };
+  [ROUTES.NAME_PAGE_1]: {
+    id: string;
+  };
 };
 
 declare module "react-router" {
