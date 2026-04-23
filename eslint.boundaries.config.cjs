@@ -4,8 +4,7 @@
  * - нижний слой не тянет верхний;
  * - слайсы одного слоя не тянут друг друга (только shared / ниже / внутри слайса);
  *
- * Public API слайса (только index.ts): см. boundaries/entry-point или internalPath в dependencies — добавь отдельно,
- * когда появятся реальные слайсы (иначе ложные срабатывания на внутренние импорты).
+ * Public API слайса (только index.ts)
  */
 
 /** @type {import('eslint').Linter.Config['settings']} */
@@ -46,8 +45,6 @@ const settings = {
       capture: ["slice"],
     },
     { type: "shared", pattern: "src/shared/**/*", mode: "full" },
-    { type: "bootstrap", pattern: "src/main.tsx", mode: "full" },
-    { type: "bootstrap", pattern: "src/App.tsx", mode: "full" },
   ],
 };
 
