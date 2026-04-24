@@ -17,12 +17,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        /** импорты вида `@use "shared/ui/vars"` без `../../` */
-        loadPaths: [path.resolve(__dirname, "./src")],
-      },
-    },
-  },
 });
