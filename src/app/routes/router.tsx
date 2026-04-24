@@ -1,5 +1,8 @@
 import { createBrowserRouter, Outlet } from "react-router";
 import { App } from "@/app/app";
+import { lazy } from "react";
+
+const NotFoundPage = lazy(() => import("@/pages/404/not-found-page"));
 
 export const router = createBrowserRouter([
   {
@@ -28,6 +31,10 @@ export const router = createBrowserRouter([
       * { path: '/login', lazy: () => import('@/pages/login/login-page') },
       * { path: '*', lazy: () => import('@/pages/404/404-page') },
       */
+         { 
+        path: '*', 
+        element: <NotFoundPage />  // 👈 ИСПОЛЬЗОВАТЬ element ВМЕСТО lazy
+      },
     ],
   },
 ]);
