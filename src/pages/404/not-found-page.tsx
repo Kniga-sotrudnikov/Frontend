@@ -1,48 +1,84 @@
+// import { Button } from "@/shared/ui/button"  
+// import { useNavigate } from "react-router"
 
+// const NotFoundPage = () => {
+//   const navigate = useNavigate()
+
+//   return (
+//     <div className="min-h-screen bg-background">
+//       <div className="px-10">
+//         <div className="flex min-h-screen items-center justify-between">
+          
+//           {/* Левая часть */}
+//           <div className="max-w-md flex flex-col gap-5">
+//             <h1 className="text-7xl font-bold text-primary">Страница не найдена</h1>
+            
+//             <p className="text-muted-foreground text-lg">
+//               Упс! Страница, которую вы ищете, не существует или была перемещена.
+//             </p>
+            
+//             <div className="flex gap-4 pt-4">
+//               <Button onClick={() => navigate("/")}>На главную</Button>
+//               <Button variant="outline" onClick={() => navigate(-1)}>Вернуться назад</Button>
+//             </div>
+//           </div>
+
+//           {/* Правая часть - картинка 795px */}
+//           <div className="w-[795px]">
+//             <img 
+//               src="src/not_found.jpg"
+//               alt="404 illustration"
+//               className="w-full h-auto"
+//             />
+//           </div>
+          
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
+
+// export default NotFoundPage
 import { Button } from "@/shared/ui/button"  
 import { useNavigate } from "react-router"
 
-  const NotFoundPage = () => {
+const NotFoundPage = () => {
   const navigate = useNavigate()
 
   return (
-    // Внешний div с фоном на всю ширину
     <div className="min-h-screen bg-background">
-      
-  
-      <div className="px-10">
+      <div className="flex min-h-screen items-center justify-center px-10">
         
-        {/* Внутренний контейнер для центрирования и расположения контента */}
-        <div className="flex min-h-screen items-center justify-between">
+        {/* Этот контейнер центрируется, а внутри него justify-between */}
+        <div className="w-full max-w-[1440px]">
           
-          {/* Левая часть */}
-          <div className="max-w-md space-y-6">
-            <h1 className="text-7xl font-bold text-primary">404</h1>
-            <h2 className="text-3xl font-semibold">Страница не найдена</h2>
-            <p className="text-muted-foreground text-lg">
-              Упс! Страница, которую вы ищете, не существует или была перемещена.
-            </p>
+          {/* Здесь justify-between разносит колонки по краям ЭТОГО контейнера */}
+          <div className="flex items-center justify-between gap-[111px]">
             
-            <div className="flex gap-4 pt-4">
-              <Button onClick={() => navigate("/")}>На главную</Button>
-              <Button variant="outline" onClick={() => navigate(-1)}>Вернуться назад</Button>
+            {/* Левая часть */}
+            <div className="w-[358px] flex flex-col gap-5">
+              <h1 className="text-7xl font-bold text-primary">Страница не найдена</h1>
+              <p className="text-muted-foreground text-lg">
+                Упс! Страница, которую вы ищете, не существует или была перемещена.
+              </p>
+              <div className="flex gap-4 pt-4">
+                <Button onClick={() => navigate("/")}>На главную</Button>
+                <Button variant="outline" onClick={() => navigate(-1)}>Вернуться назад</Button>
+              </div>
             </div>
-          </div>
 
-          {/* Правая часть */}
-          <div className="w-2/5 flex justify-center">
-            <div className="relative w-full max-w-md aspect-square">
+            {/* Правая часть */}
+            <div className="w-[795px]">
               <img 
-                src="/404-illustration.svg"
+                src="src/not_found.jpg"
                 alt="404 illustration"
-                className="absolute inset-0 w-full h-full object-contain"
+                className="w-full h-auto"
               />
             </div>
+            
           </div>
-          
         </div>
       </div>
-      
     </div>
   )
 }
