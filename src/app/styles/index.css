@@ -149,6 +149,22 @@ body {
     font-size: var(--font-size-h3);
     line-height: 40px;
   }
+
+  .button-medium {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-body-m);
+    line-height: 20px;
+    letter-spacing: 0.1px;
+  }
+
+  .button-small {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-body-s);
+    line-height: 20px;
+    letter-spacing: 0.1px;
+  }
 }
 
 @layer base {
