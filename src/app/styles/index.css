@@ -45,6 +45,7 @@ body {
   --color-white: #ffffff;
   --color-gray-25: #fbfbfb;
   --color-gray-50: #f6f6f6;
+  --color-gray-75: #edeced;
   --color-gray-100: #ebebeb;
   --color-gray-200: #d6d6d6;
   --color-gray-300: #c2c2c2;
@@ -141,6 +142,12 @@ body {
     line-height: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+  }
+  .h3 {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-semi-bold);
+    font-size: var(--font-size-h3);
+    line-height: 40px;
   }
 }
 

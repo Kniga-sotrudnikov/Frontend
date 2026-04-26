@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
       */
          { 
         path: '*', 
-        element: <NotFoundPage />  // 👈 ИСПОЛЬЗОВАТЬ element ВМЕСТО lazy
+        element: <NotFoundPage />
       },
     ],
   },
