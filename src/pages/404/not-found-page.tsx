@@ -1,11 +1,13 @@
 import { Button } from "@/shared/ui/button";
 import { Link, useNavigate } from "react-router";
+import { ROUTES } from "@/shared/constants/routes";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
 
+  // TODO: заменить константу в ROUTES после определения финального пути
   const handleContactHR = () => {
-    navigate("/contact-hr");
+    navigate(ROUTES.CONTACT_HR);
   };
 
   return (
@@ -15,7 +17,7 @@ const NotFoundPage = () => {
           <div className="flex flex-col items-center justify-between gap-27.5 lg:flex-row">
             {/* Левая часть */}
             <div className="w-full max-w-89.5 flex flex-col gap-4 lg:ml-23.75 items-center lg:items-start">
-              <h1 className="h3">Страница не найдена</h1>
+              <h1 className="h3 text-purple-400">Страница не найдена</h1>
               <p className="body-s">
                 Ссылка могла устареть или у вас нет доступа.
               </p>
@@ -26,7 +28,7 @@ const NotFoundPage = () => {
                   size="default"
                   className="button-small bg-purple-500 border-purple-500 text-white hover:bg-purple-400 hover:text-white px-3.75"
                 >
-                  <Link to="/">На главную</Link>
+                  <Link to={ROUTES.HOME}>На главную</Link>
                 </Button>
                 <Button
                   variant="outline"
@@ -38,7 +40,6 @@ const NotFoundPage = () => {
                 </Button>
               </div>
             </div>
-
             {/* Правая часть */}
             <div className="w-full max-w-[320px] lg:w-198.75 lg:max-w-none">
               <img
@@ -54,4 +55,4 @@ const NotFoundPage = () => {
   );
 };
 
-export default NotFoundPage;
+export const Component = NotFoundPage;
