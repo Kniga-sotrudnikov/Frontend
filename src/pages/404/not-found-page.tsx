@@ -1,6 +1,6 @@
 import { Button } from "@/shared/ui/button";
 import { Link, useNavigate } from "react-router";
-import { ROUTES } from "@/shared/constants/routes";
+import { ROUTES } from "@/shared/model/routes";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
