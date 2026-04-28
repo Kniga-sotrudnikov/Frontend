@@ -38,6 +38,7 @@ module.exports = {
     }
   },
   rules: {
+    // 'import/no-unresolved': 'off',
     'react-refresh/only-export-components': [
       'warn',
       {
