@@ -13,12 +13,3 @@ export {
   DropdownMenuPortal,
   DropdownMenuRadioGroup,
 } from "./dropdown-menu";
-
-export type {
-  DropdownMenuProps,
-  DropdownMenuItemProps,
-  DropdownMenuCheckboxItemProps,
-  DropdownMenuRadioItemProps,
-  DropdownMenuLabelProps,
-  DropdownMenuSubTriggerProps,
-} from "./dropdown-menu-types";
