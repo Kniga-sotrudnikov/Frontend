@@ -4,7 +4,6 @@ import { cn } from "@/shared/lib";
 import { buttonVariants } from "./button-variants";
 import { type ButtonProps } from "./button-types";
 
-// Хелпер вынесен за пределы компонента по предыдущему замечанию
 const renderIcon = (icon: React.ReactNode | string) => {
   if (typeof icon === "string") {
     return <img src={icon} alt="" aria-hidden="true" />;
@@ -22,7 +21,7 @@ function Button({
   children,
   ...props
 }: ButtonProps) {
-  // Определяем базовый компонент: если asChild, то используем Slot, иначе обычная кнопка
+
   const Comp = asChild ? Slot : "button";
 
   return (

@@ -2,7 +2,6 @@ import { type ReactNode } from "react";
 import { cn } from "@/shared/lib";
 import { type InputProps } from "./input-types.ts";
 
-// Вынес вспомогательную функцию за пределы компонента
 const renderIcon = (icon: ReactNode | string) => {
   if (typeof icon === "string") {
     return (
