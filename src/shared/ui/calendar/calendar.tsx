@@ -2,14 +2,12 @@ import * as React from "react"
 import {
   DayPicker,
   getDefaultClassNames,
-  type DayButton,
-  type Locale,
 } from "react-day-picker"
 import { ru } from "date-fns/locale";
 
 import { cn } from "@/shared/lib"
 import { Button, buttonVariants } from "@/shared/ui/button/index"
-// import { ChevronLeftIcon, ChevronRightIcon, ChevronDownIcon } from "lucide-react"
+import { CalendarDayButton } from "./calendar-day-button"
 
 function Calendar({
   className,
@@ -89,7 +87,7 @@ function Calendar({
         table: "w-full border-collapse",
         weekdays: cn("flex justify-center mb-2", defaultClassNames.weekdays),
         weekday: cn(
-          "w-(--cell-size) shrink-0 rounded-(--cell-radius) text-[0.8rem] font-normal text-muted-foreground select-none uppercase",
+          "w-(--cell-size) shrink-0 rounded-(--cell-radius) text-[0.8rem] font-normal text-foreground select-none uppercase",
           defaultClassNames.weekday
         ),
         week: cn("flex w-full justify-center", defaultClassNames.week),
@@ -140,23 +138,7 @@ function Calendar({
             />
           )
         },
-        // Chevron: ({ className, orientation, ...props }) => {
-        //   if (orientation === "left") {
-        //     return (
-        //       <ChevronLeftIcon className={cn("size-4", className)} {...props} />
-        //     )
-        //   }
-
-        //   if (orientation === "right") {
-        //     return (
-        //       <ChevronRightIcon className={cn("size-4", className)} {...props} />
-        //     )
-        //   }
-
-        //   return (
-        //     <ChevronDownIcon className={cn("size-4", className)} {...props} />
-        //   )
-        // },
+        
         DayButton: ({ ...props }) => (
           <CalendarDayButton locale={locale} {...props} />
         ),
@@ -176,43 +158,6 @@ function Calendar({
   )
 }
 
-function CalendarDayButton({
-  className,
-  day,
-  modifiers,
-  locale,
-  ...props
-}: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
-  const defaultClassNames = getDefaultClassNames()
 
-  const ref = React.useRef<HTMLButtonElement>(null)
-  React.useEffect(() => {
-    if (modifiers.focused) ref.current?.focus()
-  }, [modifiers.focused])
 
-  return (
-    <Button
-      ref={ref}
-      variant="ghost"
-      size="icon"
-      data-day={day.date.toLocaleDateString(locale?.code)}
-      data-selected-single={
-        modifiers.selected &&
-        !modifiers.range_start &&
-        !modifiers.range_end &&
-        !modifiers.range_middle
-      }
-      data-range-start={modifiers.range_start}
-      data-range-end={modifiers.range_end}
-      data-range-middle={modifiers.range_middle}
-      className={cn(
-        "rounded-full relative isolate z-10 flex size-(--cell-size) min-w-(--cell-size) flex-col gap-1 border-0 leading-none font-normal group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:border-ring group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 data-[range-end=true]:rounded-full data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground data-[range-middle=true]:rounded-none data-[range-middle=true]:bg-muted data-[range-middle=true]:text-foreground data-[range-start=true]:rounded-full data-[range-start=true]:bg-primary data-[range-start=true]:text-primary-foreground data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground data-[selected-single=true]:ring-0 data-[selected-single=true]:border-0 dark:hover:text-foreground [&>span]:text-xs [&>span]:opacity-70",
-        defaultClassNames.day,
-        className
-      )}
-      {...props}
-    />
-  )
-}
-
-export { Calendar, CalendarDayButton }
+export { Calendar }

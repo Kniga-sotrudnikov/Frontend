@@ -172,6 +172,11 @@ body {
   --sidebar-ring: var(--color-black);
 }
 
+/*  */
+[data-slot="calendar"] {
+  --muted-foreground: var(--color-gray-300);
+}
+
 @layer components {
   .body-m {
     font-family: var(--font-family-primary);
