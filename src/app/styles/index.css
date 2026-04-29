@@ -172,7 +172,6 @@ body {
   --sidebar-ring: var(--color-black);
 }
 
-/*  */
 [data-slot="calendar"] {
   --muted-foreground: var(--color-gray-300);
 }
@@ -245,11 +244,6 @@ body {
     line-height: 20px;
     letter-spacing: 0.1px;
   }
-}
-
-[data-slot="calendar"] {
-  --primary: oklch(0.5 0.25 300);
-  --primary-foreground: oklch(0.985 0 0);
 }
 
 @layer base {
