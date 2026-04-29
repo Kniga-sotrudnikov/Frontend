@@ -25,6 +25,7 @@ export const buttonVariants = cva(
         "icon-xs": "size-6",
         "icon-sm": "size-7",
         "icon-lg": "size-9",
+        "icon-xl": "size-11",
       },
     },
     defaultVariants: {

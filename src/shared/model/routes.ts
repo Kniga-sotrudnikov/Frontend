@@ -12,6 +12,11 @@ export const ROUTES = {
   LOGIN: "/login",
   NOT_FOUND: "/404",
   CONTACT_HR: "/contact-hr",
+  EMPLOYEES: "/employees",
+  ORG_STRUCTURE: "/org-structure",
+  PROJECTS: "/projects",
+  SETTINGS: "/settings",
+  HELP: "/help",
 
   /*
    * пример: путь с параметром
