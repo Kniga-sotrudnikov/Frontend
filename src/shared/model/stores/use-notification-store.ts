@@ -8,6 +8,7 @@ export interface Notification {
   message?: string;
   actions?: Array<{ label: string; onClick: () => void }>;
   duration?: number; // Время до авто-закрытия (мс), 0 = не закрывать
+  timeoutId?: number;
 }
 interface NotificationStore {
   notifications: Notification[];
@@ -21,25 +22,44 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
 
   add: (notification) => {
     const id = crypto.randomUUID();
-    const newNotification = { ...notification, id };
-
-    set((state) => ({
-      notifications: [...state.notifications, newNotification],
-    }));
+    let timeoutId;
 
     if (notification.duration !== 0) {
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         set((state) => ({
           notifications: state.notifications.filter((n) => n.id !== id),
         }));
       }, notification.duration || 4000);
     }
+
+    const newNotification = { ...notification, id, timeoutId };
+
+    set((state) => ({
+      notifications: [...state.notifications, newNotification],
+    }));
   },
 
   remove: (id) =>
-    set((state) => ({
-      notifications: state.notifications.filter((n) => n.id !== id),
-    })),
+    set((state) => {
+      const notification = state.notifications.find((n) => n.id === id);
 
-  clearAll: () => set({ notifications: [] }),
+      if (notification?.timeoutId) {
+        clearTimeout(notification.timeoutId);
+      }
+
+      return {
+        notifications: state.notifications.filter((n) => n.id !== id),
+      };
+    }),
+
+  clearAll: () =>
+    set((state) => {
+      state.notifications.forEach((n) => {
+        if (n.timeoutId) {
+          clearTimeout(n.timeoutId);
+        }
+      });
+
+      return { notifications: [] };
+    }),
 }));
