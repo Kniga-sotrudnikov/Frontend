@@ -1,17 +1,17 @@
-import * as React from "react";
+import { type ReactNode, forwardRef } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/shared/lib";
 import { buttonVariants } from "./button-variants";
 import { type ButtonProps } from "./button-types";
 
-const renderIcon = (icon: React.ReactNode | string) => {
+const renderIcon = (icon: ReactNode | string) => {
   if (typeof icon === "string") {
     return <img src={icon} alt="" aria-hidden="true" />;
   }
   return icon;
 };
 
-function Button({
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   className,
   variant,
   size,
@@ -20,12 +20,13 @@ function Button({
   asChild = false,
   children,
   ...props
-}: ButtonProps) {
+}: ButtonProps, ref) {
 
   const Comp = asChild ? Slot : "button";
 
   return (
     <Comp
+      ref={ref}
       data-slot="button"
       data-variant={variant}
       data-size={size}
@@ -41,6 +42,6 @@ function Button({
       )}
     </Comp>
   );
-}
+})
 
 export { Button };
