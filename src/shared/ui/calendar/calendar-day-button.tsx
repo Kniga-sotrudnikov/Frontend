@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react"
+import { type ComponentProps, useRef, useEffect } from "react"
 import { getDefaultClassNames, type DayButton, type Locale } from "react-day-picker"
 import { cn } from "@/shared/lib"
 import { Button } from "@/shared/ui/button/index"
@@ -12,8 +12,8 @@ function CalendarDayButton({
 }: ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
   const defaultClassNames = getDefaultClassNames()
 
-  const ref = React.useRef<HTMLButtonElement>(null)
-  React.useEffect(() => {
+  const ref = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
     if (modifiers.focused) ref.current?.focus()
   }, [modifiers.focused])
 
