@@ -1,7 +1,7 @@
 import { type ComponentProps, useRef, useEffect } from "react"
 import { getDefaultClassNames, type DayButton, type Locale } from "react-day-picker"
 import { cn } from "@/shared/lib"
-import { Button } from "@/shared/ui/button/index"
+import { Button } from "@ui/button"
 
 function CalendarDayButton({
   className,

@@ -2,7 +2,7 @@ import type { ComponentProps, ReactElement } from "react";
 import { DayPicker, getDefaultClassNames } from "react-day-picker";
 import { ru } from "date-fns/locale";
 import { cn } from "@/shared/lib";
-import { Button, buttonVariants } from "@/shared/ui/button/index";
+import { Button, buttonVariants } from "@ui/button";
 import { CalendarDayButton } from "./calendar-day-button";
 
 function Calendar({
