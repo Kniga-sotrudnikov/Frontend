@@ -1,12 +1,12 @@
 import { Link, NavLink } from "react-router";
 import logoIcon from "@/widgets/sidebar/assets/symbol-logo.svg";
-import UsersIcon from "src/shared/assets/icons/users.svg?react";
-import TreeIcon from "src/shared/assets/icons/tree.svg?react";
-import ProjectsIcon from "src/shared/assets/icons/project.svg?react";
-import SettingsIcon from "src/shared/assets/icons/settings.svg?react";
-import HelpIcon from "src/shared/assets/icons/help.svg?react";
-import { Button } from "src/shared/ui/button";
-import { ROUTES } from "src/shared/model/routes.ts";
+import UsersIcon from "@/shared/assets/icons/users.svg?react";
+import TreeIcon from "@/shared/assets/icons/tree.svg?react";
+import ProjectsIcon from "@/shared/assets/icons/project.svg?react";
+import SettingsIcon from "@/shared/assets/icons/settings.svg?react";
+import HelpIcon from "@/shared/assets/icons/help.svg?react";
+import { Button } from "@/shared/ui/button";
+import { ROUTES } from "@/shared/model/routes.ts";
 
 const mainSidebarItems = [
   {
