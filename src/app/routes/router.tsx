@@ -9,6 +9,7 @@ export const router = createBrowserRouter([
       {
         element: <App />, // тут размещается sidebar
         children: [
+          { index: true, element: null },
           /*
            * Пример навигации по страницам:
            * - Страницы находятся в папке src/pages/[name_page]/[name_page]-page.tsx
