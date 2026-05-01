@@ -30,6 +30,7 @@ export const TestNotificationPage = () => {
               onClick: () => alert("Открыть карточку"),
             },
           ],
+          duration: 0,
         }),
     },
     {
