@@ -176,6 +176,10 @@ body {
   --muted-foreground: var(--color-gray-300);
 }
 
+[data-slot="button"] {
+  --border: var(--primary);
+}
+
 @layer components {
   .body-m {
     font-family: var(--font-family-primary);
