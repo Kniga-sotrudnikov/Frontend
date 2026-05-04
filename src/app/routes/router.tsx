@@ -1,6 +1,7 @@
 import { createBrowserRouter, Outlet } from "react-router";
 import { App } from "@/app/app";
 import { TestNotificationPage } from "@/pages/test-notification-page/test-notification-page";
+import { ROUTES } from "@/shared/model/routes.ts";
 
 export const router = createBrowserRouter([
   {
@@ -10,7 +11,30 @@ export const router = createBrowserRouter([
       {
         element: <App />, // тут размещается sidebar
         children: [
-          { index: true, element: null },
+          {
+            index: true,
+            lazy: () => import("@/pages/home/home-page"),
+          },
+          {
+            path: ROUTES.EMPLOYEES,
+            lazy: () => import("@/pages/employees/employees-page"),
+          },
+          {
+            path: ROUTES.ORG_STRUCTURE,
+            lazy: () => import("@/pages/org-structure/org-structure-page.tsx"),
+          },
+          {
+            path: ROUTES.PROJECTS,
+            lazy: () => import("@/pages/projects/projects-page.tsx"),
+          },
+          {
+            path: ROUTES.SETTINGS,
+            lazy: () => import("@/pages/settings/settings-page.tsx"),
+          },
+          {
+            path: ROUTES.HELP,
+            lazy: () => import("@/pages/help/help-page.tsx"),
+          },
           /*
            * Пример навигации по страницам:
            * - Страницы находятся в папке src/pages/[name_page]/[name_page]-page.tsx
