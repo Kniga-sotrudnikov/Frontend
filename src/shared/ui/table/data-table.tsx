@@ -1,15 +1,11 @@
-import { type Dispatch, type SetStateAction, useState } from "react";
-import type {
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
-} from "@tanstack/react-table";
+import { Skeleton } from "@ui/skeleton";
 
 import {
+  type ColumnDef,
+  type SortingState,
+  type OnChangeFn,
   flexRender,
   getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -25,29 +21,28 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  columnFilters: ColumnFiltersState;
-  onColumnFiltersChange: Dispatch<SetStateAction<ColumnFiltersState>>;
+  sorting: SortingState;
+  onSortingChange: OnChangeFn<SortingState>;
+  isLoading?: boolean;
+  skeletonRows?: number;
 }
 
 export const DataTable = <TData, TValue>({
   columns,
   data,
-  columnFilters,
-  onColumnFiltersChange,
+  sorting,
+  onSortingChange,
+  isLoading = false,
+  skeletonRows = 6,
 }: DataTableProps<TData, TValue>) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange,
+    manualSorting: true,
+    onSortingChange,
     state: {
       sorting,
-      columnFilters,
     },
   });
 
@@ -78,11 +73,22 @@ export const DataTable = <TData, TValue>({
           ))}
         </TableHeader>
         <TableBody>
-          {table.getRowModel().rows?.length ? (
+          {isLoading ? (
+            Array.from({ length: skeletonRows }).map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {table.getAllLeafColumns().map((column) => (
+                  <TableCell key={column.id}>
+                    <Skeleton className="h-6.5 w-full" />
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="h-11"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="truncate">
