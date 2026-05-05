@@ -1,11 +1,17 @@
+import { type Dispatch, type SetStateAction, useState } from "react";
+import type {
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+} from "@tanstack/react-table";
+
 import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
-import type { ColumnDef, SortingState } from "@tanstack/react-table";
 
 import {
   Table,
@@ -15,16 +21,19 @@ import {
   TableHeader,
   TableRow,
 } from "./table.tsx";
-import { useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  columnFilters: ColumnFiltersState;
+  onColumnFiltersChange: Dispatch<SetStateAction<ColumnFiltersState>>;
 }
 
 export const DataTable = <TData, TValue>({
   columns,
   data,
+  columnFilters,
+  onColumnFiltersChange,
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -32,10 +41,13 @@ export const DataTable = <TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
+    onColumnFiltersChange,
     state: {
       sorting,
+      columnFilters,
     },
   });
 
@@ -82,7 +94,7 @@ export const DataTable = <TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                Нет данных.
               </TableCell>
             </TableRow>
           )}
