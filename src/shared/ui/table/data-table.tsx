@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { Skeleton } from "@ui/skeleton";
 
 import {
@@ -8,7 +10,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -24,6 +25,8 @@ interface DataTableProps<TData, TValue> {
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
   isLoading?: boolean;
+  isError?: boolean;
+  errorMessage?: ReactNode;
   skeletonRows?: number;
 }
 
@@ -33,6 +36,8 @@ export const DataTable = <TData, TValue>({
   sorting,
   onSortingChange,
   isLoading = false,
+  isError = false,
+  errorMessage = "Данные не загрузились",
   skeletonRows = 6,
 }: DataTableProps<TData, TValue>) => {
   const table = useReactTable({
@@ -83,6 +88,15 @@ export const DataTable = <TData, TValue>({
                 ))}
               </TableRow>
             ))
+          ) : isError ? (
+            <TableRow>
+              <TableCell
+                colSpan={table.getAllLeafColumns().length}
+                className="h-24 text-center text-destructive"
+              >
+                {errorMessage}
+              </TableCell>
+            </TableRow>
           ) : table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow

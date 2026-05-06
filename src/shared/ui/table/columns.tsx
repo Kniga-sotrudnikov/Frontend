@@ -5,6 +5,14 @@ import SortDescIcon from "@/shared/assets/icons/sort-1.svg?react";
 import SortAscIcon from "@/shared/assets/icons/sort-2.svg?react";
 import { Button } from "@ui/button";
 
+const Status = ({ status }: { status: "active" | "vacation" }) => {
+  return (
+    <div className="bg-purple-100">
+      {status === "active" ? "В работе" : "В отпуске"}
+    </div>
+  );
+};
+
 export const columns: ColumnDef<TEmployee>[] = [
   {
     accessorKey: "name",
@@ -93,6 +101,9 @@ export const columns: ColumnDef<TEmployee>[] = [
           </Button>
         </div>
       );
+    },
+    cell: ({ row }) => {
+      return <Status status={row.original.status} />;
     },
   },
   {
