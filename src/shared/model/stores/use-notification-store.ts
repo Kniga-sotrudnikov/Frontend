@@ -1,9 +1,11 @@
 import { create } from "zustand";
 
 export type NotificationType = "success" | "error" | "info" | "warning";
+export type IconType = "success" | "birthday";
 export interface Notification {
   id: string;
-  type: NotificationType;
+  type?: NotificationType;
+  iconType: IconType;
   title: string;
   message?: string;
   actions?: Array<{ label: string; onClick: () => void }>;
@@ -22,6 +24,7 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
 
   add: (notification) => {
     const id = crypto.randomUUID();
+
     let timeoutId;
 
     if (notification.duration !== 0) {
