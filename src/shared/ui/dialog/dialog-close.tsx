@@ -17,7 +17,8 @@ function DialogClose({
         <Button variant="outline">Отменить</Button>
       </DialogPrimitive.Close>
     )
-  } else if (variant === "icon") {
+  } 
+  if (variant === "icon") {
     return (
       <DialogPrimitive.Close asChild>
         <Button variant="ghost" size="icon-sm" className="p-1">

@@ -29,6 +29,7 @@ body {
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-btn-border: var(--primary);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -174,10 +175,6 @@ body {
 
 [data-slot="calendar"] {
   --muted-foreground: var(--color-gray-300);
-}
-
-[data-slot="button"] {
-  --border: var(--primary);
 }
 
 @layer components {
