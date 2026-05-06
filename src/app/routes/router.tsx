@@ -1,12 +1,12 @@
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter } from "react-router";
 import { App } from "@/app/app";
-import { TestNotificationPage } from "@/pages/test-notification-page/test-notification-page";
+import { ProvidersLayout } from "@/app/providers/providers-layout";
 import { ROUTES } from "@/shared/model/routes.ts";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Outlet />, // необходим для того чтобы использовать providers для всех страниц
+    element: <ProvidersLayout />, // необходим для того чтобы использовать providers для всех страниц
     children: [
       {
         element: <App />, // тут размещается sidebar
@@ -44,10 +44,6 @@ export const router = createBrowserRouter([
            *
            * { path: '/[name_page]', lazy: () => import('@/pages/[name_page]/[name_page]-page') }
            */
-          {
-            path: "test-notification-page",
-            element: <TestNotificationPage />,
-          },
         ],
       },
       /*

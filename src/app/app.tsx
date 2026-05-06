@@ -1,5 +1,5 @@
 import { Outlet } from "react-router";
-import { NotificationProvider } from "@/shared/ui/notification/notification-provider";
+
 import { Sidebar } from "@/widgets/sidebar";
 
 export function App() {
@@ -9,7 +9,6 @@ export function App() {
       <main className="flex-1">
         <Outlet />
       </main>
-      <NotificationProvider />
     </div>
   );
 }

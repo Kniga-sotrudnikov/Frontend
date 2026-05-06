@@ -1,5 +1,5 @@
 import { useNotificationStore } from "@/shared/model/stores/use-notification-store";
-import { NotificationItem } from "@ui/notification";
+import { NotificationItem } from "./notification-item";
 
 export const NotificationContainer = () => {
   const notifications = useNotificationStore((state) => state.notifications);
