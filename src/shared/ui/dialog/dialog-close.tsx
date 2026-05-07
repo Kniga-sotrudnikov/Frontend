@@ -13,7 +13,7 @@ function DialogClose({
 & {variant?: VariantCloseButton}) {
   if (variant === "icon") {
     return (
-      <DialogPrimitive.Close asChild>
+      <DialogPrimitive.Close data-slot="dialog-close" asChild {...props}>
         <Button variant="ghost" size="icon-sm" className="p-1">
           <CloseIcon />
           <span className="sr-only">Close</span>
