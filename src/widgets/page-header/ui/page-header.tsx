@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { cn } from "@/shared/lib";
-import ArrowDownIcon from "@/shared/assets/icons/arrow-down.svg";
 import BirthdayIcon from "@/shared/assets/icons/birthday.svg"; // ← иконка для заглушки, убрать по готовности Notification
 
 interface PageHeaderProps {
@@ -8,11 +7,7 @@ interface PageHeaderProps {
   stats?: ReactNode;
   search?: ReactNode;
   notifications?: ReactNode;
-  user?: {
-    avatar?: string;
-    name: string;
-    position: string;
-  };
+  user?: ReactNode;
   rightActions?: ReactNode;
   className?: string;
 }
@@ -68,39 +63,7 @@ export function PageHeader({
         */}
 
         {/* Профиль пользователя */}
-        {user && (
-          <div className="flex h-[60px] w-[303px] items-center gap-3 rounded-lg bg-gray-25 px-2 py-1">
-            {/* Аватар */}
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="h-11 w-11 rounded-full object-cover"
-              />
-            ) : (
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-purple-100 text-purple-600">
-                <span className="text-lg font-semibold">
-                  {user.name.charAt(0)}
-                </span>
-              </div>
-            )}
-
-            {/* Имя и должность */}
-            <div className="flex flex-col gap-1">
-              <span className="body-m-semibold whitespace-nowrap text-black">
-                {user.name}
-              </span>
-              <span className="body-m text-black">{user.position}</span>
-            </div>
-
-            {/* Стрелка вниз */}
-            <img
-              src={ArrowDownIcon}
-              alt=""
-              className="ml-auto h-5 w-5 shrink-0"
-            />
-          </div>
-        )}
+        {user && user}
 
         {/* Дополнительные действия */}
         {rightActions && rightActions}
