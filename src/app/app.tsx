@@ -4,7 +4,7 @@ import { Sidebar } from "@/widgets/sidebar";
 export function App() {
 
   return (
-    <div className="flex min-h-screen">
+    <div className="app-layout flex min-h-screen">
       <Sidebar />
       <main className="flex-1 p-8">
         <Outlet />

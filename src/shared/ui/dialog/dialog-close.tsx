@@ -11,13 +11,6 @@ function DialogClose({
   ...props
 }: ComponentProps<typeof DialogPrimitive.Close>
 & {variant?: VariantCloseButton}) {
-  if (variant === "default") {
-    return (
-      <DialogPrimitive.Close data-slot="dialog-close" asChild {...props}>
-        <Button variant="outline">Отменить</Button>
-      </DialogPrimitive.Close>
-    )
-  } 
   if (variant === "icon") {
     return (
       <DialogPrimitive.Close asChild>
@@ -28,6 +21,11 @@ function DialogClose({
       </DialogPrimitive.Close>
     ) 
   }
+  return (
+    <DialogPrimitive.Close data-slot="dialog-close" asChild {...props}>
+      <Button variant="outline">Отменить</Button>
+    </DialogPrimitive.Close>
+  )
 }
 
 export { DialogClose }
