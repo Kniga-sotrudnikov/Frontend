@@ -29,6 +29,7 @@ body {
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-btn-border: var(--primary);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -154,7 +155,7 @@ body {
   --accent-foreground: var(--color-white);
   --destructive: var(--color-red);
   --border: var(--color-gray-200);
-  --input: var(--color-white);
+  --input: var(--color-gray-200);
   --ring: var(--color-purple-400);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
