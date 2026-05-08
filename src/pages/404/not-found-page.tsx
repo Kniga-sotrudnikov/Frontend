@@ -58,19 +58,18 @@
 // export const Component = NotFoundPage;
 
 import { ProfessionCard } from "@/shared/ui/profession-card";
+import Photo from "@/shared/assets/images/avatar-1.png";
 
 const NotFoundPage = () => {
   return (
     <ProfessionCard
       city="Москва"
-      photo="https://example.com/photo.jpg"
       profession="Профессия"
+      photo={Photo}
       position="Координатор взаимодействия с рабочими или кем-то"
       franchise="Франшиза"
       department="Отдел"
-      onFavorite={() => console.log("В избранное")}
-      onMore={() => console.log("Открыть меню")}
-      onRespond={() => console.log("Отклик")}
+      // isArchived
     />
   );
 };
