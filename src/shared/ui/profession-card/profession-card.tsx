@@ -43,7 +43,7 @@ export const ProfessionCard = ({
   // Дефолтные обработчики с уведомлениями
   const handleFavoriteDefault = () => {
     addNotification({
-      type: "info",
+      iconType: "success",
       title: "В разработке",
       message: "Избранное будет доступно в ближайшее время",
     });
@@ -51,7 +51,7 @@ export const ProfessionCard = ({
 
   const handleEditDefault = () => {
     addNotification({
-      type: "info",
+      iconType: "success",
       title: "В разработке",
       message: "Редактирование будет доступно в ближайшее время",
     });
@@ -59,7 +59,7 @@ export const ProfessionCard = ({
 
   const handleArchiveDefault = () => {
     addNotification({
-      type: "info",
+      iconType: "success",
       title: "В разработке",
       message: "Архивирование будет доступно в ближайшее время",
     });
@@ -67,7 +67,7 @@ export const ProfessionCard = ({
 
   const handleRespondDefault = () => {
     addNotification({
-      type: "info",
+      iconType: "success",
       title: "В разработке",
       message: "Отклик на вакансию будет доступен в ближайшее время",
     });
