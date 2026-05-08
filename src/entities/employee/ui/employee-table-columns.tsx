@@ -1,26 +1,19 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import type { TEmployee } from "@ui/table/types.ts";
+import { EmployeeStatus, type TEmployee } from "@/entities/employee";
 
 import SortDescIcon from "@/shared/assets/icons/sort-1.svg?react";
 import SortAscIcon from "@/shared/assets/icons/sort-2.svg?react";
-import { Button } from "@ui/button";
 
-const Status = ({ status }: { status: "active" | "vacation" }) => {
-  return (
-    <div className="bg-purple-100">
-      {status === "active" ? "В работе" : "В отпуске"}
-    </div>
-  );
-};
+import { Button } from "@/shared/ui/button";
 
-export const columns: ColumnDef<TEmployee>[] = [
+export const employeeTableColumns: ColumnDef<TEmployee>[] = [
   {
-    accessorKey: "name",
+    accessorKey: "full_name",
     header: "ФИО",
     size: 261,
   },
   {
-    accessorKey: "position",
+    accessorKey: "job_title",
     size: 144,
     header: ({ column }) => {
       const sortDirection = column.getIsSorted();
@@ -41,7 +34,7 @@ export const columns: ColumnDef<TEmployee>[] = [
     },
   },
   {
-    accessorKey: "section",
+    accessorKey: "direction_name",
     size: 144,
     header: ({ column }) => {
       const sortDirection = column.getIsSorted();
@@ -62,7 +55,7 @@ export const columns: ColumnDef<TEmployee>[] = [
     },
   },
   {
-    accessorKey: "department",
+    accessorKey: "department_name",
     size: 144,
     header: ({ column }) => {
       const sortDirection = column.getIsSorted();
@@ -103,7 +96,7 @@ export const columns: ColumnDef<TEmployee>[] = [
       );
     },
     cell: ({ row }) => {
-      return <Status status={row.original.status} />;
+      return <EmployeeStatus status={row.original.status} />;
     },
   },
   {

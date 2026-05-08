@@ -10,6 +10,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+
 import {
   Table,
   TableBody,
@@ -24,6 +25,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   sorting: SortingState;
   onSortingChange: OnChangeFn<SortingState>;
+  onRowClick?: (row: TData) => void;
   isLoading?: boolean;
   isError?: boolean;
   errorMessage?: ReactNode;
@@ -35,6 +37,7 @@ export const DataTable = <TData, TValue>({
   data,
   sorting,
   onSortingChange,
+  onRowClick,
   isLoading = false,
   isError = false,
   errorMessage = "Данные не загрузились",
@@ -102,7 +105,8 @@ export const DataTable = <TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="h-11"
+                className="h-11 cursor-pointer"
+                onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id} className="truncate">
@@ -123,5 +127,3 @@ export const DataTable = <TData, TValue>({
     </div>
   );
 };
-
-export default DataTable;

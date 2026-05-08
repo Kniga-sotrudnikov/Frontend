@@ -4,7 +4,7 @@ import {
   PaginationEllipsis,
   PaginationItem,
   PaginationButton,
-} from "@/shared/ui/pagination/pagination.tsx";
+} from "./pagination.tsx";
 
 import DoubleArrowLeftIcon from "@/shared/assets/icons/double-arrows-left.svg?react";
 import DoubleArrowRightIcon from "@/shared/assets/icons/double-arrows-right.svg?react";
