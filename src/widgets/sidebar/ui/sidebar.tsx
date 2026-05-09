@@ -6,7 +6,7 @@ import ProjectsIcon from "@/shared/assets/icons/project.svg?react";
 import SettingsIcon from "@/shared/assets/icons/settings.svg?react";
 import HelpIcon from "@/shared/assets/icons/help.svg?react";
 import { Button } from "@/shared/ui/button";
-import { ROUTES } from "@/shared/model/routes.ts";
+import { ROUTES } from "@/shared/model/routes/routes";
 
 const mainSidebarItems = [
   {
