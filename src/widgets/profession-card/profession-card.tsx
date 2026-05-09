@@ -150,7 +150,7 @@ export const ProfessionCard = ({
         </div>
 
         <div className="flex-1">
-          <h3 className="body-s-semibold text-gray-900 max-w-72.5 mb-2 truncate">
+          <h3 className="body-s-semibold text-black max-w-72.5 mb-2 truncate">
             {profession}
           </h3>
           <p className="body-s mb-3 max-w-72.5 truncate text-gray-600">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { cn } from "@/shared/lib";
 import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useNotificationStore } from "@/shared/model/stores";
@@ -9,19 +9,20 @@ import ArchiveIcon from "@/shared/assets/icons/delete.svg";
 import WorkingIcon from "@/shared/assets/icons/working.svg";
 import BizTripIcon from "@/shared/assets/icons/biz-trip.svg";
 import VacationIcon from "@/shared/assets/icons/vacation.svg";
+import SickIcon from "@/shared/assets/icons/sick.svg";
 import defaultPhoto from "@/shared/assets/images/avatar-placeholder.jpg";
 
-type EmployeeStatus = "working" | "bizTrip" | "vacation";
+type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
 
 interface EmployeeCardProps {
   city: string;
   photo?: string;
-  profession: string;
+  name: string;
   position: string;
   franchise: string;
   department: string;
-  linearManager: string; // ФИО линейного руководителя
-  status: EmployeeStatus; // Статус сотрудника
+  linearManager: string;
+  status: EmployeeStatus;
   isArchived?: boolean;
   onFavorite?: () => void;
   onEdit?: () => void;
@@ -32,18 +33,20 @@ const statusIconMap: Record<EmployeeStatus, string> = {
   working: WorkingIcon,
   bizTrip: BizTripIcon,
   vacation: VacationIcon,
+  sick: SickIcon,
 };
 
 const statusLabelMap: Record<EmployeeStatus, string> = {
   working: "Работает",
-  bizTrip: "Командировка",
-  vacation: "Отпуск",
+  bizTrip: "В командировке",
+  vacation: "В отпуске",
+  sick: "На больничном",
 };
 
 export const EmployeeCard = ({
   city,
   photo = defaultPhoto,
-  profession,
+  name,
   position,
   franchise,
   department,
@@ -98,7 +101,7 @@ export const EmployeeCard = ({
   };
 
   return (
-    <div className="w-114.5 h-60.5 p-5.75 border border-gray-200 rounded-8 bg-white">
+    <div className="w-full max-w-114.5 min-w-72 h-auto min-h-54.25 p-5.75 border border-gray-200 rounded-8 bg-white">
       <div className="flex items-center justify-between mb-4">
         <span className="body-overline text-gray-600 max-w-72.5 truncate">
           {city}
@@ -148,27 +151,29 @@ export const EmployeeCard = ({
         </div>
       </div>
 
-      <div className="flex gap-4 border-b pb-4 mb-3.25">
+      <div className="flex gap-4 border-b pb-3 mb-3">
         <div className="relative shrink-0 w-26.5 h-23.5 bg-gray-100 rounded-8 overflow-hidden">
           <img
             src={photo}
             alt="Фото сотрудника"
             className={cn("size-full object-cover", isArchived && "grayscale")}
           />
-          {/* Иконка статуса в правом нижнем углу фото */}
-          <div className="absolute bottom-1 right-1">
-            <img
-              src={statusIconMap[status]}
-              alt={statusLabelMap[status]}
-              className="size-5"
-              title={statusLabelMap[status]}
-            />
-          </div>
+
+          {!isArchived && (
+            <div className="absolute bottom-0 right-0">
+              <img
+                src={statusIconMap[status]}
+                alt={statusLabelMap[status]}
+                className="size-6"
+                title={statusLabelMap[status]}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex-1">
-          <h3 className="body-s-semibold text-gray-900 max-w-72.5 mb-2 truncate">
-            {profession}
+          <h3 className="body-s-semibold text-black max-w-72.5 mb-2 truncate">
+            {name}
           </h3>
           <p className="body-s mb-3 max-w-72.5 truncate text-gray-600">
             {position}
@@ -182,12 +187,13 @@ export const EmployeeCard = ({
         </div>
       </div>
 
-      {/* Блок линейного руководителя под чертой */}
       <div className="flex items-center gap-2">
-        <span className="body-s font-semibold text-gray-700">
+        <span className="body-overline-semibold text-black">
           Линейный рук.:
         </span>
-        <span className="body-s text-gray-700 truncate">{linearManager}</span>
+        <span className="body-overline text-black truncate">
+          {linearManager}
+        </span>
       </div>
     </div>
   );
