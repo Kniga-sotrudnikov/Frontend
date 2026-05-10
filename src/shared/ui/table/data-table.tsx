@@ -1,6 +1,10 @@
 import type { ReactNode } from "react";
 
+import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@ui/skeleton";
+
+import SortDescIcon from "@/shared/assets/icons/sort-1.svg?react";
+import SortAscIcon from "@/shared/assets/icons/sort-2.svg?react";
 
 import {
   type ColumnDef,
@@ -23,8 +27,8 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  sorting: SortingState;
-  onSortingChange: OnChangeFn<SortingState>;
+  sorting?: SortingState;
+  onSortingChange?: OnChangeFn<SortingState>;
   onRowClick?: (row: TData) => void;
   isLoading?: boolean;
   isError?: boolean;
@@ -55,7 +59,7 @@ export const DataTable = <TData, TValue>({
   });
 
   return (
-    <div className="overflow-hidden border">
+    <div className="overflow-hidden">
       <Table className="table-fixed">
         <colgroup>
           {table.getAllLeafColumns().map((column) => (
@@ -68,12 +72,37 @@ export const DataTable = <TData, TValue>({
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                    {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                      <div className="flex items-center justify-between">
+                        <span>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
+                        </span>
+
+                        <Button
+                          variant="ghost"
+                          size="icon-xl"
+                          onClick={() =>
+                            header.column.toggleSorting(
+                              header.column.getIsSorted() === "asc",
+                            )
+                          }
+                        >
+                          {header.column.getIsSorted() === "desc" ? (
+                            <SortDescIcon className="size-5" />
+                          ) : (
+                            <SortAscIcon className="size-5" />
+                          )}
+                        </Button>
+                      </div>
+                    ) : (
+                      flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )
+                    )}
                   </TableHead>
                 );
               })}
