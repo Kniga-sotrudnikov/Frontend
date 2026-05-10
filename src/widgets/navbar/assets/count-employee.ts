@@ -1,7 +1,7 @@
-import type { OrgUnit } from "..ui/navbar-types"
+import type { OrgUnit } from "@/widgets/navbar"
 
 function countEmployee(unit: OrgUnit): number {
-    if (!unit.items?.length) return unit.employeeCount
+    if (!unit.items?.length) return unit.employeeCount ?? 0
     return unit.items.reduce((sum, child) => sum + countEmployee(child), 0)
 }
 

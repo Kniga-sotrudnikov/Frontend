@@ -1,10 +1,22 @@
+import { useState } from "react"
 import type { OrgUnit } from "./navbar-types"
-import renderUnits from "./render-item"
+import RenderUnits from "./render-unit"
 
-function Navbar({ unitsList }: { unitsList: OrgUnit[] }) {
+type NavbarProps = { unitsList: OrgUnit[] }
+
+function Navbar({ unitsList }: NavbarProps) {
+    const [selectedName, setSelectedName] = useState<string | null>(null)
     return (
-        <div className="w-[295px] bg-white p-5 rounded-2xl border-t border-l border-r border-border fixed bottom-5">
-            {unitsList.map((unit) => renderUnits(unit))}
+        <div className="h-full w-73.75 bg-white p-2.5 rounded-t-2xl border-t border-l border-r border-border">
+            <h4 className="mx-2.5 mt-2.5">Навигация</h4>
+            {unitsList.map((unit) => 
+              <RenderUnits 
+                unit={unit} 
+                selectedName={selectedName} 
+                onSelect={setSelectedName} 
+                key={unit.name}
+              />
+            )}
         </div>
     )
 }

@@ -5,7 +5,7 @@ import { type InputProps } from "./input-types.ts";
 const renderIcon = (icon: ReactNode | string) => {
   if (typeof icon === "string") {
     return (
-      <img src={icon} alt="" aria-hidden="true" className="size-4 shrink-0" />
+      <img src={icon} alt="" aria-hidden="true" className="size-5 shrink-0" />
     );
   }
   return icon;
