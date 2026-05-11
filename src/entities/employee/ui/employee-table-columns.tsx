@@ -1,5 +1,6 @@
 import type { ColumnDef } from "@tanstack/react-table";
-import { EmployeeStatus, type TEmployee } from "@/entities/employee";
+import type { TEmployee } from "@/entities/employee";
+import { EmployeeStatus } from "./employee-status.tsx";
 
 export const employeeTableColumns: ColumnDef<TEmployee>[] = [
   {
