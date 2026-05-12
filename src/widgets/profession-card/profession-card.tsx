@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Button } from "@ui/button";
+import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib";
 import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useNotificationStore } from "@/shared/model/stores";
-import StarIcon from "@/shared/assets/icons/star.svg";
-import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg";
-import PlusIcon from "@/shared/assets/icons/plus.svg";
-import EditIcon from "@/shared/assets/icons/edit.svg";
-import ArchiveIcon from "@/shared/assets/icons/delete.svg";
+import StarIcon from "@/shared/assets/icons/star.svg?react";
+import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg?react";
+import PlusIcon from "@/shared/assets/icons/plus.svg?react";
+import EditIcon from "@/shared/assets/icons/edit.svg?react";
+import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import defaultPhoto from "@/shared/assets/images/avatar-placeholder.jpg";
 
 interface ProfessionCardProps {
@@ -101,7 +101,7 @@ export const ProfessionCard = ({
             className="p-0 text-gray-500 cursor-pointer"
             aria-label="В избранное"
           >
-            <img src={StarIcon} alt="" className="size-5" />
+            <StarIcon className="size-5" />
           </button>
 
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -110,7 +110,7 @@ export const ProfessionCard = ({
                 className="p-0 text-gray-500 cursor-pointer"
                 aria-label="Действия"
               >
-                <img src={MoreVerticalIcon} alt="" className="size-5" />
+                <MoreVerticalIcon className="size-5" />
               </button>
             </PopoverTrigger>
             <PopoverContent
@@ -120,20 +120,24 @@ export const ProfessionCard = ({
               alignOffset={-20}
             >
               <div className="flex flex-col">
-                <button
+                <Button
+                  variant="ghost"
+                  size="default"
                   onClick={handleEdit}
-                  className="flex items-center gap-2 w-full p-3 border-b border-gray-200 body-s text-black hover:bg-gray-100 transition-colors text-left"
+                  className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200"
                 >
-                  <img src={EditIcon} alt="" className="size-5" />
+                  <EditIcon className="size-5" />
                   <span>Редактировать</span>
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="default"
                   onClick={handleArchive}
-                  className="flex items-center gap-2 w-full p-3 body-s text-red-600 hover:bg-gray-100 transition-colors text-left"
+                  className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-red-600 hover:bg-gray-100 transition-colors border-0"
                 >
-                  <img src={ArchiveIcon} alt="" className="size-5" />
+                  <ArchiveIcon className="size-5" />
                   <span>Архивировать</span>
-                </button>
+                </Button>
               </div>
             </PopoverContent>
           </Popover>
@@ -176,11 +180,7 @@ export const ProfessionCard = ({
           "Архивировано"
         ) : (
           <>
-            <img
-              src={PlusIcon}
-              alt=""
-              className="size-4 mr-1 brightness-0 invert"
-            />
+            <PlusIcon className="size-4 mr-1 brightness-0 invert" />
             Откликнуться
           </>
         )}
