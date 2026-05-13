@@ -214,6 +214,14 @@ body {
     letter-spacing: 0.1px;
   }
 
+  .body-overline-semibold {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-semi-bold);
+    font-size: var(--font-size-overline);
+    line-height: 100%;
+    letter-spacing: 0.1px;
+  }
+
   .overline {
     font-family: var(--font-family-primary);
     font-weight: var(--font-weight-regular);
