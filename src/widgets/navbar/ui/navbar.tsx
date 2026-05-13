@@ -7,8 +7,8 @@ type NavbarProps = { unitsList: OrgUnit[] }
 function Navbar({ unitsList }: NavbarProps) {
     const [selectedName, setSelectedName] = useState<string | null>(null)
     return (
-        <div className="h-full w-73.75 bg-white p-2.5 rounded-t-2xl border-t border-l border-r border-border">
-            <h4 className="mx-2.5 mt-2.5">Навигация</h4>
+        <div className="h-full w-full bg-white px-2.5 pt-2.5 pb-5 rounded-t-2xl border-t border-l border-r border-border">
+            <h4 className="mx-2.5 mt-2.5 font-bold text-muted-foreground">Навигация</h4>
             {unitsList.map((unit) => 
               <RenderUnits 
                 unit={unit} 
@@ -21,4 +21,4 @@ function Navbar({ unitsList }: NavbarProps) {
     )
 }
 
-export default Navbar
+export { Navbar }

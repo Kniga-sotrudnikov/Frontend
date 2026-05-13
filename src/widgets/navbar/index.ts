@@ -1,4 +1,3 @@
-export { default as Navbar } from './ui/navbar'
-export type { OrgUnit } from './ui/navbar-types'
+export { Navbar } from './ui/navbar'
 export { orgTree } from './assets/org-structure'
 

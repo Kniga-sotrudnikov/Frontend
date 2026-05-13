@@ -1,4 +1,4 @@
-import type { OrgUnit } from "../ui/navbar-types"
+import type { OrgUnit } from "@/widgets/navbar/ui/navbar-types"
 
 export const orgTree: OrgUnit[] = [
   {

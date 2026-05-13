@@ -7,8 +7,8 @@ import {
   CollapsibleTrigger,
 } from "@/shared/ui/collapsible"
 import ArrowIcon from "@icons/arrow-right.svg?react"
-import type { OrgUnit } from "./navbar-types"
-import countEmployee  from "../assets/count-employee"
+import type { OrgUnit } from "@/widgets/navbar/ui/navbar-types"
+import countEmployee  from "@/widgets/navbar/assets/count-employee"
 
 interface RenderUnitProps { 
   unit: OrgUnit;
@@ -19,7 +19,6 @@ interface RenderUnitProps {
 function RenderUnit({ unit, selectedName, onSelect }: RenderUnitProps)  {
     const employeeCount = useMemo(() => countEmployee(unit), [unit])
     const isActive = selectedName === unit.name
-    console.log(unit.name, selectedName, isActive)
     if (unit.items && unit.items.length > 0) {
       return (
         <Collapsible onOpenChange={() => onSelect(unit.name) }>
@@ -64,7 +63,7 @@ function RenderUnit({ unit, selectedName, onSelect }: RenderUnitProps)  {
         )}
       >
         <span className={cn("truncate", unit.head && "font-bold")}>{unit.name}</span>
-        <span className="text-gray-600">{unit.employeeCount ?? 0}</span>
+        <span className="text-muted-foreground">{unit.employeeCount ?? 0}</span>
       </Button>
     )
 }
