@@ -185,6 +185,13 @@ body {
     line-height: 24px;
   }
 
+  .body-l-semibold {
+    font-family: var(--font-family-primary);
+    font-weight: var(--font-weight-semi-bold);
+    font-size: var(--font-size-body-l);
+    line-height: 100%;
+  }
+
   .body-m-semibold {
     font-family: var(--font-family-primary);
     font-weight: var(--font-weight-semi-bold);
