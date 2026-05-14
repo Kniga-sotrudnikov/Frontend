@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { cn } from "@/shared/lib";
-import BirthdayIcon from "@/shared/assets/icons/birthday.svg"; // ← иконка для заглушки, убрать по готовности Notification
+import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 
 interface PageHeaderProps {
   title?: string;
@@ -49,18 +49,9 @@ export function PageHeader({
             {notifications}
           </div>
         ) : (
-          /* ВРЕМЕННАЯ ЗАГЛУШКА: иконка уведомлений */
-          <button className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:bg-gray-100">
-            <img src={BirthdayIcon} alt="Уведомления" className="h-5 w-5" />
-          </button>
+          /* Иконка дней рождений с интерактивом */
+          <BirthdaysPopover />
         )}
-        {/* TODO: раскомментировать, когда будет готов компонент Notification
-        {notifications && (
-          <div className="flex h-11 w-11 items-center justify-center rounded">
-            {notifications}
-          </div>
-        )}
-        */}
 
         {/* Профиль пользователя */}
         {user && user}
