@@ -56,6 +56,11 @@ module.exports = {
       rules: {
         'check-file/filename-naming-convention': 'off'
       }
+    }, {
+      files: ['src/shared/ui/table/**/*.tsx'],
+      rules: {
+        'react-hooks/incompatible-library': 'off',
+      },
     }
   ]
 }
