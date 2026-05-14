@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
-import {
-  getTodayBirthdays,
-  getCurrentMonthBirthdays,
-} from "@/mock-data/birthdays";
+import { getTodayBirthdays, getCurrentMonthBirthdays } from '@/entities/employee';
 import BirthdayIcon from "@/shared/assets/icons/birthday.svg";
 import CloseIcon from "@/shared/assets/icons/close.svg";
 import CakeImage from "@/shared/assets/images/cake.png";
