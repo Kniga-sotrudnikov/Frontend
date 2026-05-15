@@ -10,9 +10,7 @@ import TagIcon from "@/shared/assets/icons/tag.svg?react";
 interface Vacancy {
   title: string;
   location: string;
-  format: string;
-  employment: string;
-  experience: string;
+  employmentDetails: string[];
   franchise: string;
   department: string;
   description: string;
@@ -36,9 +34,7 @@ function VacancyCard({
   const {
     title,
     location,
-    format,
-    employment,
-    experience,
+    employmentDetails,
     franchise,
     department,
     description,
@@ -49,6 +45,15 @@ function VacancyCard({
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
   };
+
+  const hasTitle = !!title;
+  const hasLocation = !!location;
+  const hasEmploymentDetails = employmentDetails?.length > 0;
+  const hasFranchise = !!franchise;
+  const hasDepartment = !!department;
+  const hasDescription = !!description;
+  const hasResponsibilities = responsibilities?.length > 0;
+  const hasCompetencies = competencies?.length > 0;
 
   return (
     <Dialog>
@@ -79,69 +84,82 @@ function VacancyCard({
         </div>
 
         <div className="px-3">
-          <div className="flex flex-col gap-2">
-            <h2 className="body-s-semibold">{title}</h2>
-            <p className="body-s text-gray-600">{location}</p>
+          {(hasTitle || hasLocation || hasEmploymentDetails) && (
+            <div className="flex flex-col gap-2">
+              {hasTitle && <h2 className="body-s-semibold">{title}</h2>}
+              {hasLocation && (
+                <p className="body-s text-gray-600">{location}</p>
+              )}
 
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <Badge className="bg-gray-200 text-black border-black">
-                {format}
-              </Badge>
-              <Badge className="bg-gray-200 text-black border-black">
-                {employment}
-              </Badge>
-              <Badge className="bg-gray-200 text-black border-black">
-                {experience}
-              </Badge>
+              {hasEmploymentDetails && (
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  {employmentDetails.map((tag, idx) => (
+                    <Badge
+                      key={idx}
+                      className="bg-gray-200 text-black border-black"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {(hasFranchise || hasDepartment) && (
+            <div className="flex flex-col gap-2 body-overline text-gray-600">
+              {hasFranchise && <span>{franchise}</span>}
+              {hasDepartment && <span>{department}</span>}
+            </div>
+          )}
+        </div>
+
+        {hasDescription && (
+          <div className="px-3 py-3 border-t border-b">
+            <h3 className="mb-3.5 body-overline-semibold text-black">
+              Описание вакансии
+            </h3>
+            <p className="body-overline text-black">{description}</p>
+          </div>
+        )}
+
+        {hasResponsibilities && (
+          <div className="px-3 pt-3.5 pb-2 bg-gray-50 rounded-8">
+            <h3 className="mb-1 body-overline-semibold text-black">
+              Обязанности
+            </h3>
+            <ul className="list-none space-y-0">
+              {responsibilities.map((item, idx) => (
+                <li
+                  key={idx}
+                  className="flex items-center gap-1.5 ml-2 leading-tight"
+                >
+                  <span className="text-black">•</span>
+                  <span className="body-overline text-black">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {hasCompetencies && (
+          <div className="px-3">
+            <div className="flex items-center gap-1 mb-5">
+              <TagIcon className="h-4 w-4 text-gray-600" />
+              <h3 className="body-overline-semibold">Компетенции</h3>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {competencies.map((item, idx) => (
+                <Badge
+                  key={idx}
+                  className="bg-purple-50 text-purple-500 border-purple-500"
+                >
+                  {item}
+                </Badge>
+              ))}
             </div>
           </div>
-
-          <div className="flex flex-col body-overline text-gray-600">
-            <span className="mb-2">{franchise}</span>
-            <span>{department}</span>
-          </div>
-        </div>
-
-        <div className="px-3 py-3 border-t border-b">
-          <h3 className="mb-3.5 body-overline-semibold text-black">
-            Описание вакансии
-          </h3>
-          <p className="body-overline text-black">{description}</p>
-        </div>
-
-        <div className="px-3 pt-3.5 pb-2 bg-gray-50 rounded-8">
-          <h3 className="mb-1 body-overline-semibold text-black">
-            Обязанности
-          </h3>
-          <ul className="list-none space-y-0">
-            {responsibilities.map((item, idx) => (
-              <li
-                key={idx}
-                className="flex items-center gap-1.5 ml-2 leading-tight"
-              >
-                <span className="text-black">•</span>
-                <span className="body-overline text-black">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="px-3">
-          <div className="flex items-center gap-1 mb-5">
-            <TagIcon className="h-4 w-4 text-gray-600" />
-            <h3 className="body-overline-semibold">Компетенции</h3>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {competencies.map((item, idx) => (
-              <Badge
-                key={idx}
-                className="bg-purple-50 text-purple-500 border-purple-500"
-              >
-                {item}
-              </Badge>
-            ))}
-          </div>
-        </div>
+        )}
 
         <div className="flex justify-between items-center px-3">
           <Button variant="ghost" className="p-0 gap-2" onClick={onExportPDF}>
