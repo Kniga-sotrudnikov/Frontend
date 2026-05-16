@@ -5,38 +5,59 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useNotificationStore } from "@/shared/model/stores";
 import StarIcon from "@/shared/assets/icons/star.svg?react";
 import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg?react";
-import PlusIcon from "@/shared/assets/icons/plus.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
+import WorkingIcon from "@/shared/assets/icons/working.svg";
+import BizTripIcon from "@/shared/assets/icons/biz-trip.svg";
+import VacationIcon from "@/shared/assets/icons/vacation.svg";
+import SickIcon from "@/shared/assets/icons/sick.svg";
 import defaultPhoto from "@/shared/assets/images/avatar-placeholder.jpg";
 
-interface ProfessionCardProps {
+type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
+
+interface EmployeeCardProps {
   city: string;
   photo?: string;
-  profession: string;
+  name: string;
   position: string;
   franchise: string;
   department: string;
+  linearManager: string;
+  status: EmployeeStatus;
   isArchived?: boolean;
   onFavorite?: () => void;
   onEdit?: () => void;
   onArchive?: () => void;
-  onRespond?: () => void;
 }
 
-export const ProfessionCard = ({
+const statusIconMap: Record<EmployeeStatus, string> = {
+  working: WorkingIcon,
+  bizTrip: BizTripIcon,
+  vacation: VacationIcon,
+  sick: SickIcon,
+};
+
+const statusLabelMap: Record<EmployeeStatus, string> = {
+  working: "Работает",
+  bizTrip: "В командировке",
+  vacation: "В отпуске",
+  sick: "На больничном",
+};
+
+export const EmployeeCard = ({
   city,
   photo = defaultPhoto,
-  profession,
+  name,
   position,
   franchise,
   department,
+  linearManager,
+  status,
   isArchived = false,
   onFavorite,
   onEdit,
   onArchive,
-  onRespond,
-}: ProfessionCardProps) => {
+}: EmployeeCardProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const addNotification = useNotificationStore((state) => state.add);
 
@@ -65,19 +86,10 @@ export const ProfessionCard = ({
     });
   };
 
-  const handleRespondDefault = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Отклик на вакансию будет доступен в ближайшее время",
-    });
-  };
-
   // Используем переданные обработчики или дефолтные
   const onFavoriteClick = onFavorite || handleFavoriteDefault;
   const onEditClick = onEdit || handleEditDefault;
   const onArchiveClick = onArchive || handleArchiveDefault;
-  const onRespondClick = onRespond || handleRespondDefault;
 
   const handleEdit = () => {
     setPopoverOpen(false);
@@ -90,7 +102,7 @@ export const ProfessionCard = ({
   };
 
   return (
-    <div className="w-full max-w-114.5 min-w-72 h-auto min-h-60.5 p-5.75 border border-gray-200 rounded-8 bg-white">
+    <div className="w-full max-w-114.5 min-w-72 h-auto min-h-54.25 p-5.75 border border-gray-200 rounded-8 bg-white">
       <div className="flex items-center justify-between mb-4">
         <span className="body-overline text-gray-600 max-w-72.5 truncate">
           {city}
@@ -144,18 +156,29 @@ export const ProfessionCard = ({
         </div>
       </div>
 
-      <div className="flex gap-4 border-b pb-4 mb-3.25">
-        <div className="shrink-0 w-26.5 h-23.5 bg-gray-100 rounded-8 overflow-hidden">
+      <div className="flex gap-4 border-b pb-3 mb-3">
+        <div className="relative shrink-0 w-26.5 h-23.5 bg-gray-100 rounded-8 overflow-hidden">
           <img
             src={photo}
             alt="Фото сотрудника"
             className={cn("size-full object-cover", isArchived && "grayscale")}
           />
+
+          {!isArchived && (
+            <div className="absolute bottom-0 right-0">
+              <img
+                src={statusIconMap[status]}
+                alt={statusLabelMap[status]}
+                className="size-6"
+                title={statusLabelMap[status]}
+              />
+            </div>
+          )}
         </div>
 
         <div className="flex-1">
           <h3 className="body-s-semibold text-black max-w-72.5 mb-2 truncate">
-            {profession}
+            {name}
           </h3>
           <p className="body-s mb-3 max-w-72.5 truncate text-gray-600">
             {position}
@@ -169,22 +192,14 @@ export const ProfessionCard = ({
         </div>
       </div>
 
-      <Button
-        variant="default"
-        size="default"
-        onClick={onRespondClick}
-        className="w-full p-4 hover:bg-purple-400 hover:text-white disabled:opacity-100 disabled:bg-gray-300"
-        disabled={isArchived}
-      >
-        {isArchived ? (
-          "Архивировано"
-        ) : (
-          <>
-            <PlusIcon className="size-4 mr-1 brightness-0 invert" />
-            Откликнуться
-          </>
-        )}
-      </Button>
+      <div className="flex items-center gap-2">
+        <span className="body-overline-semibold text-black">
+          Линейный рук.:
+        </span>
+        <span className="body-overline text-black truncate">
+          {linearManager}
+        </span>
+      </div>
     </div>
   );
 };
