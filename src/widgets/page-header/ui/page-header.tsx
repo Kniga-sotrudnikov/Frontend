@@ -1,12 +1,11 @@
 import type { ReactNode } from "react";
 import { cn } from "@/shared/lib";
-import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 
 interface PageHeaderProps {
   title?: string;
   stats?: ReactNode;
   search?: ReactNode;
-  notifications?: ReactNode;
+  birthday?: ReactNode;
   user?: ReactNode;
   rightActions?: ReactNode;
   className?: string;
@@ -16,7 +15,7 @@ export function PageHeader({
   title,
   stats,
   search,
-  notifications,
+  birthday,
   user,
   rightActions,
   className,
@@ -43,15 +42,8 @@ export function PageHeader({
         {/* Поиск */}
         {search && <div className="w-[356px]">{search}</div>}
 
-        {/* Уведомления (ДР и т.д.) */}
-        {notifications ? (
-          <div className="flex h-11 w-11 items-center justify-center rounded">
-            {notifications}
-          </div>
-        ) : (
-          /* Иконка дней рождений с интерактивом */
-          <BirthdaysPopover />
-        )}
+        {/* Birthday (Дни рождения) */}
+        {birthday && birthday}
 
         {/* Профиль пользователя */}
         {user && user}

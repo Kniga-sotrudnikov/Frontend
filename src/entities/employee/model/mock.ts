@@ -90,8 +90,8 @@ export const MOCK_BIRTHDAYS: BirthdayPerson[] = [
   // Майские дни рождения
   { name: "Выборнова Яна", date: "14 мая", fullDate: new Date(2024, 4, 14) },
   { name: "Иванов Павел", date: "14 мая", fullDate: new Date(2024, 4, 14) },
-  { name: "Иванова Татьяна", date: "15 мая", fullDate: new Date(2024, 4, 15) },
-  { name: "Иванова Анна", date: "15 мая", fullDate: new Date(2024, 4, 12) },
+  { name: "Иванова Татьяна", date: "16 мая", fullDate: new Date(2024, 4, 16) },
+  { name: "Иванова Анна", date: "17 мая", fullDate: new Date(2024, 4, 17) },
   { name: "Стремяков Михаил", date: "19 мая", fullDate: new Date(2024, 4, 19) },
   {
     name: "Меньшин Александр",
