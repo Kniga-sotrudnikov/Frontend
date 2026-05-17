@@ -10,6 +10,7 @@ import { ZoomablePDF } from "@/shared/ui/zoomable-pdf"
 import { mockCurrentUser } from "@/entities/user"
 // import Chart from "@/shared/assets/images/Chart.png"
 import ChartPdf from "@/shared/assets/images/Chart.pdf"
+import { BirthdaysPopover } from "@/widgets/birthdays-popover"
 
 const OrgStructurePage = () => {
   const [zoom, setZoom] = useState(100)
@@ -21,6 +22,7 @@ const OrgStructurePage = () => {
         title="Оргструктура"
         stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
         search={<SearchInput placeholder="Поиск по ФИО, должности, тегам..." />}
+        birthday={<BirthdaysPopover />}
         user={<HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />}
       />
       <main className="h-screen mt-5 mx-10 flex flex-col gap-5">
