@@ -61,7 +61,7 @@ export const ZoomablePDF = ({ src, zoom, className }: ZoomablePDFProps) => {
   return (
     <div
       ref={containerRef}
-      className={cn("border rounded-2xl border-border overflow-hidden", className)}
+      className={cn("overflow-auto scrollbar-none", className)}
       style={{ cursor: zoom > 100 ? "grab" : "default" }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

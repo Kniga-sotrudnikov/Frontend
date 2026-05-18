@@ -26,7 +26,7 @@ function ZoomControl({ value, onChange }: ZoomControlProps) {
 
   return (
     <div className="flex items-center">
-      <Button variant="outline" size="icon" className="border-border" onClick={() => onChange(decZoom(value, 10))}>−</Button>
+      <Button variant="outline" size="icon" className="border-border" onClick={() => onChange(incZoom(value, 10))}>+</Button>
       <Input
         wrapperClassName="border-0 focus-within:ring-0"
         className="w-9 text-center"
@@ -35,7 +35,7 @@ function ZoomControl({ value, onChange }: ZoomControlProps) {
         onBlur={commit}
         onKeyDown={(e) => e.key === "Enter" && commit()}
       />
-      <Button variant="outline" size="icon" className="border-border" onClick={() => onChange(incZoom(value, 10))}>+</Button>
+      <Button variant="outline" size="icon" className="border-border" onClick={() => onChange(decZoom(value, 10))}>−</Button>
     </div>
   )
 }
