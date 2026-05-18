@@ -2,9 +2,7 @@ import WorkingIcon from "@/shared/assets/icons/working.svg";
 import BizTripIcon from "@/shared/assets/icons/biz-trip.svg";
 import VacationIcon from "@/shared/assets/icons/vacation.svg";
 import SickIcon from "@/shared/assets/icons/sick.svg";
-
-//TODO: ВЫНЕСТИ ТИПЫ ОТДЕЛЬНО
-export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
+import type { EmployeeStatus } from "./types";
 
 export const statusIconMap: Record<EmployeeStatus, string> = {
   working: WorkingIcon,

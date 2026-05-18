@@ -2,9 +2,9 @@ import defaultPhoto from "@/shared/assets/images/avatar-placeholder.jpg";
 import {
   statusIconMap,
   statusLabelMap,
-  type EmployeeStatus,
-} from "./status-employee";
+} from "@/entities/employee/model/constants";
 import { cn } from "@/shared/lib";
+import type { EmployeeStatus } from "@/entities/employee/model/types";
 
 interface EmployeePrimaryInfoProps {
   photo?: string;

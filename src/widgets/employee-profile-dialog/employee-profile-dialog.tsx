@@ -16,9 +16,9 @@ import LeaderIcon from "@/shared/assets/icons/leader.svg";
 import PhoneIcon from "@/shared/assets/icons/phone.svg";
 import CalendarIcon from "@/shared/assets/icons/calendar.svg";
 import TagIcon from "@/shared/assets/icons/tag.svg";
-import { CollapsibleBadgeList } from "./collapsible-badge-list";
-import { InfoSection } from "./info-section";
-import { ReportInaccuracyModal } from "./report-inaccuracy-modal";
+import { CollapsibleBadgeList } from "@/shared/ui/collapsible-badge-list";
+import { InfoSection } from "@/shared/ui/info-section";
+import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/report-inaccuracy-modal";
 import { Button } from "@/shared/ui/button";
 import type { ReactElement, ReactNode } from "react";
 

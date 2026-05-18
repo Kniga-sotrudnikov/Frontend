@@ -1,4 +1,4 @@
-import type { TEmployeeStatus } from "../model/types";
+import type { TEmployeeStatus } from "@/entities/employee/";
 import { Badge } from "@ui/badge";
 
 const employeeStatusConfig: Record<
