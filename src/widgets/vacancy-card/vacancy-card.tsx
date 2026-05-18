@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@ui/button";
 import { Badge } from "@/shared/ui/badge";
-import { ReportInaccuracyModal } from "./report-inaccuracy-modal";
+import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal";
 import InfoIcon from "@/shared/assets/icons/warning.svg?react";
 import LinkIcon from "@/shared/assets/icons/link.svg?react";
 import ExportIcon from "@/shared/assets/icons/export.svg?react";
@@ -92,6 +92,7 @@ function VacancyCard({
               )}
 
               {hasEmploymentDetails && (
+                //TODO: Заменить на CollapsibleBadgeList
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   {employmentDetails.map((tag, idx) => (
                     <Badge
@@ -143,6 +144,7 @@ function VacancyCard({
         )}
 
         {hasCompetencies && (
+          //TODO: Заменить данный компонент div на InfoSection, список бейджей заменить на CollapsibleBadgeList
           <div className="px-3">
             <div className="flex items-center gap-1 mb-5">
               <TagIcon className="h-4 w-4 text-gray-600" />
