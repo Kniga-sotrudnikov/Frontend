@@ -1,6 +1,7 @@
 import { Button } from "@/shared/ui/button";
 import { Link, useNavigate } from "react-router";
 import { ROUTES } from "@/shared/model/routes/routes";
+import NotFoundImage from "@/shared/assets/images/404.svg";
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ const NotFoundPage = () => {
             {/* Правая часть */}
             <div className="w-full max-w-[320px] lg:w-198.75 lg:max-w-none">
               <img
-                src="src/shared/assets/images/404.png"
+                src={NotFoundImage}
                 alt="404 illustration"
                 className="w-full h-auto"
               />
