@@ -43,7 +43,7 @@ export const Sidebar = () => {
   return (
     <aside className="flex flex-col justify-between px-6.5 py-10 border border-gray-200">
       <nav>
-        <Link to={ROUTES.HOME} className="flex justify-center mb-9">
+        <Link to={ROUTES.EMPLOYEES} className="flex justify-center mb-9">
           <img
             src={logoIcon}
             alt="логотип книги сотрудников"

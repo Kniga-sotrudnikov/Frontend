@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, redirect } from "react-router";
 import { App } from "@/app/app";
 import { ProvidersLayout } from "@/app/providers/providers-layout";
 import { ROUTES } from "@/shared/model/routes/routes";
@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
         children: [
           {
             index: true,
-            lazy: () => import("@/pages/home/home-page"),
+            loader: () => redirect(ROUTES.EMPLOYEES),
           },
           {
             path: ROUTES.EMPLOYEES,
