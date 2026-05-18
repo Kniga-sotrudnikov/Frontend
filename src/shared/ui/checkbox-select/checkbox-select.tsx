@@ -62,7 +62,7 @@ export const CheckboxSelect = ({
 
           return (
             <li key={option.value}>
-              <label className="flex items-center gap-2">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
                   checked={checked}
                   disabled={option.disabled}
@@ -87,7 +87,7 @@ export const CheckboxSelect = ({
         <Button
           variant="plain"
           size="plain"
-          className="flex justify-between w-full"
+          className="flex justify-between w-full hover:text-primary"
         >
           <span className="text-(length:--font-size-body-m)">{title}</span>
           {open ? (
@@ -108,7 +108,7 @@ export const CheckboxSelect = ({
                 <Button
                   variant="plain"
                   size="plain"
-                  className="font-(--font-weight-regular) text-(--color-gray-600)"
+                  className="font-(--font-weight-regular) text-muted-foreground"
                 >
                   {`Показать все (${hiddenOptionsCount})`}
                 </Button>
@@ -123,7 +123,7 @@ export const CheckboxSelect = ({
                   <Button
                     variant="plain"
                     size="plain"
-                    className="font-(--font-weight-regular) text-(--color-gray-600)"
+                    className="font-(--font-weight-regular) text-muted-foreground"
                   >
                     {`Скрыть`}
                   </Button>
