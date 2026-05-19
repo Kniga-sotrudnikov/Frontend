@@ -1,14 +1,38 @@
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { EmployeeCard } from "@/widgets/employee-card";
+import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
 import { ProfessionCard } from "@/widgets/profession-card";
 import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
 
+interface EmployeeData {
+  id: number | string;
+  city: string;
+  linearManager: string;
+  name: string;
+  position: string;
+  franchise: string;
+  department: string;
+  status: "working" | "bizTrip" | "vacation" | "sick";
+  photo?: string;
+  isArchived?: boolean;
+}
+
+interface VacancyData {
+  id: number | string;
+  city: string;
+  profession: string;
+  position: string;
+  franchise: string;
+  department: string;
+  isArchived?: boolean;
+}
+
 interface EmployeesListProps {
-  employees: React.ComponentProps<typeof EmployeeCard>[];
-  vacancies: React.ComponentProps<typeof ProfessionCard>[];
+  employees: EmployeeData[];
+  vacancies: VacancyData[];
   favoritesIds?: (number | string)[];
 }
 
@@ -109,15 +133,30 @@ export const EmployeesList = ({
       {activeTab === "employees" && (
         <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
           {employees.map((employee) => (
-            <EmployeeCard key={employee.id} {...employee} />
+            <EmployeeCard
+              key={employee.id}
+              city={employee.city}
+              linearManager={employee.linearManager}
+              primaryInfo={
+                <EmployeePrimaryInfo
+                  name={employee.name}
+                  position={employee.position}
+                  franchise={employee.franchise}
+                  department={employee.department}
+                  status={employee.status}
+                  photo={employee.photo}
+                  isArchived={employee.isArchived}
+                />
+              }
+            />
           ))}
         </div>
       )}
 
       {activeTab === "vacancies" && (
         <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
-          {vacancies.map((vacancy) => (
-            <ProfessionCard key={vacancy.id} {...vacancy} />
+          {vacancies.map(({ id, ...vacancyProps }) => (
+            <ProfessionCard key={id} {...vacancyProps} />
           ))}
         </div>
       )}
@@ -127,10 +166,28 @@ export const EmployeesList = ({
           {allFavorites.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
               {allFavorites.map((item) => {
-                if ("name" in item) {
-                  return <EmployeeCard key={item.id} {...item} />;
+                if ("name" in item && "linearManager" in item) {
+                  return (
+                    <EmployeeCard
+                      key={item.id}
+                      city={item.city}
+                      linearManager={item.linearManager}
+                      primaryInfo={
+                        <EmployeePrimaryInfo
+                          name={item.name}
+                          position={item.position}
+                          franchise={item.franchise}
+                          department={item.department}
+                          status={item.status}
+                          photo={item.photo}
+                          isArchived={item.isArchived}
+                        />
+                      }
+                    />
+                  );
                 } else {
-                  return <ProfessionCard key={item.id} {...item} />;
+                  const { id, ...vacancyProps } = item;
+                  return <ProfessionCard key={id} {...vacancyProps} />;
                 }
               })}
             </div>

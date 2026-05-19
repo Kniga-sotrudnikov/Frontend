@@ -12,3 +12,5 @@ export type TEmployee = {
   city: string;
   tags: string[];
 };
+
+export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
