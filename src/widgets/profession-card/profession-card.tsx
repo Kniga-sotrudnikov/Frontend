@@ -11,6 +11,7 @@ import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import defaultPhoto from "@/shared/assets/images/avatar-placeholder.jpg";
 
 interface ProfessionCardProps {
+  id: number | string;
   city: string;
   photo?: string;
   profession: string;

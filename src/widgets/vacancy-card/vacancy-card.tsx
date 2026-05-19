@@ -8,6 +8,7 @@ import ExportIcon from "@/shared/assets/icons/export.svg?react";
 import TagIcon from "@/shared/assets/icons/tag.svg?react";
 
 interface Vacancy {
+  id: number | string;
   title: string;
   location: string;
   employmentDetails: string[];

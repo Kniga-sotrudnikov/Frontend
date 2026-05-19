@@ -15,7 +15,8 @@ import defaultPhoto from "@/shared/assets/images/avatar-placeholder.jpg";
 
 type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
 
-interface EmployeeCardProps {
+export interface EmployeeCardProps {
+  id: number | string;
   city: string;
   photo?: string;
   name: string;
