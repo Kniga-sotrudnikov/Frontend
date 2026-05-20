@@ -40,7 +40,7 @@ function Input({
         type={type}
         data-slot="input"
         className={cn(
-          "flex h-full w-full min-w-0 bg-transparent py-1 text-base outline-none placeholder:text-muted-foreground md:text-sm",
+          "flex h-full w-full min-w-0 bg-transparent py-1 text-base outline-none placeholder:text-muted-foreground md:text-xs",
           className,
         )}
         {...props}

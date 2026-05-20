@@ -23,32 +23,29 @@ export function PageHeader({
   return (
     <header
       className={cn(
-        "flex w-full items-center justify-between gap-4 border-b border-gray-200 bg-white px-8 py-4",
+        "flex w-full flex-nowrap items-center justify-between gap-2 overflow-x-auto border-b border-gray-200 bg-white px-4 py-4 lg:gap-4 lg:px-8",
         className,
       )}
     >
-      {/* Левая часть: заголовок + статистика */}
-      <div className="flex flex-col gap-1">
+      <div className="flex shrink-0 flex-col gap-1">
         {title && (
-          <h1 className="font-family-primary text-[32px] font-semibold leading-[44px] text-black">
+          <h1 className="whitespace-nowrap font-family-primary text-[18px] font-semibold leading-[24px] text-black lg:text-[32px] lg:leading-[44px]">
             {title}
           </h1>
         )}
-        {stats && <div className="body-s text-gray-600">{stats}</div>}
+        {stats && (
+          <div className="body-s whitespace-nowrap text-gray-600 text-xs lg:text-base">
+            {stats}
+          </div>
+        )}
       </div>
 
-      {/* Правая часть: поиск + уведомления + профиль */}
-      <div className="flex items-center gap-10">
-        {/* Поиск */}
-        {search && <div className="w-[356px]">{search}</div>}
-
-        {/* Birthday (Дни рождения) */}
+      <div className="flex shrink-0 items-center gap-2 lg:gap-4">
+        {search && (
+          <div className="w-full lg:w-[356px]">{search}</div>
+        )}
         {birthday && birthday}
-
-        {/* Профиль пользователя */}
         {user && user}
-
-        {/* Дополнительные действия */}
         {rightActions && rightActions}
       </div>
     </header>
