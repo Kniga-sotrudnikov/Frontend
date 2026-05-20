@@ -2,6 +2,7 @@ import { SearchInput } from "@/shared/ui/input";
 import { PageHeader } from "@/widgets/page-header";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
+{/*Вставил сюда временно,для демонстрации */}
 import { EmployeeNotFound } from "@/widgets/employee-not-found";
 
 const SettingsPage = () => {
