@@ -2,8 +2,6 @@ import { SearchInput } from "@/shared/ui/input";
 import { PageHeader } from "@/widgets/page-header";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
-{/*Вставил сюда временно,для демонстрации */}
-import { EmployeeNotFound } from "@/widgets/employee-not-found";
 
 const SettingsPage = () => {
   return (
@@ -15,8 +13,6 @@ const SettingsPage = () => {
         user={<HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />}
         />
       <div className="p-6">Настройки. В работе...</div>
-      {/*Вставил сюда временно,для демонстрации */}
-      <EmployeeNotFound></EmployeeNotFound>
     </div>
   );
 };
