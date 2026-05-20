@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ArrowDownIcon from "@/shared/assets/icons/arrow-down.svg";
 import CloseIcon from "@/shared/assets/icons/close.svg"
 import { SearchInput } from '@/shared/ui/input/search-input';
-import {Button} from '@/shared/ui/button/button'
+import {Button} from '@/shared/ui/button'
 import { DropdownMenuSeparator } from '@/shared/ui/dropdown-menu';
 
 interface FilterCitiesProps {
@@ -10,6 +10,9 @@ interface FilterCitiesProps {
   selected?: string[];
   onChange?: (selected: string[]) => void;
 }
+
+  const maxVisible = 5;
+
 
 const FilterCities: React.FC<FilterCitiesProps> = ({ cities, selected = [], onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,7 +67,6 @@ const FilterCities: React.FC<FilterCitiesProps> = ({ cities, selected = [], onCh
     city.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const maxVisible = 5;
   const displayedCities = showAll ? filteredCities : filteredCities.slice(0, maxVisible);
   const hasMore = filteredCities.length > maxVisible && !showAll;
 
@@ -108,7 +110,7 @@ const FilterCities: React.FC<FilterCitiesProps> = ({ cities, selected = [], onCh
                 className="p-0"
                 variant="link"
                 size="default"
-                onClick={() => handleRemoveCities()}
+                onClick={handleRemoveCities}
                 >
                     Сбросить
                 </Button>
@@ -118,7 +120,7 @@ const FilterCities: React.FC<FilterCitiesProps> = ({ cities, selected = [], onCh
               
               <div className="flex flex-wrap gap-1">
                 {selectedCities.map(city => (
-                  <span key={city} className="inline-flex items-center px-2 py-0.5 h-[24px]  text-xs rounded-md font-medium bg-(--secondary) text-(--primary))">
+                  <span key={city} className="inline-flex items-center px-2 py-0.5 h-[24px]  text-xs rounded-md font-medium bg-[var(--secondary)] text-[var(--primary)]">
                     {city}
                     <button
                       type="button"
@@ -177,7 +179,7 @@ const FilterCities: React.FC<FilterCitiesProps> = ({ cities, selected = [], onCh
             type="button"
             variant="outline"
             size="default"
-            onClick={() => handleRemoveCities()}
+            onClick={handleRemoveCities}
             >
                 Очистить
             </Button>
