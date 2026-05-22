@@ -4,6 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
+import { Button } from "@/shared/ui/button";
 import { EmployeesTab } from "./employees-tab";
 import { VacanciesTab } from "./vacancies-tab";
 import { FavoritesTab } from "./favorites-tab";
@@ -100,10 +101,12 @@ export const EmployeesList = ({
         </Tabs>
 
         <div className="flex rounded-8 h-8 overflow-hidden">
-          <button
+          <Button
+            variant="plain"
+            size="plain"
             onClick={() => setViewType("grid")}
             className={cn(
-              "py-1.5 px-2 cursor-pointer rounded-l-8",
+              "py-1.5 px-2 rounded-none rounded-l-8 h-full transition-none",
               viewType === "grid"
                 ? "bg-purple-50 border border-purple-100"
                 : "bg-white border-y border-l border-gray-200",
@@ -111,11 +114,13 @@ export const EmployeesList = ({
             )}
           >
             <GridIcon className="size-5" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="plain"
+            size="plain"
             onClick={() => setViewType("list")}
             className={cn(
-              "py-1.5 px-2 cursor-pointer rounded-r-8",
+              "py-1.5 px-2 rounded-none rounded-r-8 h-full transition-none",
               viewType === "list"
                 ? "bg-purple-50 border border-purple-100"
                 : "bg-white border-y border-r border-gray-200",
@@ -123,7 +128,7 @@ export const EmployeesList = ({
             )}
           >
             <ListIcon className="size-5" />
-          </button>
+          </Button>
         </div>
       </div>
 
