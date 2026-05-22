@@ -1,34 +1,14 @@
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { EmployeeCard } from "@/widgets/employee-card";
-import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
-import { ProfessionCard } from "@/widgets/profession-card";
+
 import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
-
-interface EmployeeData {
-  id: number | string;
-  city: string;
-  linearManager: string;
-  name: string;
-  position: string;
-  franchise: string;
-  department: string;
-  status: "working" | "bizTrip" | "vacation" | "sick";
-  photo?: string;
-  isArchived?: boolean;
-}
-
-interface VacancyData {
-  id: number | string;
-  city: string;
-  profession: string;
-  position: string;
-  franchise: string;
-  department: string;
-  isArchived?: boolean;
-}
+import { EmployeesTab } from "./employees-tab";
+import { VacanciesTab } from "./vacancies-tab";
+import { FavoritesTab } from "./favorites-tab";
+import { ArchiveTab } from "./archive-tab";
+import type { EmployeeData, VacancyData } from "./types";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -42,24 +22,29 @@ export const EmployeesList = ({
   favoritesIds = [],
 }: EmployeesListProps) => {
   const [activeTab, setActiveTab] = useState<
-    "employees" | "vacancies" | "favorites"
+    "employees" | "vacancies" | "favorites" | "archive"
   >("employees");
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
 
-  const favoriteEmployees = employees.filter((emp) =>
-    favoritesIds.includes(emp.id),
+  const favoriteEmployees = employees.filter(
+    (emp) => favoritesIds.includes(emp.id) && !emp.isArchived,
   );
 
-  const favoriteVacancies = vacancies.filter((vac) =>
-    favoritesIds.includes(vac.id),
+  const favoriteVacancies = vacancies.filter(
+    (vac) => favoritesIds.includes(vac.id) && !vac.isArchived,
   );
 
   const allFavorites = [...favoriteEmployees, ...favoriteVacancies];
 
+  const archivedEmployees = employees.filter((emp) => emp.isArchived === true);
+  const archivedVacancies = vacancies.filter((vac) => vac.isArchived === true);
+  const allArchived = [...archivedEmployees, ...archivedVacancies];
+
   const counts = {
-    employees: employees.length,
-    vacancies: vacancies.length,
+    employees: employees.filter((emp) => !emp.isArchived).length,
+    vacancies: vacancies.filter((vac) => !vac.isArchived).length,
     favorites: allFavorites.length,
+    archived: allArchived.length,
   };
 
   return (
@@ -68,7 +53,9 @@ export const EmployeesList = ({
         <Tabs
           value={activeTab}
           onValueChange={(value) =>
-            setActiveTab(value as "employees" | "vacancies" | "favorites")
+            setActiveTab(
+              value as "employees" | "vacancies" | "favorites" | "archive",
+            )
           }
         >
           <TabsList variant="line" className="gap-0 p-0 h-auto">
@@ -99,10 +86,20 @@ export const EmployeesList = ({
                 {counts.favorites}
               </span>
             </TabsTrigger>
+            {/* TODO: добавить проверку на роль HR */}
+            <TabsTrigger
+              value="archive"
+              className="flex items-center justify-center gap-1 px-3 py-2 button-small cursor-pointer"
+            >
+              Архив
+              <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
+                {counts.archived}
+              </span>
+            </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="flex rounded-8 h-8">
+        <div className="flex rounded-8 h-8 overflow-hidden">
           <button
             onClick={() => setViewType("grid")}
             className={cn(
@@ -131,72 +128,19 @@ export const EmployeesList = ({
       </div>
 
       {activeTab === "employees" && (
-        <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
-          {employees.map((employee) => (
-            <EmployeeCard
-              key={employee.id}
-              city={employee.city}
-              linearManager={employee.linearManager}
-              primaryInfo={
-                <EmployeePrimaryInfo
-                  name={employee.name}
-                  position={employee.position}
-                  franchise={employee.franchise}
-                  department={employee.department}
-                  status={employee.status}
-                  photo={employee.photo}
-                  isArchived={employee.isArchived}
-                />
-              }
-            />
-          ))}
-        </div>
+        <EmployeesTab employees={employees} viewType={viewType} />
       )}
 
       {activeTab === "vacancies" && (
-        <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
-          {vacancies.map(({ id, ...vacancyProps }) => (
-            <ProfessionCard key={id} {...vacancyProps} />
-          ))}
-        </div>
+        <VacanciesTab vacancies={vacancies} viewType={viewType} />
       )}
 
       {activeTab === "favorites" && (
-        <>
-          {allFavorites.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
-              {allFavorites.map((item) => {
-                if ("name" in item && "linearManager" in item) {
-                  return (
-                    <EmployeeCard
-                      key={item.id}
-                      city={item.city}
-                      linearManager={item.linearManager}
-                      primaryInfo={
-                        <EmployeePrimaryInfo
-                          name={item.name}
-                          position={item.position}
-                          franchise={item.franchise}
-                          department={item.department}
-                          status={item.status}
-                          photo={item.photo}
-                          isArchived={item.isArchived}
-                        />
-                      }
-                    />
-                  );
-                } else {
-                  const { id, ...vacancyProps } = item;
-                  return <ProfessionCard key={id} {...vacancyProps} />;
-                }
-              })}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-gray-500">
-              Нет избранных сотрудников или вакансий
-            </div>
-          )}
-        </>
+        <FavoritesTab favorites={allFavorites} viewType={viewType} />
+      )}
+
+      {activeTab === "archive" && (
+        <ArchiveTab archived={allArchived} viewType={viewType} />
       )}
     </div>
   );
