@@ -4,6 +4,9 @@ import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { Navbar, orgTree } from "@/widgets/navbar";
 import { EmployeesList } from "@/widgets/employees-list";
+import { StatusFilter } from "@/features/employee/ui/status-filter.tsx";
+import { useState } from "react";
+import type { TEmployeeStatus } from "@/entities/employee";
 
 // Моковые данные для сотрудников
 const mockEmployees = [
@@ -143,6 +146,8 @@ const mockVacancies = [
 const mockFavorites = [1, 3, 102, 105];
 
 const EmployeesPage = () => {
+  const [value, setValue] = useState<TEmployeeStatus[]>([]);
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <PageHeader
@@ -158,11 +163,15 @@ const EmployeesPage = () => {
       <div className="mx-10 mt-5 grid grid-cols-[295px_1fr] gap-x-7 min-h-screen">
         <Navbar unitsList={orgTree} />
 
-        <EmployeesList
-          employees={mockEmployees}
-          vacancies={mockVacancies}
-          favoritesIds={mockFavorites}
-        />
+        {/* Правая колонка - общий контейнер для фильтра и списка */}
+        <div className="space-y-3">
+          <StatusFilter value={value} onValueChange={setValue} />
+          <EmployeesList
+            employees={mockEmployees}
+            vacancies={mockVacancies}
+            favoritesIds={mockFavorites}
+          />
+        </div>
       </div>
     </div>
   );
