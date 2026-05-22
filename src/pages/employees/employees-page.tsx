@@ -9,7 +9,7 @@ import type { TEmployeeStatus } from "@/entities/employee";
 
 const EmployeesPage = () => {
   const [value, setValue] = useState<TEmployeeStatus[]>([]);
-  console.log(value);
+
   return (
     <div className="bg-gray-50 ">
       <PageHeader

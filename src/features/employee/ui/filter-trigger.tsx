@@ -6,13 +6,16 @@ import ArrowUpIcon from "@icons/arrow-up.svg?react";
 import { cn } from "@/shared/lib";
 
 type TFilterTriggerProps = ComponentProps<typeof Button> & {
-  value: string[];
+  selectedCount: number;
   label: string;
   open: boolean;
 };
 
 export const FilterTrigger = forwardRef<HTMLButtonElement, TFilterTriggerProps>(
-  function FilterTrigger({ value, label, open, className, ...props }, ref) {
+  function FilterTrigger(
+    { selectedCount, label, open, className, ...props },
+    ref,
+  ) {
     return (
       <Button
         ref={ref}
@@ -26,12 +29,10 @@ export const FilterTrigger = forwardRef<HTMLButtonElement, TFilterTriggerProps>(
         {...props}
       >
         <div className="flex items-center gap-2.5">
-          <span className="font-(--font-weight-regular) text-(--color-gray-500)">
-            {label}
-          </span>
-          {value.length > 0 && (
-            <span className="flex items-center justify-center size-5.75 rounded-(--radius-4) bg-[#D6D6D64D] text-(length:--font-size-overline) leading-none">
-              {value.length}
+          <span className="font-regular text-(--color-gray-500)">{label}</span>
+          {selectedCount > 0 && (
+            <span className="flex items-center justify-center size-5.75 rounded-(--radius-4) bg-muted body-overline font-medium leading-none">
+              {selectedCount}
             </span>
           )}
         </div>
