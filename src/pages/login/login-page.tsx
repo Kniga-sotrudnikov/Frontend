@@ -4,6 +4,7 @@ import { Button } from "@ui/button";
 import LogoFull from "@/shared/assets/images/full-logo.svg?react";
 import MailIcon from "@icons/mail.svg";
 import loginImage from "@/shared/assets/images/login.png";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 const LoginPage = () => {
   return (
@@ -15,15 +16,62 @@ const LoginPage = () => {
         </h1>
         <img src={loginImage} alt="" width="573" height="691" />
       </div>
+
       <div className="flex flex-col justify-center items-center w-198.5 h-dvh">
-        <form className="pt-10.25 px-7 pb-5">
-          <span>Вход</span>
-          <Input iconLeft={MailIcon} />
-          <PasswordInput />
-          <Button>Забыли пароль?</Button>
-          <Button>Войти</Button>
-          <span>Нет доступа?</span>
-          <Button>Обратитесь к HR</Button>
+        <form className="w-115 pt-10 px-7 pb-3.5 border border-border) rounded-12">
+          <h3 className="leading-none">Вход</h3>
+
+          <Tabs defaultValue="overview" className="mt-8.75 gap-7.5">
+            <TabsList variant="line" className="mx-auto gap-13">
+              <TabsTrigger value="link">Одноразовая ссылка</TabsTrigger>
+              <TabsTrigger value="password">Пароль</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="link" className="mb-20">
+              <div className="flex flex-col gap-2 mb-7">
+                <label htmlFor="link" className="block">
+                  Email
+                </label>
+                <Input id="link" iconLeft={MailIcon} wrapperClassName="h-11" />
+                <p className="body-overline text-(--color-gray-300) leading-4">
+                  Мы отправим ссылку для входа на вашу почту. Ссылка действует
+                  15 минут
+                </p>
+              </div>
+              <Button className="h-10 w-full">Отправить ссылку</Button>
+            </TabsContent>
+
+            <TabsContent value="password" className="mb-9">
+              <div className="mb-5.75">
+                <label htmlFor="email" className="block mb-2">
+                  Email
+                </label>
+                <Input id="email" iconLeft={MailIcon} wrapperClassName="h-11" />
+              </div>
+              <div className="mb-3.5">
+                <label htmlFor="password" className="block mb-2">
+                  Пароль
+                </label>
+                <PasswordInput id="password" wrapperClassName="h-11" />
+              </div>
+
+              <div className="flex flex-col gap-5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="max-w-37.5 self-end mr-3"
+                >
+                  Забыли пароль?
+                </Button>
+                <Button className="h-10">Войти</Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex justify-center items-center gap-1">
+            <span className="body-s">Нет доступа?</span>
+            <Button variant="ghost">Обратитесь к HR</Button>
+          </div>
         </form>
       </div>
     </section>
