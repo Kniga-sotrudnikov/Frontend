@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/shared/ui/dialog"
 import { Button } from "@/shared/ui/button"
@@ -57,6 +58,9 @@ function UploadOrgStructure({ open, onOpenChange }: UploadOrgStructureProps) {
           <DialogTitle className="font-bold text-lg">
             Обновление файла оргструктуры
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Загрузите новый файл оргструктуры в формате PDF, PNG или JPG
+          </DialogDescription>
         </DialogHeader>
         <div
           className={`min-w-[373px] bg-gray-50 border-3 border-dashed rounded-lg flex flex-col items-center gap-3 p-8 transition-colors ${

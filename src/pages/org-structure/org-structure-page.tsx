@@ -19,6 +19,7 @@ const OrgStructurePage = () => {
   const isAdmin = mockCurrentUser.role === "hr_admin"
   // TODO: значение isImage будут определятся форматом файла загружаемого с сервера
   const isImage = true
+  const isZoomabled = zoom > 100
 
   return (
     <div>
@@ -29,16 +30,21 @@ const OrgStructurePage = () => {
         birthday={<BirthdaysPopover />}
         user={<HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />}
       />
-      <main className="bg-gray-50 h-screen pt-5 pb-10 px-10 flex flex-col gap-5">
+      <main className="h-screen pt-5 pb-10 px-10 flex flex-col gap-5">
         <div className="flex justify-start gap-7">
           {isAdmin && 
-             <Button variant="outline" onClick={() => setIsClarifyingOpen(true)}>
-               Загрузить схему
-             </Button>
+            <Button variant="outline" onClick={() => setIsClarifyingOpen(true)}>
+              Загрузить схему
+            </Button>
           }
           <Button variant="outline" className="px-3.5">Экспортировать</Button>
           <Separator orientation="vertical" />
           <ZoomControl value={zoom} onChange={setZoom} />
+          {isZoomabled && 
+            <Button variant="outline" onClick={() => setZoom(100)}>
+              Сбросить масштабирование
+            </Button>
+          }
         </div>
         <div className="border rounded-2xl border-border overflow-hidden flex-1 min-h-0">
           {isImage

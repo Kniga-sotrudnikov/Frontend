@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 
 interface ZoomableImageProps {
   src: string;
@@ -14,10 +14,6 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
     offsetX: number;
     offsetY: number;
   } | null>(null);
-
-  useEffect(() => {
-    setOffset({ x: 0.5, y: 0.5 });
-  }, [zoom]);
 
   const zoomFactor = zoom / 100;
   const size = 1 / zoomFactor;
