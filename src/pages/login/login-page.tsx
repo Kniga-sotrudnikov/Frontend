@@ -13,8 +13,29 @@ import LogoFull from "@/shared/assets/images/full-logo.svg?react";
 import ToastIcon from "@icons/toast.svg?react";
 import mailIcon from "@icons/mail.svg";
 import loginImage from "@/shared/assets/images/login.png";
+import { cn } from "@/shared/lib";
+import { useEffect, useState } from "react";
 
 const LoginPage = () => {
+  const [sentEmail, setSentEmail] = useState<string | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const LINK_TIMER = 30;
+
+  useEffect(() => {
+    if (secondsLeft <= 0) {
+      setSentEmail(null);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setSecondsLeft((prevState) => prevState - 1);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [secondsLeft]);
+
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: "onChange",
@@ -30,6 +51,10 @@ const LoginPage = () => {
   const onSubmit = (values: TLoginFormValues) => {
     if (values.authType === "link") {
       console.log("вход по ссылке", values.email);
+
+      setSentEmail(values.email);
+      setSecondsLeft(LINK_TIMER);
+
       return;
     }
 
@@ -37,6 +62,7 @@ const LoginPage = () => {
   };
 
   const isValid = form.formState.isValid;
+  const isLinkCooldown = secondsLeft > 0;
 
   return (
     <section className="flex justify-center items-center">
@@ -69,7 +95,7 @@ const LoginPage = () => {
               <TabsTrigger value="password">Пароль</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="link" className="mb-20">
+            <TabsContent value="link" className="mb-10">
               <div className="flex flex-col gap-2 mb-7">
                 <label htmlFor="link" className="block">
                   Email
@@ -79,14 +105,15 @@ const LoginPage = () => {
                   type="email"
                   autoComplete="email"
                   iconLeft={mailIcon}
-                  wrapperClassName="h-11"
+                  wrapperClassName={cn(
+                    "h-11",
+                    form.formState.errors.email && "border-destructive",
+                  )}
                   {...form.register("email")}
                 />
-                {form.formState.errors.email && (
-                  <p className="text-destructive">
-                    {form.formState.errors.email.message}
-                  </p>
-                )}
+                <p className="min-h-5 body-overline text-destructive">
+                  {form.formState.errors.email?.message}
+                </p>
                 <p className="body-overline text-(--color-gray-300) leading-4">
                   Мы отправим ссылку для входа на вашу почту. Ссылка действует
                   15 минут
@@ -94,27 +121,29 @@ const LoginPage = () => {
               </div>
               <Button
                 variant="default"
-                disabled={!isValid}
+                disabled={!isValid || isLinkCooldown}
                 className="h-10 w-full"
               >
                 Отправить ссылку
               </Button>
 
-              <div className="flex flex-col bg-(--color-green-100) p-2 mt-6.5 rounded-8">
-                <div className="flex items-center gap-2">
-                  <ToastIcon className="shrink-0 text-(--color-green-700)" />
-                  <span className="text-(--color-green-700) button-small">
-                    {`Письмо отправлено на ${form.getValues("email")}`}
+              {sentEmail && secondsLeft > 0 && (
+                <div className="flex flex-col bg-(--color-green-100) p-2 mt-6.5 rounded-8">
+                  <div className="flex items-center gap-2">
+                    <ToastIcon className="shrink-0 text-(--color-green-700)" />
+                    <span className="text-(--color-green-700) button-small">
+                      {`Письмо отправлено на ${sentEmail}`}
+                    </span>
+                  </div>
+                  <span className="text-(--color-green-700) self-start pl-8">
+                    {`Отправить еще раз (${secondsLeft} с)`}
                   </span>
                 </div>
-                <span className="text-(--color-green-700) self-start pl-8">
-                  Отправить еще раз (30 с)
-                </span>
-              </div>
+              )}
             </TabsContent>
 
             <TabsContent value="password" className="mb-9">
-              <div className="flex flex-col gap-2 mb-5.5">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="email" className="block">
                   Email
                 </label>
@@ -123,30 +152,32 @@ const LoginPage = () => {
                   type="email"
                   autoComplete="email"
                   iconLeft={mailIcon}
-                  wrapperClassName="h-11"
+                  wrapperClassName={cn(
+                    "h-11",
+                    form.formState.errors.email && "border-destructive",
+                  )}
                   {...form.register("email")}
                 />
-                {form.formState.errors.email && (
-                  <p className="text-destructive">
-                    {form.formState.errors.email.message}
-                  </p>
-                )}
+                <p className="min-h-5 body-overline text-destructive">
+                  {form.formState.errors.email?.message}
+                </p>
               </div>
-              <div className="flex flex-col gap-2 mb-6">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="password" className="block">
                   Пароль
                 </label>
                 <PasswordInput
                   id="password"
                   autoComplete="current-password"
-                  wrapperClassName="h-11"
+                  wrapperClassName={cn(
+                    "h-11",
+                    form.formState.errors.password && "border-destructive",
+                  )}
                   {...form.register("password")}
                 />
-                {form.formState.errors.password && (
-                  <p className="text-destructive">
-                    {form.formState.errors.password.message}
-                  </p>
-                )}
+                <p className="min-h-5 body-overline text-destructive">
+                  {form.formState.errors.password?.message}
+                </p>
               </div>
 
               <div className="flex flex-col gap-4">
