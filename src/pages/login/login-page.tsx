@@ -1,38 +1,23 @@
-import { Input, PasswordInput } from "@ui/input";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  loginSchema,
+  type TLoginFormValues,
+} from "@/pages/login/model/login-schema.ts";
+
 import { Button } from "@ui/button";
+import { Input, PasswordInput } from "@ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
 import LogoFull from "@/shared/assets/images/full-logo.svg?react";
 import ToastIcon from "@icons/toast.svg?react";
 import mailIcon from "@icons/mail.svg";
 import loginImage from "@/shared/assets/images/login.png";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const LoginPage = () => {
-  const loginSchema = z
-    .object({
-      authType: z.enum(["link", "password"]),
-      email: z
-        .string()
-        .min(1, "Введите email")
-        .email("Введите корректный email"),
-      password: z.string().optional(),
-    })
-    .superRefine((values, ctx) => {
-      if (values.authType === "password" && !values.password?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          path: ["password"],
-          message: "Введите пароль",
-        });
-      }
-    });
-  type TLoginFormValues = z.infer<typeof loginSchema>;
-
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(loginSchema),
+    mode: "onChange",
     defaultValues: {
       authType: "link",
       email: "",
@@ -50,6 +35,8 @@ const LoginPage = () => {
 
     console.log("вход с паролем", values.email, values.password);
   };
+
+  const isValid = form.formState.isValid;
 
   return (
     <section className="flex justify-center items-center">
@@ -105,13 +92,19 @@ const LoginPage = () => {
                   15 минут
                 </p>
               </div>
-              <Button className="h-10 w-full">Отправить ссылку</Button>
+              <Button
+                variant="default"
+                disabled={!isValid}
+                className="h-10 w-full"
+              >
+                Отправить ссылку
+              </Button>
 
               <div className="flex flex-col bg-(--color-green-100) p-2 mt-6.5 rounded-8">
                 <div className="flex items-center gap-2">
-                  <ToastIcon className="text-(--color-green-700)" />
+                  <ToastIcon className="shrink-0 text-(--color-green-700)" />
                   <span className="text-(--color-green-700) button-small">
-                    Письмо отправлено на name@company.org
+                    {`Письмо отправлено на ${form.getValues("email")}`}
                   </span>
                 </div>
                 <span className="text-(--color-green-700) self-start pl-8">
@@ -121,8 +114,8 @@ const LoginPage = () => {
             </TabsContent>
 
             <TabsContent value="password" className="mb-9">
-              <div className="mb-5.75">
-                <label htmlFor="email" className="block mb-2">
+              <div className="flex flex-col gap-2 mb-5.5">
+                <label htmlFor="email" className="block">
                   Email
                 </label>
                 <Input
@@ -133,9 +126,14 @@ const LoginPage = () => {
                   wrapperClassName="h-11"
                   {...form.register("email")}
                 />
+                {form.formState.errors.email && (
+                  <p className="text-destructive">
+                    {form.formState.errors.email.message}
+                  </p>
+                )}
               </div>
-              <div className="mb-3.5">
-                <label htmlFor="password" className="block mb-2">
+              <div className="flex flex-col gap-2 mb-6">
+                <label htmlFor="password" className="block">
                   Пароль
                 </label>
                 <PasswordInput
@@ -144,9 +142,14 @@ const LoginPage = () => {
                   wrapperClassName="h-11"
                   {...form.register("password")}
                 />
+                {form.formState.errors.password && (
+                  <p className="text-destructive">
+                    {form.formState.errors.password.message}
+                  </p>
+                )}
               </div>
 
-              <div className="flex flex-col gap-5">
+              <div className="flex flex-col gap-4">
                 <Button
                   type="button"
                   variant="ghost"
@@ -154,7 +157,9 @@ const LoginPage = () => {
                 >
                   Забыли пароль?
                 </Button>
-                <Button className="h-10">Войти</Button>
+                <Button disabled={!isValid} className="h-10">
+                  Войти
+                </Button>
               </div>
             </TabsContent>
           </Tabs>
