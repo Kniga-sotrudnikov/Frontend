@@ -2,7 +2,8 @@ import { Input, PasswordInput } from "@ui/input";
 import { Button } from "@ui/button";
 
 import LogoFull from "@/shared/assets/images/full-logo.svg?react";
-import MailIcon from "@icons/mail.svg";
+import ToastIcon from "@icons/toast.svg?react";
+import mailIcon from "@icons/mail.svg";
 import loginImage from "@/shared/assets/images/login.png";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
@@ -21,7 +22,7 @@ const LoginPage = () => {
         <form className="w-115 pt-10 px-7 pb-3.5 border border-border) rounded-12">
           <h3 className="leading-none">Вход</h3>
 
-          <Tabs defaultValue="overview" className="mt-8.75 gap-7.5">
+          <Tabs defaultValue="link" className="mt-8.75 gap-7.5">
             <TabsList variant="line" className="mx-auto gap-13">
               <TabsTrigger value="link">Одноразовая ссылка</TabsTrigger>
               <TabsTrigger value="password">Пароль</TabsTrigger>
@@ -32,13 +33,25 @@ const LoginPage = () => {
                 <label htmlFor="link" className="block">
                   Email
                 </label>
-                <Input id="link" iconLeft={MailIcon} wrapperClassName="h-11" />
+                <Input id="link" iconLeft={mailIcon} wrapperClassName="h-11" />
                 <p className="body-overline text-(--color-gray-300) leading-4">
                   Мы отправим ссылку для входа на вашу почту. Ссылка действует
                   15 минут
                 </p>
               </div>
               <Button className="h-10 w-full">Отправить ссылку</Button>
+
+              <div className="flex flex-col bg-(--color-green-100) p-2 mt-6.5 rounded-8">
+                <div className="flex items-center gap-2">
+                  <ToastIcon className="text-(--color-green-700)" />
+                  <span className="text-(--color-green-700) button-small">
+                    Письмо отправлено на name@company.org
+                  </span>
+                </div>
+                <span className="text-(--color-green-700) self-start pl-8">
+                  Отправить еще раз (30 с)
+                </span>
+              </div>
             </TabsContent>
 
             <TabsContent value="password" className="mb-9">
@@ -46,7 +59,7 @@ const LoginPage = () => {
                 <label htmlFor="email" className="block mb-2">
                   Email
                 </label>
-                <Input id="email" iconLeft={MailIcon} wrapperClassName="h-11" />
+                <Input id="email" iconLeft={mailIcon} wrapperClassName="h-11" />
               </div>
               <div className="mb-3.5">
                 <label htmlFor="password" className="block mb-2">
