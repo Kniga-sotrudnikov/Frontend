@@ -1,4 +1,4 @@
-export type TEmployeeStatus = "active" | "vacation";
+export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
 
 export type TEmployee = {
   id: number;
@@ -12,3 +12,5 @@ export type TEmployee = {
   city: string;
   tags: string[];
 };
+
+export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
