@@ -6,23 +6,77 @@ import ToastIcon from "@icons/toast.svg?react";
 import mailIcon from "@icons/mail.svg";
 import loginImage from "@/shared/assets/images/login.png";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const LoginPage = () => {
+  const loginSchema = z
+    .object({
+      authType: z.enum(["link", "password"]),
+      email: z
+        .string()
+        .min(1, "Введите email")
+        .email("Введите корректный email"),
+      password: z.string().optional(),
+    })
+    .superRefine((values, ctx) => {
+      if (values.authType === "password" && !values.password?.trim()) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["password"],
+          message: "Введите пароль",
+        });
+      }
+    });
+  type TLoginFormValues = z.infer<typeof loginSchema>;
+
+  const form = useForm<TLoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      authType: "link",
+      email: "",
+      password: "",
+    },
+  });
+
+  const authType = form.watch("authType");
+
+  const onSubmit = (values: TLoginFormValues) => {
+    if (values.authType === "link") {
+      console.log("вход по ссылке", values.email);
+      return;
+    }
+
+    console.log("вход с паролем", values.email, values.password);
+  };
+
   return (
     <section className="flex justify-center items-center">
       <div className="flex flex-col justify-center items-center w-161.5 h-dvh bg-secondary">
         <LogoFull className="mb-16.25 text-secondary-foreground" />
-        <h1 className="max-w-120 text-(length:--font-size-h3) leading-6">
+        <h1 className="max-w-120 h3 leading-6">
           Корпоративная платформа для командной работы и общения
         </h1>
         <img src={loginImage} alt="" width="573" height="691" />
       </div>
 
       <div className="flex flex-col justify-center items-center w-198.5 h-dvh">
-        <form className="w-115 pt-10 px-7 pb-3.5 border border-border) rounded-12">
+        <form
+          noValidate
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-115 pt-10 px-7 pb-3.5 border border-border rounded-12"
+        >
           <h3 className="leading-none">Вход</h3>
 
-          <Tabs defaultValue="link" className="mt-8.75 gap-7.5">
+          <Tabs
+            defaultValue="link"
+            value={authType}
+            onValueChange={(value) =>
+              form.setValue("authType", value as TLoginFormValues["authType"])
+            }
+            className="mt-8.75 gap-7.5"
+          >
             <TabsList variant="line" className="mx-auto gap-13">
               <TabsTrigger value="link">Одноразовая ссылка</TabsTrigger>
               <TabsTrigger value="password">Пароль</TabsTrigger>
@@ -33,7 +87,19 @@ const LoginPage = () => {
                 <label htmlFor="link" className="block">
                   Email
                 </label>
-                <Input id="link" iconLeft={mailIcon} wrapperClassName="h-11" />
+                <Input
+                  id="link"
+                  type="email"
+                  autoComplete="email"
+                  iconLeft={mailIcon}
+                  wrapperClassName="h-11"
+                  {...form.register("email")}
+                />
+                {form.formState.errors.email && (
+                  <p className="text-destructive">
+                    {form.formState.errors.email.message}
+                  </p>
+                )}
                 <p className="body-overline text-(--color-gray-300) leading-4">
                   Мы отправим ссылку для входа на вашу почту. Ссылка действует
                   15 минут
@@ -59,13 +125,25 @@ const LoginPage = () => {
                 <label htmlFor="email" className="block mb-2">
                   Email
                 </label>
-                <Input id="email" iconLeft={mailIcon} wrapperClassName="h-11" />
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  iconLeft={mailIcon}
+                  wrapperClassName="h-11"
+                  {...form.register("email")}
+                />
               </div>
               <div className="mb-3.5">
                 <label htmlFor="password" className="block mb-2">
                   Пароль
                 </label>
-                <PasswordInput id="password" wrapperClassName="h-11" />
+                <PasswordInput
+                  id="password"
+                  autoComplete="current-password"
+                  wrapperClassName="h-11"
+                  {...form.register("password")}
+                />
               </div>
 
               <div className="flex flex-col gap-5">
@@ -83,7 +161,9 @@ const LoginPage = () => {
 
           <div className="flex justify-center items-center gap-1">
             <span className="body-s">Нет доступа?</span>
-            <Button variant="ghost">Обратитесь к HR</Button>
+            <Button type="button" variant="ghost">
+              Обратитесь к HR
+            </Button>
           </div>
         </form>
       </div>
