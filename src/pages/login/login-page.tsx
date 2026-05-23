@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  loginSchema,
-  type TLoginFormValues,
-} from "@/pages/login/model/login-schema.ts";
+import { loginSchema, type TLoginFormValues } from "./model/login-schema.ts";
 
 import { cn } from "@/shared/lib";
 import { Button } from "@ui/button";
@@ -66,16 +63,22 @@ const LoginPage = () => {
   const isLinkCooldown = secondsLeft > 0;
 
   return (
-    <section className="flex justify-center items-center">
-      <div className="flex flex-col justify-center items-center w-161.5 h-dvh bg-secondary">
+    <section className="flex min-h-dvh">
+      <div className="flex w-[45%] min-w-120 flex-col justify-center items-center bg-secondary">
         <LogoFull className="mb-16.25 text-secondary-foreground" />
-        <h1 className="max-w-120 h3 leading-6">
+        <h1 className="max-w-120 h3 leading-6 px-10 lg:px-0">
           Корпоративная платформа для командной работы и общения
         </h1>
-        <img src={loginImage} alt="" width="573" height="691" />
+        <img
+          src={loginImage}
+          alt=""
+          width="573"
+          height="691"
+          className="max-h-[60dvh] max-w-[90%] object-contain"
+        />
       </div>
 
-      <div className="flex flex-col justify-center items-start gap-6 w-198.5 h-dvh pl-36.75">
+      <div className="flex flex-1 flex-col justify-center items-start gap-6 px-6 lg:pl-36.75">
         <div className="flex flex-col gap-1.5 max-w-135">
           <p className="text-(length:--font-size-body-l)">
             Доступ только для сотрудников проекта “Всё получится”
@@ -85,19 +88,24 @@ const LoginPage = () => {
             <p>Контакты и данные сотрудников защищены</p>
           </div>
         </div>
-        <div className="flex flex-col justify-center items-center gap-6">
+        <div className="flex flex-col justify-center items-center gap-6 w-full max-w-115">
           <form
             noValidate
             onSubmit={form.handleSubmit(onSubmit)}
-            className="w-115 pt-10 px-7 pb-5.5 border border-border rounded-12"
+            className="w-full pt-10 px-7 pb-5.5 border border-border rounded-12"
           >
             <h3 className="leading-none">Вход</h3>
 
             <Tabs
-              defaultValue="link"
               value={authType}
               onValueChange={(value) =>
-                form.setValue("authType", value as TLoginFormValues["authType"])
+                form.setValue(
+                  "authType",
+                  value as TLoginFormValues["authType"],
+                  {
+                    shouldValidate: true,
+                  },
+                )
               }
               className="mt-8.75 gap-7.5"
             >
