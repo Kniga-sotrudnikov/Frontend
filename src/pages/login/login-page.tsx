@@ -1,38 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type TLoginFormValues } from "./model/login-schema.ts";
+import { loginSchema, type TLoginFormValues } from "./model/login-schema";
+import type { TLinkCooldown } from "@/pages/login/model/types";
 
-import { cn } from "@/shared/lib";
 import { Button } from "@ui/button";
-import { Input, PasswordInput } from "@ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { LinkLoginTab } from "./ui/link-login-tab";
+import { PasswordLoginTab } from "./ui/password-login-tab";
 
 import LogoFull from "@/shared/assets/images/full-logo.svg?react";
-import ToastIcon from "@icons/toast.svg?react";
 import ShieldIcon from "@icons/shield.svg?react";
-import mailIcon from "@icons/mail.svg";
 import loginImage from "@/shared/assets/images/login.png";
 
+const LINK_TIMER = 30;
+
 const LoginPage = () => {
-  const [sentEmail, setSentEmail] = useState<string | null>(null);
-  const [secondsLeft, setSecondsLeft] = useState(0);
-  const LINK_TIMER = 30;
-
-  useEffect(() => {
-    if (secondsLeft <= 0) {
-      setSentEmail(null);
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setSecondsLeft((prevState) => prevState - 1);
-    }, 1000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [secondsLeft]);
+  const [linkCooldown, setLinkCooldown] = useState<TLinkCooldown | null>(null);
 
   const form = useForm<TLoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -49,10 +33,10 @@ const LoginPage = () => {
   const onSubmit = (values: TLoginFormValues) => {
     if (values.authType === "link") {
       console.log("вход по ссылке", values.email);
-
-      setSentEmail(values.email);
-      setSecondsLeft(LINK_TIMER);
-
+      setLinkCooldown({
+        email: values.email,
+        expiresAt: Date.now() + LINK_TIMER * 1000,
+      });
       return;
     }
 
@@ -60,7 +44,8 @@ const LoginPage = () => {
   };
 
   const isValid = form.formState.isValid;
-  const isLinkCooldown = secondsLeft > 0;
+  const isLinkCooldown =
+    linkCooldown !== null && linkCooldown.expiresAt > Date.now();
 
   return (
     <section className="flex min-h-dvh">
@@ -122,102 +107,16 @@ const LoginPage = () => {
               </TabsList>
 
               <TabsContent value="link" className="mb-10">
-                <div className="flex flex-col gap-2 mb-7">
-                  <label htmlFor="link" className="block">
-                    Email
-                  </label>
-                  <Input
-                    id="link"
-                    type="email"
-                    autoComplete="email"
-                    iconLeft={mailIcon}
-                    wrapperClassName={cn(
-                      "h-11",
-                      form.formState.errors.email && "border-destructive",
-                    )}
-                    {...form.register("email")}
-                  />
-                  <p className="min-h-5 body-overline text-destructive">
-                    {form.formState.errors.email?.message}
-                  </p>
-                  <p className="body-overline text-(--color-gray-300) leading-4">
-                    Мы отправим ссылку для входа на вашу почту. Ссылка действует
-                    15 минут
-                  </p>
-                </div>
-                <Button
-                  variant="default"
-                  disabled={!isValid || isLinkCooldown}
-                  className="h-10 w-full"
-                >
-                  Отправить ссылку
-                </Button>
-
-                {sentEmail && secondsLeft > 0 && (
-                  <div className="flex flex-col bg-(--color-green-100) p-2 mt-6.5 rounded-8">
-                    <div className="flex items-center gap-2">
-                      <ToastIcon className="shrink-0 text-(--color-green-700)" />
-                      <span className="text-(--color-green-700) button-small">
-                        {`Письмо отправлено на ${sentEmail}`}
-                      </span>
-                    </div>
-                    <span className="text-(--color-green-700) self-start pl-8">
-                      {`Отправить еще раз (${secondsLeft} с)`}
-                    </span>
-                  </div>
-                )}
+                <LinkLoginTab
+                  form={form}
+                  isButtonDisabled={!isValid || isLinkCooldown}
+                  linkCooldown={linkCooldown}
+                  onCooldownComplete={() => setLinkCooldown(null)}
+                />
               </TabsContent>
 
               <TabsContent value="password" className="mb-9">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="email" className="block">
-                    Email
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    autoComplete="email"
-                    iconLeft={mailIcon}
-                    wrapperClassName={cn(
-                      "h-11",
-                      form.formState.errors.email && "border-destructive",
-                    )}
-                    {...form.register("email")}
-                  />
-                  <p className="min-h-5 body-overline text-destructive">
-                    {form.formState.errors.email?.message}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="password" className="block">
-                    Пароль
-                  </label>
-                  <PasswordInput
-                    id="password"
-                    autoComplete="current-password"
-                    wrapperClassName={cn(
-                      "h-11",
-                      form.formState.errors.password && "border-destructive",
-                    )}
-                    {...form.register("password")}
-                  />
-                  <p className="min-h-5 body-overline text-destructive">
-                    {form.formState.errors.password?.message}
-                  </p>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <Button
-                    type="button"
-                    variant="plain"
-                    className="self-end mr-3 text-(--color-purple-400)"
-                  >
-                    Забыли пароль?
-                  </Button>
-                  <Button disabled={!isValid} className="h-10">
-                    Войти
-                  </Button>
-                </div>
+                <PasswordLoginTab form={form} isButtonDisabled={!isValid} />
               </TabsContent>
             </Tabs>
 
