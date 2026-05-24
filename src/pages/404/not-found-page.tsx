@@ -29,7 +29,7 @@ const NotFoundPage = () => {
                   size="default"
                   className="button-small bg-purple-500 border-purple-500 text-white hover:bg-purple-400 hover:text-white px-3.75"
                 >
-                  <Link to={ROUTES.HOME}>На главную</Link>
+                  <Link to={ROUTES.EMPLOYEES}>На главную</Link>
                 </Button>
                 <Button
                   variant="outline"

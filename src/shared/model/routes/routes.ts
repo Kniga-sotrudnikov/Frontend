@@ -8,7 +8,6 @@ import "react-router";
  * по текущему маршруту (см. доку react-router про типизацию роутов).
  */
 export const ROUTES = {
-  HOME: "/",
   LOGIN: "/login",
   NOT_FOUND: "/404",
   CONTACT_HR: "/contact-hr",
