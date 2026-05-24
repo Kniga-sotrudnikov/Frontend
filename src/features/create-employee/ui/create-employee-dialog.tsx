@@ -182,7 +182,7 @@ export const CreateEmployeeDialog = ({
           </div>
 
           {/* Scrollable Content */}
-          <div className="flex-1 px-5 py-4">
+          <div className="flex-1 overflow-y-auto px-5 py-4">
             {/* PhotoUpload */}
             <div className="mb-5">
               <PhotoUpload
