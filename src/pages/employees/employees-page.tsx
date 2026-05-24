@@ -8,31 +8,11 @@ import { EmployeesList } from "@/widgets/employees-list";
 import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useState } from "react";
 import type { TEmployeeStatus } from "@/entities/employee";
-
-// TODO: заменить на реальные данные из API
-const mockEmployees = [
-  {
-    id: 1,
-    city: "Москва",
-    linearManager: "Иванов Иван Иванович",
-    name: "Иванова Татьяна Романовна",
-    position: "Продуктовый менеджер",
-    franchise: "Соц. Франшиза",
-    department: "Отдел спецпроектов",
-    status: "working" as const,
-    photo: "/src/shared/assets/images/avatar-1.png",
-    isArchived: false,
-  },
-  // ... остальные сотрудники
-];
-
-const mockVacancies = [
-  // ... вакансии
-];
+import { mockEmployees, mockVacancies } from "./mocks/mocks";
 
 const EmployeesPage = () => {
   const [statusFilterValue, setStatusFilterValue] = useState<TEmployeeStatus[]>([]);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [, setRefreshKey] = useState(0);
 
   const handleEmployeeCreated = () => {
     setRefreshKey((prev) => prev + 1);
@@ -55,7 +35,6 @@ const EmployeesPage = () => {
             <CreateEmployeeWrapper onSuccess={handleEmployeeCreated} />
           </div>
           <EmployeesList
-            key={refreshKey}
             employees={mockEmployees}
             vacancies={mockVacancies}
             favoritesIds={[]}
