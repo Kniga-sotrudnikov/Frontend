@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { cn } from "@/shared/lib";
 import { Badge } from "@ui/badge";
 import { Button } from "@ui/button";
+import { Input } from "@ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
-import CheckMarkIcon from "@/shared/assets/icons/check-mark.svg?react";
+import { Checkbox } from "@ui/checkbox";
+import SearchIcon from "@/shared/assets/icons/search.svg?react";
 import ArrowDownIcon from "@/shared/assets/icons/arrow-down.svg?react";
 import CloseIcon from "@/shared/assets/icons/close.svg?react";
-import { COMPETENCY_OPTIONS, type CompetencyOption } from "../model/types";
+import { COMPETENCY_OPTIONS } from "../model/types";
 
 interface CompetenciesSelectProps {
   value: string[];
@@ -14,42 +16,87 @@ interface CompetenciesSelectProps {
   error?: string;
 }
 
+const VISIBLE_COUNT = 5;
+
 export const CompetenciesSelect = ({
   value,
   onChange,
   error,
 }: CompetenciesSelectProps) => {
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tempValue, setTempValue] = useState<string[]>(value);
+  const [showAll, setShowAll] = useState(false);
 
-  const toggleCompetency = (competency: CompetencyOption) => {
-    if (value.includes(competency.id)) {
-      onChange(value.filter((v) => v !== competency.id));
-    } else {
-      onChange([...value, competency.id]);
+  const handleOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen) {
+      setTempValue([...value]);
+      setSearchQuery("");
+      setShowAll(false);
     }
   };
 
-  const removeCompetency = (id: string) => {
-    onChange(value.filter((v) => v !== id));
+  const handleToggleCompetency = (competencyId: string) => {
+    setTempValue((prev) =>
+      prev.includes(competencyId)
+        ? prev.filter((id) => id !== competencyId)
+        : [...prev, competencyId],
+    );
   };
+
+  const handleClear = () => {
+    setTempValue([]);
+  };
+
+  const handleApply = () => {
+    onChange(tempValue);
+    setOpen(false);
+  };
+
+  const handleRemoveCompetency = (id: string) => {
+    const newValue = value.filter((v) => v !== id);
+    onChange(newValue);
+  };
+
+  const filteredOptions = useMemo(() => {
+    if (!searchQuery.trim()) return COMPETENCY_OPTIONS;
+    const query = searchQuery.toLowerCase();
+    return COMPETENCY_OPTIONS.filter((option) =>
+      option.label.toLowerCase().includes(query),
+    );
+  }, [searchQuery]);
+
+  const displayedOptions = showAll
+    ? filteredOptions
+    : filteredOptions.slice(0, VISIBLE_COUNT);
+  const hasMore = filteredOptions.length > VISIBLE_COUNT;
 
   const selectedLabels = value.map(
     (id) => COMPETENCY_OPTIONS.find((opt) => opt.id === id)?.label || id,
   );
 
+  // Количество выбранных для отображения в кнопке "Очистить"
+  const selectedCount = tempValue.length;
+
   return (
     <div className="flex flex-col gap-2">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
             type="button"
             variant="outline"
             className={cn(
-              "w-full justify-between font-normal mt-2",
+              "w-full justify-between font-normal h-[44px]",
               error && "border-red-600",
+              !error && "border-gray-200",
             )}
           >
-            <span className={value.length === 0 ? "text-xs text-gray-400" : ""}>
+            <span
+              className={
+                value.length === 0 ? "text-gray-400 text-sm" : "text-sm"
+              }
+            >
               {value.length === 0
                 ? "Выберите компетенции"
                 : `Выбрано: ${value.length}`}
@@ -57,44 +104,104 @@ export const CompetenciesSelect = ({
             <ArrowDownIcon className="size-4 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full min-w-[280px] p-2" align="start">
-          <div className="flex flex-col gap-1">
-            {COMPETENCY_OPTIONS.map((option) => (
-              <Button
-                key={option.id}
+        <PopoverContent
+          className="w-[368px] p-4 rounded-6 border border-gray-200 shadow-md"
+          align="start"
+          sideOffset={8}
+        >
+          <div className="flex flex-col gap-3">
+            {/* Search Field */}
+            <div className="relative">
+              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-500" />
+              <Input
+                placeholder="Поиск"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 h-11 text-base"
+                wrapperClassName="h-11"
+              />
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-gray-200" />
+
+            {/* Options list */}
+            <p className="text-xs text-black leading-5 tracking-[-0.5px]">
+              Компетенции
+            </p>
+            <div className="flex flex-col gap-1 max-h-[100px]">
+              {displayedOptions.map((option) => (
+                <label
+                  key={option.id}
+                  className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 py-1"
+                >
+                  <Checkbox
+                    checked={tempValue.includes(option.id)}
+                    onCheckedChange={() => handleToggleCompetency(option.id)}
+                  />
+                  <span className="text-xs text-black leading-5 tracking-[-0.5px] whitespace-nowrap overflow-x-auto scrollbar-none">
+                    {option.label}
+                  </span>
+                </label>
+              ))}
+            </div>
+
+            {/* Show all button */}
+            {hasMore && !showAll && (
+              <button
                 type="button"
-                variant="plain"
-                size="plain"
-                className={cn(
-                  "flex w-full cursor-pointer items-center justify-between rounded-8 px-3 py-2 text-sm transition-colors hover:bg-gray-100",
-                  value.includes(option.id) && "bg-purple-50",
-                )}
-                onClick={() => toggleCompetency(option)}
+                onClick={() => setShowAll(true)}
+                className="text-xs text-gray-500 tracking-[-0.5px] hover:text-gray-700 text-left w-fit"
               >
-                <span>{option.label}</span>
-                {value.includes(option.id) && (
-                  <CheckMarkIcon className="size-4 text-purple-500" />
+                Показать все ({filteredOptions.length})
+              </button>
+            )}
+
+            {/* Divider */}
+            <div className="border-t border-gray-200" />
+
+            {/* Buttons: Очистить и Применить */}
+            <div className="flex justify-between items-start gap-3">
+              <button
+                type="button"
+                onClick={handleClear}
+                className="flex items-center justify-center w-[102px] h-7 px-4 border border-purple-500 bg-white text-xs font-medium text-black rounded-md hover:bg-purple-50"
+              >
+                Очистить
+                {selectedCount > 0 && (
+                  <span className="ml-2 flex items-center justify-center min-w-5 h-5 px-1 bg-gray-200 rounded text-xs">
+                    {selectedCount}
+                  </span>
                 )}
+              </button>
+              <Button
+                type="button"
+                onClick={handleApply}
+                className="w-[118px] h-7 px-4 text-xs font-medium bg-purple-500 hover:bg-purple-600 text-white rounded-md"
+              >
+                Применить
               </Button>
-            ))}
+            </div>
           </div>
         </PopoverContent>
       </Popover>
 
+      {/* Selected competencies badges */}
       {selectedLabels.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedLabels.map((label) => (
-            <Badge key={label} className="gap-1 border-purple-500 bg-purple-50 text-purple-500">
+            <Badge
+              key={label}
+              className="gap-1 border-purple-500 bg-purple-50 text-purple-500"
+            >
               {label}
-              <Button
+              <button
                 type="button"
-                variant="plain"
-                size="icon-xs"
-                onClick={() => removeCompetency(label)}
+                onClick={() => handleRemoveCompetency(label)}
                 className="ml-1 rounded-full hover:text-gray-700"
               >
                 <CloseIcon className="size-3" />
-              </Button>
+              </button>
             </Badge>
           ))}
         </div>
