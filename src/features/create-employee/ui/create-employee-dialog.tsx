@@ -27,6 +27,7 @@ import {
   CITY_OPTIONS,
 } from "../model/constants";
 import type { CreateEmployeeFormValues } from "../model/types";
+import { validateForm, type ValidationErrors } from "../model/validation";
 
 interface CreateEmployeeDialogProps {
   open: boolean;
@@ -63,9 +64,7 @@ export const CreateEmployeeDialog = ({
   onSubmit,
 }: CreateEmployeeDialogProps) => {
   const [values, setValues] = useState<CreateEmployeeFormValues>(initialValues);
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof CreateEmployeeFormValues, string>>
-  >({});
+  const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -80,33 +79,7 @@ export const CreateEmployeeDialog = ({
   };
 
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof CreateEmployeeFormValues, string>> =
-      {};
-
-    if (!values.fullName.trim()) {
-      newErrors.fullName = "Обязательное поле";
-    }
-    if (!values.position.trim()) {
-      newErrors.position = "Обязательное поле";
-    }
-    if (!values.department) {
-      newErrors.department = "Обязательное поле";
-    }
-    if (!values.emailCorporate.trim()) {
-      newErrors.emailCorporate = "Обязательное поле";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.emailCorporate)) {
-      newErrors.emailCorporate = "Некорректный email";
-    }
-    if (!values.phoneCorporate.trim()) {
-      newErrors.phoneCorporate = "Обязательное поле";
-    }
-    if (!values.birthday) {
-      newErrors.birthday = "Обязательное поле";
-    }
-    if (!values.city) {
-      newErrors.city = "Обязательное поле";
-    }
-
+    const newErrors = validateForm(values);
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -395,7 +368,13 @@ export const CreateEmployeeDialog = ({
                       updateField("emailPersonal", e.target.value)
                     }
                     placeholder="alexey.ivanov@gmail.com"
+                    error={!!errors.emailPersonal}
                   />
+                  {errors.emailPersonal && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {errors.emailPersonal}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -412,7 +391,13 @@ export const CreateEmployeeDialog = ({
                       updateField("phonePersonal", e.target.value)
                     }
                     placeholder="+7 (000) 000-00-00"
+                    error={!!errors.phonePersonal}
                   />
+                  {errors.phonePersonal && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {errors.phonePersonal}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -431,7 +416,7 @@ export const CreateEmployeeDialog = ({
                   )}
                 </div>
 
-                {/* Компетенции - теперь во второй колонке */}
+                {/* Компетенции */}
                 <div className="space-y-2 -mt-2">
                   <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
                     Компетенции
@@ -439,6 +424,7 @@ export const CreateEmployeeDialog = ({
                   <CompetenciesSelect
                     value={values.competencies}
                     onChange={(value) => updateField("competencies", value)}
+                    error={errors.competencies}
                   />
                 </div>
               </div>
@@ -460,7 +446,7 @@ export const CreateEmployeeDialog = ({
               disabled={isSubmitting}
               className="w-[165px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-md"
             >
-              {isSubmitting ? "Создание..." : "Создать карточку"}
+              {isSubmitting ? "Создание..." : "Добавить карточку"}
             </Button>
           </div>
         </form>

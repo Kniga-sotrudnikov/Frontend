@@ -9,7 +9,7 @@ export const CreateEmployeeButton = ({ onClick }: CreateEmployeeButtonProps) => 
   return (
     <Button onClick={onClick} className="gap-2">
       <PlusIcon className="size-4" />
-      Создать карточку
+      Добавить карточку
     </Button>
   );
 };
