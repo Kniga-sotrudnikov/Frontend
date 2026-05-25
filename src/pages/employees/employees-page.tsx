@@ -4,13 +4,19 @@ import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { Navbar, orgTree } from "@/widgets/navbar";
 import { EmployeesList } from "@/widgets/employees-list";
-import { StatusFilter } from "@/features/employee/ui/status-filter.tsx";
+import { StatusFilter } from "@/features/employee/ui/status-filter";
+import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useState } from "react";
 import type { TEmployeeStatus } from "@/entities/employee";
 import { mockEmployees, mockFavorites, mockVacancies } from "./mocks/mocks";
 
 const EmployeesPage = () => {
-  const [value, setValue] = useState<TEmployeeStatus[]>([]);
+  const [statusFilterValue, setStatusFilterValue] = useState<TEmployeeStatus[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleEmployeeCreated = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -19,17 +25,22 @@ const EmployeesPage = () => {
         stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
         search={<SearchInput placeholder="Поиск по ФИО, должности, тегам..." />}
         birthday={<BirthdaysPopover />}
-        user={
-          <HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />
-        }
+        user={<HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />}
       />
 
       <div className="mx-10 mt-5 grid grid-cols-[295px_1fr] gap-x-7 min-h-screen">
         <Navbar unitsList={orgTree} />
 
-        <div className="space-y-3">
-          <StatusFilter value={value} onValueChange={setValue} />
+        <div className="space-y-4">
+          {/* Верхняя панель: фильтр слева, кнопка справа */}
+          <div className="flex justify-between items-center">
+            <StatusFilter value={statusFilterValue} onValueChange={setStatusFilterValue} />
+            <CreateEmployeeWrapper onSuccess={handleEmployeeCreated} />
+          </div>
+          
+          {/* Список сотрудников */}
           <EmployeesList
+            key={refreshKey}
             employees={mockEmployees}
             vacancies={mockVacancies}
             favoritesIds={mockFavorites}
