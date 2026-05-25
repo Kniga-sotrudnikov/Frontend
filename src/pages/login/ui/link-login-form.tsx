@@ -1,29 +1,53 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
-import { cn } from "@/shared/lib";
 import { LinkSentNotice } from "./link-sent-notice";
+import { cn } from "@/shared/lib";
 
-import { type UseFormReturn } from "react-hook-form";
-import { type TLoginFormValues } from "../model/login-schema";
-import type { TLinkCooldown } from "@/pages/login/model/types";
+import type { TLinkCooldown } from "../model/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  linkLoginSchema,
+  type TLinkLoginFormValues,
+} from "../model/link-login-schema";
 
 import mailIcon from "@icons/mail.svg";
 
-type TLinkLoginTabProps = {
-  form: UseFormReturn<TLoginFormValues>;
-  isButtonDisabled: boolean;
-  linkCooldown: TLinkCooldown | null;
-  onCooldownComplete: () => void;
+const LINK_TIMER = 30;
+
+const getLinkCooldownExpiresAt = () => {
+  return Date.now() + LINK_TIMER * 1000;
 };
 
-export const LinkLoginTab = ({
-  form,
-  isButtonDisabled,
-  linkCooldown,
-  onCooldownComplete,
-}: TLinkLoginTabProps) => {
+export const LinkLoginForm = () => {
+  const [linkCooldown, setLinkCooldown] = useState<TLinkCooldown | null>(null);
+
+  const form = useForm<TLinkLoginFormValues>({
+    resolver: zodResolver(linkLoginSchema),
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = (values: TLinkLoginFormValues) => {
+    console.log("вход по ссылке", values.email);
+    setLinkCooldown({
+      email: values.email,
+      expiresAt: getLinkCooldownExpiresAt(),
+    });
+  };
+
+  const handleCooldownComplete = () => {
+    setLinkCooldown(null);
+  };
+
+  const isSubmitDisabled = linkCooldown !== null || !form.formState.isValid;
+
   return (
-    <div>
+    <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-2 mb-7">
         <label htmlFor="link" className="block">
           Email
@@ -49,7 +73,7 @@ export const LinkLoginTab = ({
       </div>
       <Button
         variant="default"
-        disabled={isButtonDisabled}
+        disabled={isSubmitDisabled}
         className="h-10 w-full"
       >
         Отправить ссылку
@@ -59,9 +83,9 @@ export const LinkLoginTab = ({
         <LinkSentNotice
           email={linkCooldown.email}
           expiresAt={linkCooldown.expiresAt}
-          onComplete={onCooldownComplete}
+          onComplete={handleCooldownComplete}
         />
       )}
-    </div>
+    </form>
   );
 };

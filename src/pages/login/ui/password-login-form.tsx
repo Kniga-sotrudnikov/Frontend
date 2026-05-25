@@ -1,23 +1,35 @@
+import { useForm } from "react-hook-form";
+
 import { Input, PasswordInput } from "@ui/input";
 import { Button } from "@ui/button";
 import { cn } from "@/shared/lib";
 
-import type { UseFormReturn } from "react-hook-form";
-import type { TLoginFormValues } from "../model/login-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  passwordLoginSchema,
+  type TPasswordLoginFormValues,
+} from "../model/password-login-schema";
 
 import mailIcon from "@icons/mail.svg";
 
-type TPasswordLoginTabProps = {
-  form: UseFormReturn<TLoginFormValues>;
-  isButtonDisabled: boolean;
-};
+export const PasswordLoginForm = () => {
+  const form = useForm<TPasswordLoginFormValues>({
+    resolver: zodResolver(passwordLoginSchema),
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-export const PasswordLoginTab = ({
-  form,
-  isButtonDisabled,
-}: TPasswordLoginTabProps) => {
+  const onSubmit = (values: TPasswordLoginFormValues) => {
+    console.log("вход по паролю", values.email, values.password);
+  };
+
+  const isSubmitDisabled = !form.formState.isValid;
+
   return (
-    <div>
+    <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-2">
         <label htmlFor="email" className="block">
           Email
@@ -65,10 +77,10 @@ export const PasswordLoginTab = ({
         >
           Забыли пароль?
         </Button>
-        <Button disabled={isButtonDisabled} className="h-10">
+        <Button disabled={isSubmitDisabled} className="h-10">
           Войти
         </Button>
       </div>
-    </div>
+    </form>
   );
 };

@@ -1,52 +1,13 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema, type TLoginFormValues } from "./model/login-schema";
-import type { TLinkCooldown } from "@/pages/login/model/types";
-
 import { Button } from "@ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { LinkLoginTab } from "./ui/link-login-tab";
-import { PasswordLoginTab } from "./ui/password-login-tab";
+import { LinkLoginForm } from "./ui/link-login-form";
+import { PasswordLoginForm } from "./ui/password-login-form";
 
 import LogoFull from "@/shared/assets/images/full-logo.svg?react";
 import ShieldIcon from "@icons/shield.svg?react";
 import loginImage from "@/shared/assets/images/login.png";
 
-const LINK_TIMER = 30;
-
 const LoginPage = () => {
-  const [linkCooldown, setLinkCooldown] = useState<TLinkCooldown | null>(null);
-
-  const form = useForm<TLoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    mode: "onChange",
-    defaultValues: {
-      authType: "link",
-      email: "",
-      password: "",
-    },
-  });
-
-  const authType = form.watch("authType");
-
-  const onSubmit = (values: TLoginFormValues) => {
-    if (values.authType === "link") {
-      console.log("вход по ссылке", values.email);
-      setLinkCooldown({
-        email: values.email,
-        expiresAt: Date.now() + LINK_TIMER * 1000,
-      });
-      return;
-    }
-
-    console.log("вход с паролем", values.email, values.password);
-  };
-
-  const isValid = form.formState.isValid;
-  const isLinkCooldown =
-    linkCooldown !== null && linkCooldown.expiresAt > Date.now();
-
   return (
     <section className="flex min-h-dvh">
       <div className="flex w-[45%] min-w-120 flex-col justify-center items-center bg-secondary">
@@ -74,26 +35,9 @@ const LoginPage = () => {
           </div>
         </div>
         <div className="flex flex-col justify-center items-center gap-6 w-full max-w-115">
-          <form
-            noValidate
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full pt-10 px-7 pb-5.5 border border-border rounded-12"
-          >
+          <div className="w-full pt-10 px-7 pb-5.5 border border-border rounded-12">
             <h3 className="leading-none">Вход</h3>
-
-            <Tabs
-              value={authType}
-              onValueChange={(value) =>
-                form.setValue(
-                  "authType",
-                  value as TLoginFormValues["authType"],
-                  {
-                    shouldValidate: true,
-                  },
-                )
-              }
-              className="mt-8.75 gap-7.5"
-            >
+            <Tabs defaultValue="link" className="mt-8.75 gap-7.5">
               <TabsList
                 variant="line"
                 className="mx-auto gap-13 w-full border-b border-border"
@@ -106,17 +50,20 @@ const LoginPage = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="link" className="mb-10">
-                <LinkLoginTab
-                  form={form}
-                  isButtonDisabled={!isValid || isLinkCooldown}
-                  linkCooldown={linkCooldown}
-                  onCooldownComplete={() => setLinkCooldown(null)}
-                />
+              <TabsContent
+                value="link"
+                forceMount
+                className="mb-10 data-[state=inactive]:hidden"
+              >
+                <LinkLoginForm />
               </TabsContent>
 
-              <TabsContent value="password" className="mb-9">
-                <PasswordLoginTab form={form} isButtonDisabled={!isValid} />
+              <TabsContent
+                value="password"
+                forceMount
+                className="mb-9 data-[state=inactive]:hidden"
+              >
+                <PasswordLoginForm />
               </TabsContent>
             </Tabs>
 
@@ -130,7 +77,7 @@ const LoginPage = () => {
                 Обратитесь к HR
               </Button>
             </div>
-          </form>
+          </div>
           <p className="body-overline">
             Ⓒ 2026 Всё получится! Все права защищены.
           </p>
