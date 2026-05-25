@@ -18,7 +18,7 @@ export const FavoritesTab = ({ favorites, viewType }: FavoritesTabProps) => {
     <div
       className={
         viewType === "grid"
-          ? "grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2"
+          ? "grid gap-6 grid-cols-[repeat(auto-fit,minmax(370px,1fr))]"
           : "flex flex-col gap-4"
       }
     >

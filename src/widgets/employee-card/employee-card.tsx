@@ -72,7 +72,7 @@ export const EmployeeCard = ({
   };
 
   return (
-    <div className="w-full max-w-114.5 min-w-72 h-auto min-h-54.25 p-5.75 border border-gray-200 rounded-8 bg-white">
+    <div className="  h-auto min-h-54.25 p-5.75 border border-gray-200 rounded-8 bg-white">
       <div className="flex items-center justify-between mb-4">
         <span className="body-overline text-gray-600 max-w-72.5 truncate">
           {city}

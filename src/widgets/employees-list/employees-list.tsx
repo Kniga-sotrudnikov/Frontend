@@ -48,7 +48,7 @@ export const EmployeesList = ({
   };
 
   return (
-    <div className="max-w-235">
+    <div>
       <div className="flex justify-between items-center mb-3">
         <Tabs
           value={activeTab}

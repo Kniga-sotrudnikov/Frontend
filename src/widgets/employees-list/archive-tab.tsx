@@ -1,4 +1,3 @@
-// src/widgets/employees-list/archive-tab.tsx
 import { EmployeeCard } from "@/widgets/employee-card";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
 import { ProfessionCard } from "@/widgets/profession-card";
@@ -19,7 +18,7 @@ export const ArchiveTab = ({ archived, viewType }: ArchiveTabProps) => {
     <div
       className={
         viewType === "grid"
-          ? "grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2"
+          ? "grid gap-6 grid-cols-[repeat(auto-fit,minmax(370px,1fr))]"
           : "flex flex-col gap-4"
       }
     >
