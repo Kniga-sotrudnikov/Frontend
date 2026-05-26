@@ -41,7 +41,7 @@ interface EmployeeFormProps {
   calendarOpen: boolean;
   onCalendarOpenChange: (open: boolean) => void;
   touchedFields: Set<keyof CreateEmployeeFormValues>;
-  firstInputRef?: RefObject<HTMLInputElement | null>;
+  firstInputRef?: RefObject<HTMLInputElement >;
 }
 
 export const EmployeeForm = memo(function EmployeeForm({
