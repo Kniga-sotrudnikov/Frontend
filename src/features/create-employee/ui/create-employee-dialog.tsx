@@ -84,6 +84,9 @@ export const CreateEmployeeDialog = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  const minDate = new Date(1950, 0, 1);
+  const maxDate = new Date(new Date().getFullYear() + 10, 11, 31);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
@@ -292,6 +295,9 @@ export const CreateEmployeeDialog = ({
                           setCalendarOpen(false);
                         }}
                         locale={ru}
+                        captionLayout="dropdown"
+                        startMonth={minDate}
+                        endMonth={maxDate}
                       />
                     </PopoverContent>
                   </Popover>
