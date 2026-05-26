@@ -20,10 +20,12 @@ interface Vacancy {
 }
 
 interface VacancyCardProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   vacancy: Vacancy;
   onExportPDF?: () => void;
   onRespond?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 function VacancyCard({
@@ -31,6 +33,8 @@ function VacancyCard({
   vacancy,
   onExportPDF,
   onRespond,
+  open,
+  onOpenChange,
 }: VacancyCardProps) {
   const {
     title,
@@ -57,8 +61,8 @@ function VacancyCard({
   const hasCompetencies = competencies?.length > 0;
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="max-w-none w-[90vw] sm:max-w-138 rounded-8">
         <div className="flex items-center justify-between mx-3">
           <ReportInaccuracyModal>
