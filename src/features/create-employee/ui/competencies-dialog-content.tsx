@@ -33,7 +33,6 @@ export const CompetenciesDialogContent = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="!w-[451px] h-auto !max-w-none !p-4 !rounded-6 !border !border-gray-200 !shadow-md !bg-white">
         <div className="flex flex-col gap-2">
-          {/* Search + Add tag */}
           <div className="flex flex-row items-start gap-2">
             <div className="relative flex-1">
               <SearchIcon className="absolute left-2 top-1/2 -translate-y-1/2 size-5 text-gray-500" />
@@ -55,10 +54,8 @@ export const CompetenciesDialogContent = ({
             </Button>
           </div>
 
-          {/* Divider */}
           <div className="border-t border-gray-200" />
 
-          {/* Options list */}
           <p className="text-xs font-semibold text-black leading-6 tracking-[0.5px]">
             Компетенции
           </p>
@@ -79,10 +76,8 @@ export const CompetenciesDialogContent = ({
             ))}
           </div>
 
-          {/* Divider */}
           <div className="border-t border-gray-200" />
 
-          {/* Buttons: Очистить и Применить */}
           <div className="flex justify-start gap-2 pt-0 flex-shrink-0 w-full">
             <Button
               type="button"

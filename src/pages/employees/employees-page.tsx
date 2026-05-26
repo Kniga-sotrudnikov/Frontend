@@ -12,11 +12,6 @@ import { mockEmployees, mockFavorites, mockVacancies } from "./mocks/mocks";
 
 const EmployeesPage = () => {
   const [statusFilterValue, setStatusFilterValue] = useState<TEmployeeStatus[]>([]);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const handleEmployeeCreated = () => {
-    setRefreshKey((prev) => prev + 1);
-  };
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -32,15 +27,12 @@ const EmployeesPage = () => {
         <Navbar unitsList={orgTree} />
 
         <div className="space-y-4">
-          {/* Верхняя панель: фильтр слева, кнопка справа */}
-          <div className="flex justify-between items-center">
+          <div className="flex items-center">
             <StatusFilter value={statusFilterValue} onValueChange={setStatusFilterValue} />
-            <CreateEmployeeWrapper onSuccess={handleEmployeeCreated} />
+            <CreateEmployeeWrapper />
           </div>
           
-          {/* Список сотрудников */}
           <EmployeesList
-            key={refreshKey}
             employees={mockEmployees}
             vacancies={mockVacancies}
             favoritesIds={mockFavorites}

@@ -50,10 +50,8 @@ export const CreateEmployeeDialog = ({
   const firstInputRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Уведомления
   const addNotification = useNotificationStore((state) => state.add);
 
-  // Автофокус на первое поле при открытии диалога
   useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
@@ -63,7 +61,6 @@ export const CreateEmployeeDialog = ({
     }
   }, [open]);
 
-  // Сброс формы при закрытии
   useEffect(() => {
     if (!open) {
       setValues(initialValues);
@@ -73,7 +70,6 @@ export const CreateEmployeeDialog = ({
     }
   }, [open]);
 
-  // Проверка на пустые обязательные поля (для блокировки кнопки)
   const isFormValid = useCallback(() => {
     return values.fullName.trim() !== "" && values.emailCorporate.trim() !== "";
   }, [values.fullName, values.emailCorporate]);
@@ -92,7 +88,6 @@ export const CreateEmployeeDialog = ({
     [errors],
   );
 
-  // Отмечаем поле как touched при потере фокуса
   const handleFieldBlur = useCallback(
     (field: keyof CreateEmployeeFormValues) => {
       setTouchedFields((prev) => new Set(prev).add(field));
@@ -110,19 +105,16 @@ export const CreateEmployeeDialog = ({
     async (e: React.FormEvent) => {
       e.preventDefault();
 
-      // Отмечаем все поля как touched
       const allFields = Object.keys(
         values,
       ) as (keyof CreateEmployeeFormValues)[];
       setTouchedFields(new Set(allFields));
 
       if (!validate()) {
-        // Фокусируемся на первом поле с ошибкой
         const firstErrorField = Object.keys(errors).filter(
           (k) => k !== "general",
         )[0] as keyof CreateEmployeeFormValues;
         if (firstErrorField === "photo") {
-          // Для фото своя логика фокуса
           document
             .querySelector("[data-photo-upload]")
             ?.scrollIntoView({ behavior: "smooth" });
@@ -171,10 +163,8 @@ export const CreateEmployeeDialog = ({
     [validate, values, onSubmit, onOpenChange, errors, addNotification],
   );
 
-  // Обработчик Enter
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      // Не отправляем форму, если нажат Enter внутри текстового поля
       const target = e.target as HTMLElement;
       if (target.tagName === "TEXTAREA" || target.tagName === "INPUT") {
         return;
@@ -184,7 +174,6 @@ export const CreateEmployeeDialog = ({
     }
   }, []);
 
-  // Кнопка создания карточки disabled, если форма не валидна или идет отправка
   const isSubmitDisabled = isSubmitting || !isFormValid();
 
   return (
@@ -203,7 +192,6 @@ export const CreateEmployeeDialog = ({
             <DialogClose variant="icon" />
           </div>
 
-          {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto px-5 py-4">
             <EmployeeForm
               values={values}
@@ -216,7 +204,6 @@ export const CreateEmployeeDialog = ({
               firstInputRef={firstInputRef}
             />
 
-            {/* Общая ошибка */}
             {errors.general && (
               <div className="mt-4 p-3 rounded-md bg-red-50 border border-red-200">
                 <p className="text-sm text-red-600">{errors.general}</p>
@@ -224,7 +211,6 @@ export const CreateEmployeeDialog = ({
             )}
           </div>
 
-          {/* Кнопки с индикатором обязательных полей */}
           <div className="flex justify-between items-center px-4 pb-5 pt-0 flex-shrink-0 w-full">
             <div className="text-xs text-gray-400">
               {!isFormValid() && (

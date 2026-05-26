@@ -11,7 +11,6 @@ export const CreateEmployeeWrapper = ({ onSuccess }: CreateEmployeeWrapperProps)
   const [open, setOpen] = useState(false);
 
   const handleSubmit = async (data: CreateEmployeeFormValues) => {
-    console.log("Creating employee:", data);
     onSuccess?.(data);
   };
 

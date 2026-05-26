@@ -34,7 +34,6 @@ export const CompetenciesPopoverContent = ({
 }: CompetenciesPopoverContentProps) => {
   return (
     <div className="flex flex-col gap-2">
-      {/* Search + Add tag */}
       <div className="flex flex-row items-start gap-2">
         <div className="relative flex-1">
           <SearchIcon className="absolute left-2 top-1/2 -translate-y-1/2 size-5 text-gray-500" />
@@ -56,10 +55,8 @@ export const CompetenciesPopoverContent = ({
         </Button>
       </div>
 
-      {/* Divider */}
       <div className="border-t border-gray-200" />
 
-      {/* Options list */}
       <p className="text-xs font-semibold text-black leading-6 tracking-[0.5px]">
         Компетенции
       </p>
@@ -80,7 +77,6 @@ export const CompetenciesPopoverContent = ({
         ))}
       </div>
 
-      {/* Show all button */}
       {hasMore && !showAll && (
         <button
           type="button"
@@ -91,10 +87,8 @@ export const CompetenciesPopoverContent = ({
         </button>
       )}
 
-      {/* Divider */}
       <div className="border-t border-gray-200" />
 
-      {/* Buttons: Очистить и Применить */}
       <div className="flex justify-start gap-2 pt-0 flex-shrink-0 w-full">
         <Button
           type="button"

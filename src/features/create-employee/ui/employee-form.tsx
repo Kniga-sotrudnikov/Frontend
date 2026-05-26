@@ -54,17 +54,14 @@ export const EmployeeForm = memo(function EmployeeForm({
   touchedFields,
   firstInputRef,
 }: EmployeeFormProps) {
-  // Показывать ошибку только если поле touched
   const showError = (field: keyof CreateEmployeeFormValues) => {
     return touchedFields.has(field) && errors[field];
   };
 
-  // Отображать звездочку для обязательных полей
   const RequiredMark = () => <span className="text-red-600 ml-0.5">*</span>;
 
   return (
     <>
-      {/* PhotoUpload */}
       <div className="mb-5" data-photo-upload>
         <PhotoUpload
           value={values.photo}
@@ -73,9 +70,7 @@ export const EmployeeForm = memo(function EmployeeForm({
         />
       </div>
 
-      {/* Форма с двумя колонками */}
       <div className="grid grid-cols-2 gap-x-3">
-        {/* Левая колонка */}
         <div className="flex flex-col gap-2">
           <div className="space-y-2">
             <Label.Root
@@ -216,7 +211,6 @@ export const EmployeeForm = memo(function EmployeeForm({
           </div>
         </div>
 
-        {/* Правая колонка */}
         <div className="flex flex-col gap-2">
           <div className="space-y-2">
             <Label.Root
@@ -310,7 +304,6 @@ export const EmployeeForm = memo(function EmployeeForm({
             )}
           </div>
 
-          {/* Компетенции */}
           <div className="space-y-2">
             <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
               Компетенции

@@ -70,7 +70,6 @@ export const PhotoUpload = ({ value, onChange, error }: PhotoUploadProps) => {
       onDragOver={handleDrag}
       onDrop={handleDrop}
     >
-      {/* Avatar / Preview area */}
       <div className="relative w-[106px] h-[94px] shrink-0 bg-gray-100 rounded-md overflow-hidden">
         {previewUrl ? (
           <>
@@ -98,7 +97,6 @@ export const PhotoUpload = ({ value, onChange, error }: PhotoUploadProps) => {
         )}
       </div>
 
-      {/* Upload hint */}
       <div className="flex flex-col gap-2 flex-1">
         <p className="text-xs text-black leading-5 tracking-[-0.5px]">
           Перетащите фотографию сюда или{" "}
