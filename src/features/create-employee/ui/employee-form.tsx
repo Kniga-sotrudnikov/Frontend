@@ -101,8 +101,8 @@ export const EmployeeForm = memo(function EmployeeForm({
               value={values.department}
               onValueChange={(value) => onUpdate("department", value)}
               options={DEPARTMENT_OPTIONS.map((dept) => ({
-                value: dept,
-                label: dept,
+                value: dept.value,
+                label: dept.value,
               }))}
               placeholder="Выберите отдел"
               error={!!showError("department")}
@@ -240,8 +240,8 @@ export const EmployeeForm = memo(function EmployeeForm({
               value={values.leader}
               onValueChange={(value) => onUpdate("leader", value)}
               options={LEADER_OPTIONS.map((leader) => ({
-                value: leader,
-                label: leader,
+                value: leader.value,
+                label: leader.value,
               }))}
               placeholder="Выберите руководителя"
             />
@@ -295,7 +295,10 @@ export const EmployeeForm = memo(function EmployeeForm({
             <FormSelect
               value={values.city}
               onValueChange={(value) => onUpdate("city", value)}
-              options={CITY_OPTIONS.map((city) => ({ value: city, label: city }))}
+              options={CITY_OPTIONS.map((city) => ({ 
+                value: city.value, 
+                label: city.value 
+              }))}
               placeholder="Выберите город"
               error={!!showError("city")}
             />

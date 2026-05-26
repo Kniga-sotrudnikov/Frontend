@@ -5,7 +5,7 @@ import { Button } from "@ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import ArrowDownIcon from "@/shared/assets/icons/arrow-down.svg?react";
 import CloseIcon from "@/shared/assets/icons/close.svg?react";
-import { COMPETENCY_OPTIONS } from "../model/types";
+import { COMPETENCY_OPTIONS } from "../model/constants";
 import { CompetenciesPopoverContent } from "./competencies-popover-content";
 import { CompetenciesDialogContent } from "./competencies-dialog-content";
 
