@@ -112,6 +112,14 @@ export const CompetenciesSelect = ({
     (id) => COMPETENCY_OPTIONS.find((opt) => opt.id === id)?.label || id,
   );
 
+  const labelToIdMap = useMemo(() => {
+    const map = new Map<string, string>();
+    COMPETENCY_OPTIONS.forEach((opt) => {
+      map.set(opt.label, opt.id);
+    });
+    return map;
+  }, []);
+
   return (
     <div className="flex flex-col gap-2">
       <Popover open={open} onOpenChange={handleOpenChange}>
@@ -120,21 +128,41 @@ export const CompetenciesSelect = ({
             type="button"
             variant="outline"
             className={cn(
-              "w-full justify-between font-normal h-[44px] mt-1",
+              "w-full justify-start font-normal h-[44px] mt-1 hover:bg-transparent",
               error && "border-red-600",
               !error && "border-gray-200",
             )}
           >
-            <span
-              className={
-                value.length === 0 ? "text-gray-400 text-sm" : "text-sm"
-              }
-            >
-              {value.length === 0
-                ? "Выберите компетенции"
-                : `Выбрано: ${value.length}`}
-            </span>
-            <ArrowDownIcon className="size-4 opacity-50" />
+            <div className="flex flex-nowrap items-center gap-1 flex-1 min-w-0 overflow-hidden">
+              {selectedLabels.length > 0 ? (
+                selectedLabels.map((label) => {
+                  const competencyId = labelToIdMap.get(label) || label;
+                  return (
+                    <Badge
+                      key={label}
+                      className="gap-1 bg-purple-50 text-purple-500 text-overline py-0.5 px-2 shrink-0"
+                    >
+                      {label}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveCompetency(competencyId);
+                        }}
+                        className="ml-1 rounded-full p-0.5 transition-all hover:bg-purple-100"
+>
+  <CloseIcon className="size-2.5 text-purple-500 hover:text-purple-700" />
+                      </button>
+                    </Badge>
+                  );
+                })
+              ) : (
+                <span className="text-gray-400 text-sm">
+                  Выберите компетенции
+                </span>
+              )}
+            </div>
+            <ArrowDownIcon className="size-4 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
         <PopoverContent
@@ -182,7 +210,7 @@ export const CompetenciesSelect = ({
               {displayedOptions.map((option) => (
                 <label
                   key={option.id}
-                  className="flex items-center gap-1 cursor-pointer hover:bg-gray-50"
+                  className="flex items-center gap-1 cursor-pointer"
                 >
                   <Checkbox
                     checked={tempValue.includes(option.id)}
@@ -308,26 +336,6 @@ export const CompetenciesSelect = ({
         </DialogContent>
       </Dialog>
 
-      {/* Selected competencies badges */}
-      {selectedLabels.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {selectedLabels.map((label) => (
-            <Badge
-              key={label}
-              className="gap-1 border-purple-500 bg-purple-50 text-purple-500"
-            >
-              {label}
-              <button
-                type="button"
-                onClick={() => handleRemoveCompetency(label)}
-                className="ml-1 rounded-full hover:text-gray-700"
-              >
-                <CloseIcon className="size-3" />
-              </button>
-            </Badge>
-          ))}
-        </div>
-      )}
       {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );
