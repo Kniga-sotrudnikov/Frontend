@@ -1,6 +1,8 @@
 import type { CreateEmployeeFormValues } from "./types";
 
-export type ValidationErrors = Partial<Record<keyof CreateEmployeeFormValues, string>>;
+export type ValidationErrors = Partial<Record<keyof CreateEmployeeFormValues, string>> & {
+  general?: string;
+};
 
 export const validateEmail = (email: string): boolean => {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

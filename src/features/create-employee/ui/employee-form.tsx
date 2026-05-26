@@ -1,3 +1,4 @@
+import { memo, type RefObject } from "react";
 import * as Label from "@radix-ui/react-label";
 import { FormInput } from "./form-input";
 import { Calendar } from "@ui/calendar";
@@ -36,25 +37,39 @@ interface EmployeeFormProps {
     field: K,
     value: CreateEmployeeFormValues[K],
   ) => void;
+  onBlur: (field: keyof CreateEmployeeFormValues) => void;
   calendarOpen: boolean;
   onCalendarOpenChange: (open: boolean) => void;
+  touchedFields: Set<keyof CreateEmployeeFormValues>;
+  firstInputRef?: RefObject<HTMLInputElement | null>;
 }
 
-export const EmployeeForm = ({
+export const EmployeeForm = memo(function EmployeeForm({
   values,
   errors,
   onUpdate,
+  onBlur,
   calendarOpen,
   onCalendarOpenChange,
-}: EmployeeFormProps) => {
+  touchedFields,
+  firstInputRef,
+}: EmployeeFormProps) {
+  // Показывать ошибку только если поле touched
+  const showError = (field: keyof CreateEmployeeFormValues) => {
+    return touchedFields.has(field) && errors[field];
+  };
+
+  // Отображать звездочку для обязательных полей
+  const RequiredMark = () => <span className="text-red-600 ml-0.5">*</span>;
+
   return (
     <>
       {/* PhotoUpload */}
-      <div className="mb-5">
+      <div className="mb-5" data-photo-upload>
         <PhotoUpload
           value={values.photo}
           onChange={(file) => onUpdate("photo", file)}
-          error={errors.photo}
+          error={showError("photo") ? errors.photo : undefined}
         />
       </div>
 
@@ -67,16 +82,18 @@ export const EmployeeForm = ({
               htmlFor="fullName"
               className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
             >
-              Полное имя
+              Полное имя <RequiredMark />
             </Label.Root>
             <FormInput
               id="fullName"
+              ref={firstInputRef}
               value={values.fullName}
               onChange={(e) => onUpdate("fullName", e.target.value)}
+              onBlur={() => onBlur("fullName")}
               placeholder="Иванов Алексей Петрович"
-              error={!!errors.fullName}
+              error={!!showError("fullName")}
             />
-            {errors.fullName && (
+            {showError("fullName") && (
               <p className="text-xs text-red-600 mt-1">{errors.fullName}</p>
             )}
           </div>
@@ -93,9 +110,9 @@ export const EmployeeForm = ({
                 label: dept,
               }))}
               placeholder="Выберите отдел"
-              error={!!errors.department}
+              error={!!showError("department")}
             />
-            {errors.department && (
+            {showError("department") && (
               <p className="text-xs text-red-600 mt-1">{errors.department}</p>
             )}
           </div>
@@ -105,17 +122,18 @@ export const EmployeeForm = ({
               htmlFor="emailCorporate"
               className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
             >
-              Электронная почта (корпоративная)
+              Электронная почта (корпоративная) <RequiredMark />
             </Label.Root>
             <FormInput
               id="emailCorporate"
               type="email"
               value={values.emailCorporate}
               onChange={(e) => onUpdate("emailCorporate", e.target.value)}
+              onBlur={() => onBlur("emailCorporate")}
               placeholder="alexey.ivanov@company.com"
-              error={!!errors.emailCorporate}
+              error={!!showError("emailCorporate")}
             />
-            {errors.emailCorporate && (
+            {showError("emailCorporate") && (
               <p className="text-xs text-red-600 mt-1">{errors.emailCorporate}</p>
             )}
           </div>
@@ -131,10 +149,11 @@ export const EmployeeForm = ({
               id="phoneCorporate"
               value={values.phoneCorporate}
               onChange={(e) => onUpdate("phoneCorporate", e.target.value)}
+              onBlur={() => onBlur("phoneCorporate")}
               placeholder="+7 (495) 123-45-67"
-              error={!!errors.phoneCorporate}
+              error={!!showError("phoneCorporate")}
             />
-            {errors.phoneCorporate && (
+            {showError("phoneCorporate") && (
               <p className="text-xs text-red-600 mt-1">{errors.phoneCorporate}</p>
             )}
           </div>
@@ -151,7 +170,7 @@ export const EmployeeForm = ({
                   className={cn(
                     "w-full justify-between text-left font-normal h-8 text-xs mt-2",
                     !values.birthday && "text-muted-foreground",
-                    errors.birthday && "border-red-600",
+                    showError("birthday") && "border-red-600",
                   )}
                 >
                   <span>
@@ -179,7 +198,7 @@ export const EmployeeForm = ({
                 />
               </PopoverContent>
             </Popover>
-            {errors.birthday && (
+            {showError("birthday") && (
               <p className="text-xs text-red-600 mt-1">{errors.birthday}</p>
             )}
           </div>
@@ -210,10 +229,11 @@ export const EmployeeForm = ({
               id="position"
               value={values.position}
               onChange={(e) => onUpdate("position", e.target.value)}
+              onBlur={() => onBlur("position")}
               placeholder="Менеджер по карьерному развитию"
-              error={!!errors.position}
+              error={!!showError("position")}
             />
-            {errors.position && (
+            {showError("position") && (
               <p className="text-xs text-red-600 mt-1">{errors.position}</p>
             )}
           </div>
@@ -245,10 +265,11 @@ export const EmployeeForm = ({
               type="email"
               value={values.emailPersonal}
               onChange={(e) => onUpdate("emailPersonal", e.target.value)}
+              onBlur={() => onBlur("emailPersonal")}
               placeholder="alexey.ivanov@gmail.com"
-              error={!!errors.emailPersonal}
+              error={!!showError("emailPersonal")}
             />
-            {errors.emailPersonal && (
+            {showError("emailPersonal") && (
               <p className="text-xs text-red-600 mt-1">{errors.emailPersonal}</p>
             )}
           </div>
@@ -264,10 +285,11 @@ export const EmployeeForm = ({
               id="phonePersonal"
               value={values.phonePersonal}
               onChange={(e) => onUpdate("phonePersonal", e.target.value)}
+              onBlur={() => onBlur("phonePersonal")}
               placeholder="+7 (000) 000-00-00"
-              error={!!errors.phonePersonal}
+              error={!!showError("phonePersonal")}
             />
-            {errors.phonePersonal && (
+            {showError("phonePersonal") && (
               <p className="text-xs text-red-600 mt-1">{errors.phonePersonal}</p>
             )}
           </div>
@@ -281,9 +303,9 @@ export const EmployeeForm = ({
               onValueChange={(value) => onUpdate("city", value)}
               options={CITY_OPTIONS.map((city) => ({ value: city, label: city }))}
               placeholder="Выберите город"
-              error={!!errors.city}
+              error={!!showError("city")}
             />
-            {errors.city && (
+            {showError("city") && (
               <p className="text-xs text-red-600 mt-1">{errors.city}</p>
             )}
           </div>
@@ -296,11 +318,11 @@ export const EmployeeForm = ({
             <CompetenciesSelect
               value={values.competencies}
               onChange={(value) => onUpdate("competencies", value)}
-              error={errors.competencies}
+              error={showError("competencies") ? errors.competencies : undefined}
             />
           </div>
         </div>
       </div>
     </>
   );
-};
+});
