@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { forwardRef, type ReactNode } from "react";
 import { cn } from "@/shared/lib";
 import { type InputProps } from "./input-types.ts";
 
@@ -11,14 +11,17 @@ const renderIcon = (icon: ReactNode | string) => {
   return icon;
 };
 
-function Input({
-  className,
-  type,
-  iconLeft,
-  iconRight,
-  wrapperClassName,
-  ...props
-}: InputProps) {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    className,
+    type,
+    iconLeft,
+    iconRight,
+    wrapperClassName,
+    ...props
+  }: InputProps,
+  ref,
+) {
   return (
     <div
       data-slot="input-wrapper"
@@ -37,6 +40,7 @@ function Input({
       )}
 
       <input
+        ref={ref}
         type={type}
         data-slot="input"
         className={cn(
@@ -53,6 +57,6 @@ function Input({
       )}
     </div>
   );
-}
+});
 
 export { Input };
