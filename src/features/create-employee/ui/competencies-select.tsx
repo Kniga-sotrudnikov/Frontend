@@ -87,7 +87,7 @@ export const CompetenciesSelect = ({
             type="button"
             variant="outline"
             className={cn(
-              "w-full justify-between font-normal h-[44px]",
+              "w-full justify-between font-normal h-[44px] mt-1",
               error && "border-red-600",
               !error && "border-gray-200",
             )}

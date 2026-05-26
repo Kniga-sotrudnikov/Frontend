@@ -400,7 +400,7 @@ export const CreateEmployeeDialog = ({
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="space-y-2 -mb-2">
                   <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
                     Город
                   </Label.Root>
@@ -417,7 +417,7 @@ export const CreateEmployeeDialog = ({
                 </div>
 
                 {/* Компетенции */}
-                <div className="space-y-2 -mt-2">
+                <div className="space-y-2">
                   <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
                     Компетенции
                   </Label.Root>
@@ -437,16 +437,16 @@ export const CreateEmployeeDialog = ({
               type="button"
               variant="plain"
               onClick={() => onOpenChange(false)}
-              className="w-[105px] h-[32px] border border-purple-500 bg-white text-xs text-purple-500 hover:bg-purple-50 rounded-md"
+              className="w-[105px] h-[32px] border border-purple-500 bg-white text-xs text-purple-500 hover:bg-purple-50 rounded-[var(--radius-8)"
             >
               Отменить
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-[165px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-md"
+              className="w-[165px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)"
             >
-              {isSubmitting ? "Создание..." : "Добавить карточку"}
+              {isSubmitting ? "Создание..." : "Создать карточку"}
             </Button>
           </div>
         </form>
