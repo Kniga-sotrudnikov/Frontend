@@ -92,7 +92,7 @@ const FilterCities: React.FC<FilterCitiesProps> = ({
 
       <PopoverContent
         align="start"
-        className="p-5 w-auto min-w-54.5"
+        className="p-5 w-auto min-w-75"
         sideOffset={10}
       >
         <div className="relative mb-3">
@@ -112,7 +112,7 @@ const FilterCities: React.FC<FilterCitiesProps> = ({
           <Button
             type="button"
             className="p-0 text-[var(--primary)]"
-            variant="ghost"
+            variant="link"
             size="default"
             onClick={handleRemoveCities}
           >
@@ -181,14 +181,6 @@ const FilterCities: React.FC<FilterCitiesProps> = ({
         <DropdownMenuSeparator />
 
         <div className="h-[32px] mt-4 flex justify-end gap-[12px]">
-          <Button
-            type="button"
-            variant="outline"
-            size="default"
-            onClick={handleRemoveCities}
-          >
-            Очистить
-          </Button>
           <Button
             type="button"
             variant="default"
