@@ -175,7 +175,7 @@ export const CompetenciesSelect = ({
             <div className="border-t border-gray-200" />
 
             {/* Options list */}
-            <p className="text-sm font-semibold text-black leading-7 tracking-[-1.25px]">
+            <p className="text-xs font-semibold text-black leading-6 tracking-[0.5px]">
               Компетенции
             </p>
             <div className="flex flex-col gap-1">
@@ -188,7 +188,7 @@ export const CompetenciesSelect = ({
                     checked={tempValue.includes(option.id)}
                     onCheckedChange={() => handleToggleCompetency(option.id)}
                   />
-                  <span className="text-xs text-black leading-5 tracking-[-0.5px] whitespace-nowrap overflow-x-auto scrollbar-none">
+                  <span className="text-xs text-black leading-5 tracking-[-0.5px] whitespace-nowrap">
                     {option.label}
                   </span>
                 </label>
@@ -210,7 +210,7 @@ export const CompetenciesSelect = ({
             <div className="border-t border-gray-200" />
 
             {/* Buttons: Очистить и Применить */}
-            <div className="flex justify-ыефке gap-2 pt-0 flex-shrink-0 w-full">
+            <div className="flex justify-start gap-2 pt-0 flex-shrink-0 w-full">
               <Button
                 type="button"
                 variant="outline"
@@ -261,10 +261,10 @@ export const CompetenciesSelect = ({
             <div className="border-t border-gray-200" />
 
             {/* Options list */}
-            <p className="text-sm font-semibold text-black leading-7 tracking-[-1.25px]">
+            <p className="text-xs font-semibold text-black leading-6 tracking-[0.5px]">
               Компетенции
             </p>
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               {fullFilteredOptions.map((option) => (
                 <label
                   key={option.id}
@@ -287,7 +287,7 @@ export const CompetenciesSelect = ({
             <div className="border-t border-gray-200" />
 
             {/* Buttons: Очистить и Применить */}
-            <div className="flex justify-between gap-2 pt-0 flex-shrink-0 w-full">
+            <div className="flex justify-start gap-2 pt-0 flex-shrink-0 w-full">
               <Button
                 type="button"
                 variant="outline"

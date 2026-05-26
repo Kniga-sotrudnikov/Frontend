@@ -43,8 +43,4 @@ export const COMPETENCY_OPTIONS: CompetencyOption[] = [
   { id: "research_work", label: "Исследовательская работа" },
   { id: "coach", label: "Коуч тимлидов" },
   { id: "scaling", label: "Масштабирование практики" },
-  { id: "mentor", label: "Наставник" },
-  { id: "expert", label: "Эксперт" },
-  { id: "speaker", label: "Спикер" },
-  { id: "teamlead", label: "Teamlead" },
 ];
