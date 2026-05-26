@@ -8,6 +8,7 @@ import { StatusFilter } from "@/features/employee/ui/status-filter.tsx";
 import { useState } from "react";
 import type { TEmployeeStatus } from "@/entities/employee";
 import { mockEmployees, mockFavorites, mockVacancies } from "./mocks/mocks";
+import FilterCities from "@/widgets/filter-cities/filter-cities";
 
 const EmployeesPage = () => {
   const [value, setValue] = useState<TEmployeeStatus[]>([]);
@@ -28,7 +29,11 @@ const EmployeesPage = () => {
         <Navbar unitsList={orgTree} />
 
         <div className="space-y-3">
-          <StatusFilter value={value} onValueChange={setValue} />
+          <div className="flex gap-x-3">
+            <StatusFilter value={value} onValueChange={setValue} />
+            <FilterCities cities={["Москва", "Сочи"]} />
+          </div>
+
           <EmployeesList
             employees={mockEmployees}
             vacancies={mockVacancies}
