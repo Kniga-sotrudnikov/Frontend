@@ -4,6 +4,7 @@ import { CreateEmployeeDialog } from "./create-employee-dialog";
 import type { CreateEmployeeFormValues } from "../model/types";
 
 interface CreateEmployeeWrapperProps {
+  className?: string;
   onSuccess?: (data: CreateEmployeeFormValues) => void;
 }
 

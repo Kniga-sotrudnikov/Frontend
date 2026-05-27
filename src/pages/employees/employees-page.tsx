@@ -5,6 +5,7 @@ import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { Navbar, orgTree } from "@/widgets/navbar";
 import { EmployeesList } from "@/widgets/employees-list";
 import { StatusFilter } from "@/features/employee/ui/status-filter";
+import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useState } from "react";
 import type { TEmployeeStatus } from "@/entities/employee";
 import { mockEmployees, mockFavorites, mockVacancies } from "./mocks/mocks";
@@ -30,6 +31,8 @@ const EmployeesPage = () => {
           <div className="flex gap-x-3">
             <StatusFilter value={value} onValueChange={setValue} />
             <FilterCities cities={["Москва", "Сочи"]} />
+            <FilterCities cities={["Москва", "Сочи"]} />
+            <CreateEmployeeWrapper className="ml-auto" />
           </div>
 
           <EmployeesList
