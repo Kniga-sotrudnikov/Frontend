@@ -9,9 +9,10 @@ import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useState } from "react";
 import type { TEmployeeStatus } from "@/entities/employee";
 import { mockEmployees, mockFavorites, mockVacancies } from "./mocks/mocks";
+import FilterCities from "@/widgets/filter-cities/filter-cities";
 
 const EmployeesPage = () => {
-  const [statusFilterValue, setStatusFilterValue] = useState<TEmployeeStatus[]>([]);
+  const [value, setValue] = useState<TEmployeeStatus[]>([]);
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -26,12 +27,12 @@ const EmployeesPage = () => {
       <div className="mx-10 mt-5 grid grid-cols-[295px_1fr] gap-x-7 min-h-screen">
         <Navbar unitsList={orgTree} />
 
-        <div className="space-y-4">
-          <div className="flex items-center">
-            <StatusFilter value={statusFilterValue} onValueChange={setStatusFilterValue} />
-            <CreateEmployeeWrapper />
+        <div className="space-y-3">
+          <div className="flex gap-x-3">
+            <StatusFilter value={value} onValueChange={setValue} />
+            <FilterCities cities={["Москва", "Сочи"]} />
           </div>
-          
+
           <EmployeesList
             employees={mockEmployees}
             vacancies={mockVacancies}
