@@ -1,18 +1,14 @@
-import { forwardRef, useState } from "react";
-import { Input } from "./input";
-import { type InputProps } from "./input-types";
-import EyeVisibleIcon from "@/shared/assets/icons/eye-visible.svg";
-import EyeHiddenIcon from "@/shared/assets/icons/eye-hidden.svg";
+import { useState } from "react"
+import { Input } from "./input"
+import { type InputProps } from "./input-types"
+import EyeVisibleIcon from "@/shared/assets/icons/eye-visible.svg"
+import EyeHiddenIcon from "@/shared/assets/icons/eye-hidden.svg"
 
-const PasswordInput = forwardRef<
-  HTMLInputElement,
-  Omit<InputProps, "iconRight" | "type">
->(function PasswordInput(props, ref) {
-  const [showPassword, setShowPassword] = useState(false);
+function PasswordInput(props: Omit<InputProps, "iconRight" | "type">) {
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <Input
-      ref={ref}
       {...props}
       type={showPassword ? "text" : "password"}
       iconRight={
@@ -28,7 +24,7 @@ const PasswordInput = forwardRef<
         </button>
       }
     />
-  );
-});
+  )
+}
 
-export { PasswordInput };
+export { PasswordInput }
