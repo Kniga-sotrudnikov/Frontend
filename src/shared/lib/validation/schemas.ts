@@ -38,6 +38,10 @@ export const positionSchema = z.string().min(1, "Обязательное пол
 
 export const requiredStringSchema = z.string().min(1, "Обязательное поле");
 
-export const birthdaySchema = z.date({ required_error: "Обязательное поле" });
+export const birthdaySchema = z
+  .date({
+    required_error: "Обязательное поле",
+    invalid_type_error: "Введите корректную дату",
+  });;
 
 export const competenciesSchema = z.array(z.string()).optional();

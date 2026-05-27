@@ -4,34 +4,37 @@ import { Checkbox } from "@ui/checkbox";
 import SearchIcon from "@/shared/assets/icons/search.svg?react";
 import PlusIcon from "@/shared/assets/icons/plus.svg?react";
 import type { CompetencyOption } from "../model/types";
+import { cn } from "@/shared/lib";
 
-interface CompetenciesPopoverContentProps {
+interface CompetenciesContentProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   tempValue: string[];
   onToggleCompetency: (id: string) => void;
-  displayedOptions: CompetencyOption[];
+  options: CompetencyOption[];
   onClear: () => void;
   onApply: () => void;
-  onShowAll: () => void;
-  hasMore: boolean;
-  showAll: boolean;
-  filteredCount: number;
+  onShowAll?: () => void;
+  hasMore?: boolean;
+  showAll?: boolean;
+  filteredCount?: number;
+  variant?: "popover" | "dialog";
 }
 
-export const CompetenciesPopoverContent = ({
+export const CompetenciesContent = ({
   searchQuery,
   onSearchChange,
   tempValue,
   onToggleCompetency,
-  displayedOptions,
+  options,
   onClear,
   onApply,
   onShowAll,
   hasMore,
   showAll,
   filteredCount,
-}: CompetenciesPopoverContentProps) => {
+  variant = "popover",
+}: CompetenciesContentProps) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row items-start gap-2">
@@ -60,11 +63,15 @@ export const CompetenciesPopoverContent = ({
       <p className="text-xs font-semibold text-black leading-6 tracking-[0.5px]">
         Компетенции
       </p>
-      <div className="flex flex-col gap-1">
-        {displayedOptions.map((option) => (
+
+      <div className={variant === "dialog" ? "flex flex-col gap-1.5" : "flex flex-col gap-1"}>
+        {options.map((option) => (
           <label
             key={option.id}
-            className="flex items-center gap-1 cursor-pointer"
+            className={cn(
+              "flex items-center gap-1 cursor-pointer",
+              variant === "dialog" && "hover:bg-gray-50"
+            )}
           >
             <Checkbox
               checked={tempValue.includes(option.id)}
@@ -77,7 +84,7 @@ export const CompetenciesPopoverContent = ({
         ))}
       </div>
 
-      {hasMore && !showAll && (
+      {variant === "popover" && hasMore && !showAll && (
         <button
           type="button"
           onClick={onShowAll}
