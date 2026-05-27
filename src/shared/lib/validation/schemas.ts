@@ -14,20 +14,23 @@ export const passwordSchema = z
   .regex(/\d/, "Пароль должен содержать цифру")
   .regex(/[^A-Za-zА-Яа-я0-9]/, "Пароль должен содержать спецсимвол");
 
-  export const phoneSchema = z
+export const phoneSchema = z
   .string()
   .min(1, "Введите номер телефона")
   .regex(
-    /^\+[0-9\s()-]{10,}$/, 
-    "Телефон должен начинаться с + и содержать только цифры, пробелы, скобки и дефисы"
+    /^\+[0-9\s()-]{10,}$/,
+    "Телефон должен начинаться с + и содержать только цифры, пробелы, скобки и дефисы",
   )
   .transform((val) => val.replace(/[\s()-]/g, ""))
-  .refine((digits) => {
-    const phoneWithoutPlus = digits.replace(/^\+/, "");
-    return phoneWithoutPlus.length >= 10 && phoneWithoutPlus.length <= 15;
-  }, {
-    message: "Телефон должен содержать от 10 до 15 цифр после +",
-  });
+  .refine(
+    (digits) => {
+      const phoneWithoutPlus = digits.replace(/^\+/, "");
+      return phoneWithoutPlus.length >= 10 && phoneWithoutPlus.length <= 15;
+    },
+    {
+      message: "Телефон должен содержать от 10 до 15 цифр после +",
+    },
+  );
 
 export const fullNameSchema = z
   .string()
@@ -39,9 +42,10 @@ export const positionSchema = z.string().min(1, "Обязательное пол
 export const requiredStringSchema = z.string().min(1, "Обязательное поле");
 
 export const birthdaySchema = z
-  .date({
-    required_error: "Обязательное поле",
-    invalid_type_error: "Введите корректную дату",
-  });;
+  .date()
+  .nullable()
+  .refine((val) => val !== null, {
+    message: "Обязательное поле",
+  });
 
 export const competenciesSchema = z.array(z.string()).optional();
