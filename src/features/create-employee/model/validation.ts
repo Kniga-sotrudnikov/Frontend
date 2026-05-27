@@ -1,57 +1,75 @@
 import type { CreateEmployeeFormValues } from "./types";
+import { 
+  emailSchema, 
+  phoneSchema, 
+  fullNameSchema, 
+  positionSchema,
+  requiredStringSchema,
+  birthdaySchema,
+} from "@/shared/lib/validation";
 
 export type ValidationErrors = Partial<Record<keyof CreateEmployeeFormValues, string>> & {
   general?: string;
 };
 
 export const validateEmail = (email: string): boolean => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  return emailSchema.safeParse(email).success;
 };
 
 export const validatePhone = (phone: string): boolean => {
-  // Проверка на допустимые символы: цифры, пробелы, +, (, ), -
-  if (!/^[\d\s+()-]+$/.test(phone)) return false;
-  // Проверка количества цифр (без учета форматирования)
-  const digits = phone.replace(/[\s()-]/g, '');
-  return digits.length >= 10 && digits.length <= 15;
+  return phoneSchema.safeParse(phone).success;
 };
 
 export const validateForm = (values: CreateEmployeeFormValues): ValidationErrors => {
   const errors: ValidationErrors = {};
 
-  // Обязательные поля
-  if (!values.fullName.trim()) {
-    errors.fullName = "Обязательное поле";
-  }
-  if (!values.position.trim()) {
-    errors.position = "Обязательное поле";
-  }
-  if (!values.department) {
-    errors.department = "Обязательное поле";
-  }
-  if (!values.emailCorporate.trim()) {
-    errors.emailCorporate = "Обязательное поле";
-  } else if (!validateEmail(values.emailCorporate)) {
-    errors.emailCorporate = "Некорректный email";
-  }
-  if (!values.phoneCorporate.trim()) {
-    errors.phoneCorporate = "Обязательное поле";
-  } else if (!validatePhone(values.phoneCorporate)) {
-    errors.phoneCorporate = "Некорректный телефон";
-  }
-  if (!values.birthday) {
-    errors.birthday = "Обязательное поле";
-  }
-  if (!values.city) {
-    errors.city = "Обязательное поле";
+  const fullNameResult = fullNameSchema.safeParse(values.fullName);
+  if (!fullNameResult.success) {
+    errors.fullName = fullNameResult.error.issues[0]?.message || "Обязательное поле";
   }
 
-  // Необязательные поля (проверяем только если заполнены)
-  if (values.emailPersonal.trim() && !validateEmail(values.emailPersonal)) {
-    errors.emailPersonal = "Некорректный email";
+  const positionResult = positionSchema.safeParse(values.position);
+  if (!positionResult.success) {
+    errors.position = positionResult.error.issues[0]?.message || "Обязательное поле";
   }
-  if (values.phonePersonal.trim() && !validatePhone(values.phonePersonal)) {
-    errors.phonePersonal = "Некорректный телефон";
+
+  const departmentResult = requiredStringSchema.safeParse(values.department);
+  if (!departmentResult.success) {
+    errors.department = departmentResult.error.issues[0]?.message || "Обязательное поле";
+  }
+
+  const emailCorporateResult = emailSchema.safeParse(values.emailCorporate);
+  if (!emailCorporateResult.success) {
+    errors.emailCorporate = emailCorporateResult.error.issues[0]?.message || "Некорректный email";
+  }
+
+  const phoneCorporateResult = phoneSchema.safeParse(values.phoneCorporate);
+  if (!phoneCorporateResult.success) {
+    errors.phoneCorporate = phoneCorporateResult.error.issues[0]?.message || "Некорректный телефон";
+  }
+
+  const birthdayResult = birthdaySchema.safeParse(values.birthday);
+  if (!birthdayResult.success) {
+    errors.birthday = birthdayResult.error.issues[0]?.message || "Обязательное поле";
+  }
+
+  const cityResult = requiredStringSchema.safeParse(values.city);
+  if (!cityResult.success) {
+    errors.city = cityResult.error.issues[0]?.message || "Обязательное поле";
+  }
+
+  if (values.emailPersonal) {
+    const emailPersonalResult = emailSchema.safeParse(values.emailPersonal);
+    if (!emailPersonalResult.success) {
+      errors.emailPersonal = "Некорректный email";
+    }
+  }
+
+  if (values.phonePersonal) {
+    const phonePersonalResult = phoneSchema.safeParse(values.phonePersonal);
+    if (!phonePersonalResult.success) {
+      errors.phonePersonal = "Некорректный телефон";
+    }
   }
 
   return errors;
