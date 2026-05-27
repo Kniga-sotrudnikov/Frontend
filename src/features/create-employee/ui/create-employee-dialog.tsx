@@ -80,7 +80,6 @@ export const CreateEmployeeDialog = ({
       value: CreateEmployeeFormValues[K],
     ) => {
       setValues((prev) => ({ ...prev, [field]: value }));
-      // Очищаем ошибку только если поле было touched
       if (errors[field]) {
         setErrors((prev) => ({ ...prev, [field]: undefined }));
       }
