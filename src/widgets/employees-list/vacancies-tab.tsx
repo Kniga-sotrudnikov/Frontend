@@ -14,11 +14,9 @@ export const VacanciesTab = ({ vacancies, viewType }: VacanciesTabProps) => {
   const [selectedVacancy, setSelectedVacancy] = useState<VacancyData | null>(
     null,
   );
-  const [isVacancyCardOpen, setIsVacancyCardOpen] = useState(false);
 
   const handleRespond = (vacancy: VacancyData) => {
     setSelectedVacancy(vacancy);
-    setIsVacancyCardOpen(true);
   };
 
   if (activeVacancies.length === 0) {
@@ -26,30 +24,34 @@ export const VacanciesTab = ({ vacancies, viewType }: VacanciesTabProps) => {
   }
 
   return (
-    <div
-      className={
-        viewType === "grid"
-          ? "grid gap-6 grid-cols-[repeat(auto-fit,minmax(370px,1fr))]"
-          : "flex flex-col gap-4"
-      }
-    >
-      {activeVacancies.map((vacancy) => (
-        <ProfessionCard
-          key={vacancy.id}
-          city={vacancy.city}
-          profession={vacancy.profession}
-          position={vacancy.position}
-          franchise={vacancy.franchise}
-          department={vacancy.department}
-          isArchived={vacancy.isArchived}
-          onRespond={() => handleRespond(vacancy)}
-        />
-      ))}
+    <>
+      <div
+        className={
+          viewType === "grid"
+            ? "grid gap-6 grid-cols-[repeat(auto-fit,minmax(370px,1fr))]"
+            : "flex flex-col gap-4"
+        }
+      >
+        {activeVacancies.map((vacancy) => (
+          <ProfessionCard
+            key={vacancy.id}
+            city={vacancy.city}
+            profession={vacancy.profession}
+            position={vacancy.position}
+            franchise={vacancy.franchise}
+            department={vacancy.department}
+            isArchived={vacancy.isArchived}
+            onRespond={() => handleRespond(vacancy)}
+          />
+        ))}
+      </div>
 
       {selectedVacancy && (
         <VacancyCard
-          open={isVacancyCardOpen}
-          onOpenChange={setIsVacancyCardOpen}
+          open={!!selectedVacancy}
+          onOpenChange={(open) => {
+            if (!open) setSelectedVacancy(null);
+          }}
           vacancy={{
             id: selectedVacancy.id,
             title: selectedVacancy.profession,
@@ -65,6 +67,6 @@ export const VacanciesTab = ({ vacancies, viewType }: VacanciesTabProps) => {
           onExportPDF={() => {}}
         />
       )}
-    </div>
+    </>
   );
 };
