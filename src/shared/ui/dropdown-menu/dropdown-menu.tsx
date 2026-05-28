@@ -34,7 +34,7 @@ function DropdownMenuTrigger({
   return (
     <DropdownMenuPrimitive.Trigger
       className={cn(
-        "group flex cursor-pointer items-center gap-3 hover:outline-1 hover:rounded-lg select-none hover:bg-gray-100 hover:outline-gray-200 data-[state=open]:outline-gray-200 data-[state=open]:bg-gray-100 data-[state=open]:outline-1 data-[state=open]:rounded-lg",
+        "group flex cursor-pointer items-center gap-3 hover:outline-1 hover:rounded-lg select-none hover:bg-gray-100 hover:outline-gray-200 data-[state=open]:outline-gray-200 data-[state=open]:bg-gray-100 data-[state=open]:outline-1 data-[state=open]:rounded-lg focus:outline-none focus-visible:outline-none",
         className,
       )}
       {...props}

@@ -4,6 +4,9 @@ import UserIcon from "@/shared/assets/icons/user.svg?react"
 import { useNavigate } from "react-router";
 import { ROUTES } from "@/shared/model/routes/routes";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
+import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
+import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts";
+import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info";
 
 interface HeaderUserCardProps {
   name: string;
@@ -13,19 +16,7 @@ interface HeaderUserCardProps {
 
 const mockEmployeeProfile = {
   primaryInfo: (
-    <div className="flex items-center gap-3">
-      <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-semibold">
-        А
-      </div>
-      <div>
-        <div className="font-semibold text-black">
-          Алексеева Виктория
-        </div>
-        <div className="text-xs text-gray-500">
-          HR-специалист
-        </div>
-      </div>
-    </div>
+    <EmployeePrimaryInfo status="working" name="Алексеева Виктория" position="Менеджер по карьерному развитию" franchise="Фандрайзинг и продажи" department="Бизнес"/>
   ),
 
   roles: [
@@ -36,21 +27,15 @@ const mockEmployeeProfile = {
   ],
 
   emailInfo: (
-    <a className="text-xs text-link hover:underline">
-      victoria.alekseeva@company.com
-    </a>
+    <EmployeeContacts type="email" corpContact="victoria.alekseeva@company.com" persContact="victoria.alekseeva2@company.com"/>
   ),
 
   phoneInfo: (
-    <a className="text-xs text-link hover:underline">
-      +420 777 123 456
-    </a>
+        <EmployeeContacts type="phone" corpContact="+420777123456" persContact="+420777123457"/>
   ),
 
   leader: (
-    <div className="text-xs">
-      Иванов Сергей — Head of HR
-    </div>
+    <LeaderPrimaryInfo leaderName="Иванов Игорь Сергеевич" leaderPosition="HR"/>
   ),
 
   city: "Прага",
@@ -118,7 +103,9 @@ const handleLogout = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={8}>
         <EmployeeProfileDialog {...mockEmployeeProfile}>
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={(event) => {
+            event.preventDefault();
+          }}>
           <UserIcon className="size-5 text-current"/>
           Мой профиль
         </DropdownMenuItem>
