@@ -1,1 +1,10 @@
-export { emailSchema, passwordSchema } from "./schemas.ts";
+export {
+  emailSchema,
+  passwordSchema,
+  phoneSchema,
+  fullNameSchema,
+  positionSchema,
+  requiredStringSchema,
+  birthdaySchema,
+  competenciesSchema,
+} from "./schemas";
