@@ -11,6 +11,16 @@ export const mockDirections = [
     name: "Фандрайзинг и продажи",
     headName: "Иванов Павел Викторович",
   },
+  {
+    id: "5",
+    name: "Фандрайзинг и продажи",
+    headName: "Иванов Павел Викторович",
+  },
+  {
+    id: "6",
+    name: "Фандрайзинг и продажи",
+    headName: "Иванов Павел Викторович",
+  },
 ];
 
 export const mockSisList = [
@@ -18,4 +28,6 @@ export const mockSisList = [
   { id: "2", name: "PR", headName: "Смирнова Елена Дмитриевна" },
   { id: "3", name: "HR", headName: "Алексеева Виктория" },
   { id: "4", name: "HR", headName: "Алексеева Виктория" },
+  { id: "5", name: "HR", headName: "Алексеева Виктория" },
+  { id: "6", name: "HR", headName: "Алексеева Виктория" },
 ];

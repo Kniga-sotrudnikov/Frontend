@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
+import { ActionItem } from "@/shared/ui/action-item";
 import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
-import { ActionItem } from "@/shared/ui/action-item";
 
 interface OrgItem {
   id: string;
@@ -21,6 +23,21 @@ interface OrgItemProps {
 
 export const OrgItem = ({ item, onEdit, onDelete }: OrgItemProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
 
   const handleEdit = () => {
     setPopoverOpen(false);
@@ -70,9 +87,19 @@ export const OrgItem = ({ item, onEdit, onDelete }: OrgItemProps) => {
   ];
 
   return (
-    <div className="flex items-center justify-between py-2.5 px-3 rounded-8 border border-gray-100">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center justify-between py-2.5 px-3 rounded-8 border border-gray-100 bg-white"
+    >
       <div className="flex items-center gap-4">
-        <GridIcon className="size-5 text-gray-500" />
+        <div
+          {...listeners}
+          {...attributes}
+          className="cursor-grab active:cursor-grabbing"
+        >
+          <GridIcon className="size-5 text-gray-500" />
+        </div>
         <div className="flex flex-col gap-2.25">
           <span className="button-medium text-gray-900">{item.name}</span>
           <span className="body-s tracking-[0.1px] text-gray-900">

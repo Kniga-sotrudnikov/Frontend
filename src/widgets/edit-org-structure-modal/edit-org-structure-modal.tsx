@@ -20,13 +20,13 @@ interface EditOrgStructureModalProps {
   onEditSis?: (item: OrgItem) => void;
   onDeleteDirection?: (item: OrgItem) => void;
   onDeleteSis?: (item: OrgItem) => void;
-  onSave?: () => void;
+  onSave?: (data: { directions: OrgItem[]; sisList: OrgItem[] }) => void;
 }
 
 export function EditOrgStructureModal({
   children,
-  directions,
-  sisList,
+  directions: initialDirections,
+  sisList: initialSisList,
   onAddDirection,
   onAddSis,
   onEditDirection,
@@ -36,6 +36,9 @@ export function EditOrgStructureModal({
   onSave,
 }: EditOrgStructureModalProps) {
   const [open, setOpen] = useState(false);
+
+  const [localDirections, setLocalDirections] = useState(initialDirections);
+  const [localSisList, setLocalSisList] = useState(initialSisList);
   const addNotification = useNotificationStore((state) => state.add);
 
   const showDevNotification = () => {
@@ -100,7 +103,7 @@ export function EditOrgStructureModal({
 
   const handleSave = () => {
     if (onSave) {
-      onSave();
+      onSave({ directions: localDirections, sisList: localSisList });
     }
     setOpen(false);
   };
@@ -116,22 +119,24 @@ export function EditOrgStructureModal({
           <DialogClose variant="icon" onClick={handleCancel} />
         </div>
 
-        <div className="flex flex-col flex-1 gap-6 overflow-auto">
+        <div className="flex flex-col flex-1 gap-6 overflow-y-auto">
           <OrgSection
             title="Направления"
-            items={directions}
+            items={localDirections}
             addButtonText="Добавить направление"
             onAdd={handleAddDirection}
             onEdit={handleEditDirection}
             onDelete={handleDeleteDirection}
+            onReorder={setLocalDirections}
           />
           <OrgSection
             title="СИС"
-            items={sisList}
+            items={localSisList}
             addButtonText="Добавить СИС"
             onAdd={handleAddSis}
             onEdit={handleEditSis}
             onDelete={handleDeleteSis}
+            onReorder={setLocalSisList}
           />
         </div>
 
