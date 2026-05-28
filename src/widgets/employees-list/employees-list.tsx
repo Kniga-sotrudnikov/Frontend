@@ -9,7 +9,7 @@ import { RenderCards } from "./render-cards";
 import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
 import { useNotificationStore } from "@/shared/model/stores";
-import { useEmployeesUIStore } from "@/features/employee";
+import { useEmployeesPageStore } from "@/features/employee";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -25,8 +25,8 @@ export const EmployeesList = ({
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
   >("employees");
-  const viewType = useEmployeesUIStore((state) => state.viewType);
-  const setViewType = useEmployeesUIStore((state) => state.setViewType);
+  const viewType = useEmployeesPageStore((state) => state.viewType);
+  const setViewType = useEmployeesPageStore((state) => state.setViewType);
   const addNotification = useNotificationStore((state) => state.add);
 
   const favoriteEmployees = employees.filter(

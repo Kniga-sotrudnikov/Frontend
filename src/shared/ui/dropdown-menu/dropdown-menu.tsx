@@ -34,14 +34,14 @@ function DropdownMenuTrigger({
   return (
     <DropdownMenuPrimitive.Trigger
       className={cn(
-        "group flex cursor-default items-center gap-1.5 outline-none select-none",
+        "group flex cursor-pointer items-center gap-3 hover:outline-1 hover:rounded-lg select-none hover:bg-gray-100 hover:outline-gray-200 data-[state=open]:outline-gray-200 data-[state=open]:bg-gray-100 data-[state=open]:outline-1 data-[state=open]:rounded-lg focus:outline-none focus-visible:outline-none",
         className,
       )}
       {...props}
     >
       {children}
       {hasArrow && (
-        <div className="relative size-4 shrink-0">
+        <div className="relative size-5 shrink-0 m-3">
           <img
             src={ArrowDownIcon}
             alt=""
@@ -70,7 +70,7 @@ function DropdownMenuContent({
         sideOffset={sideOffset}
         align={align}
         className={cn(
-          "z-50 min-w-32 overflow-hidden rounded-[var(--radius-8)] bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10",
+          "z-50 min-w-32 w-[var(--radix-dropdown-menu-trigger-width)] overflow-hidden rounded-[var(--radius-8)] bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10",
           "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95",
           "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className,

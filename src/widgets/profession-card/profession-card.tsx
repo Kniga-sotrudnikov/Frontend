@@ -1,13 +1,8 @@
-import { useState } from "react";
 import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib";
-import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { useNotificationStore } from "@/shared/model/stores";
 import StarIcon from "@/shared/assets/icons/star.svg?react";
-import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg?react";
 import PlusIcon from "@/shared/assets/icons/plus.svg?react";
-import EditIcon from "@/shared/assets/icons/edit.svg?react";
-import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import defaultPhoto from "@/shared/assets/images/avatar-placeholder.jpg";
 
 interface ProfessionCardProps {
@@ -21,8 +16,6 @@ interface ProfessionCardProps {
   // TODO: убрать после подключения TanStack Query — получать из useFavoritesQuery()
   isFavorite?: boolean;
   onFavorite?: () => void;
-  onEdit?: () => void;
-  onArchive?: () => void;
   onRespond?: () => void;
 }
 
@@ -36,11 +29,8 @@ export const ProfessionCard = ({
   isArchived = false,
   isFavorite = false,
   onFavorite,
-  onEdit,
-  onArchive,
   onRespond,
 }: ProfessionCardProps) => {
-  const [popoverOpen, setPopoverOpen] = useState(false);
   const addNotification = useNotificationStore((state) => state.add);
 
   // Дефолтные обработчики с уведомлениями
@@ -49,22 +39,6 @@ export const ProfessionCard = ({
       iconType: "success",
       title: "В разработке",
       message: "Избранное будет доступно в ближайшее время",
-    });
-  };
-
-  const handleEditDefault = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Редактирование будет доступно в ближайшее время",
-    });
-  };
-
-  const handleArchiveDefault = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Архивирование будет доступно в ближайшее время",
     });
   };
 
@@ -78,19 +52,7 @@ export const ProfessionCard = ({
 
   // Используем переданные обработчики или дефолтные
   const onFavoriteClick = onFavorite || handleFavoriteDefault;
-  const onEditClick = onEdit || handleEditDefault;
-  const onArchiveClick = onArchive || handleArchiveDefault;
   const onRespondClick = onRespond || handleRespondDefault;
-
-  const handleEdit = () => {
-    setPopoverOpen(false);
-    onEditClick();
-  };
-
-  const handleArchive = () => {
-    setPopoverOpen(false);
-    onArchiveClick();
-  };
 
   return (
     <div className="w-full max-w-114.5 min-w-72 h-auto min-h-60.5 p-5.75 border border-gray-200 rounded-8 bg-white">
@@ -106,44 +68,6 @@ export const ProfessionCard = ({
           >
             <StarIcon className={isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"} />
           </button>
-
-          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-            <PopoverTrigger asChild>
-              <button
-                className="p-0 text-gray-500 cursor-pointer"
-                aria-label="Действия"
-              >
-                <MoreVerticalIcon className="size-5" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-42.75 p-0 overflow-hidden"
-              align="end"
-              sideOffset={-40}
-              alignOffset={-20}
-            >
-              <div className="flex flex-col">
-                <Button
-                  variant="ghost"
-                  size="default"
-                  onClick={handleEdit}
-                  className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200"
-                >
-                  <EditIcon className="size-5" />
-                  <span>Редактировать</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="default"
-                  onClick={handleArchive}
-                  className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-red-600 hover:bg-gray-100 transition-colors border-0"
-                >
-                  <ArchiveIcon className="size-5" />
-                  <span>Архивировать</span>
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
         </div>
       </div>
 

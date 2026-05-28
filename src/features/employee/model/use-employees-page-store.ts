@@ -8,7 +8,7 @@ interface EmployeesUIState {
   setStatusFilter: (statuses: TEmployeeStatus[]) => void;
 }
 
-export const useEmployeesUIStore = create<EmployeesUIState>((set) => ({
+export const useEmployeesPageStore = create<EmployeesUIState>((set) => ({
   viewType: "grid",
   statusFilter: [],
   setViewType: (viewType) => set({ viewType }),
