@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@ui/skeleton";
@@ -12,6 +12,7 @@ import {
   type OnChangeFn,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -47,19 +48,21 @@ export const DataTable = <TData, TValue>({
   errorMessage = "Данные не загрузились",
   skeletonRows = 6,
 }: DataTableProps<TData, TValue>) => {
+  const [localSorting, setLocalSorting] = useState<SortingState>([]);
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    manualSorting: true,
-    onSortingChange,
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: onSortingChange ?? setLocalSorting,
     state: {
-      sorting,
+      sorting: sorting ?? localSorting,
     },
   });
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden rounded-t-xl bg-white">
       <Table className="table-fixed">
         <colgroup>
           {table.getAllLeafColumns().map((column) => (

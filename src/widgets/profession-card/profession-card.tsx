@@ -18,6 +18,8 @@ interface ProfessionCardProps {
   franchise: string;
   department: string;
   isArchived?: boolean;
+  // TODO: убрать после подключения TanStack Query — получать из useFavoritesQuery()
+  isFavorite?: boolean;
   onFavorite?: () => void;
   onEdit?: () => void;
   onArchive?: () => void;
@@ -32,6 +34,7 @@ export const ProfessionCard = ({
   franchise,
   department,
   isArchived = false,
+  isFavorite = false,
   onFavorite,
   onEdit,
   onArchive,
@@ -101,7 +104,7 @@ export const ProfessionCard = ({
             className="p-0 text-gray-500 cursor-pointer"
             aria-label="В избранное"
           >
-            <StarIcon className="size-5" />
+            <StarIcon className={isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"} />
           </button>
 
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>

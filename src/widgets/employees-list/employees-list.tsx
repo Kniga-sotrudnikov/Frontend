@@ -4,11 +4,12 @@ import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
 import { Button } from "@/shared/ui/button";
-import { EmployeesTab } from "./employees-tab";
-import { VacanciesTab } from "./vacancies-tab";
-import { FavoritesTab } from "./favorites-tab";
-import { ArchiveTab } from "./archive-tab";
 import type { EmployeeData, VacancyData } from "./types";
+import { RenderCards } from "./render-cards";
+import { DataTable } from "@/shared/ui/table/data-table";
+import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
+import { useNotificationStore } from "@/shared/model/stores";
+import { useEmployeesUIStore } from "@/features/employee";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -24,7 +25,9 @@ export const EmployeesList = ({
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
   >("employees");
-  const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const viewType = useEmployeesUIStore((state) => state.viewType);
+  const setViewType = useEmployeesUIStore((state) => state.setViewType);
+  const addNotification = useNotificationStore((state) => state.add);
 
   const favoriteEmployees = employees.filter(
     (emp) => favoritesIds.includes(emp.id) && !emp.isArchived,
@@ -40,23 +43,40 @@ export const EmployeesList = ({
   const archivedVacancies = vacancies.filter((vac) => vac.isArchived === true);
   const allArchived = [...archivedEmployees, ...archivedVacancies];
 
-  const counts = {
-    employees: employees.filter((emp) => !emp.isArchived).length,
-    vacancies: vacancies.filter((vac) => !vac.isArchived).length,
-    favorites: allFavorites.length,
-    archived: allArchived.length,
+  const tabContentMap = {
+    employees: employees.filter((emp) => !emp.isArchived),
+    vacancies: vacancies.filter((vac) => !vac.isArchived),
+    favorites: allFavorites,
+    archive: allArchived,
   };
 
+  const emptyTextMap = {
+    employees: "Нет активных сотрудников",
+    vacancies: "Нет активных вакансий",
+    favorites: "Нет избранных сотрудников или вакансий",
+    archive: "В архиве ничего нет",
+  };
+
+  const itemsByTab = tabContentMap[activeTab];
+  const emptyText = emptyTextMap[activeTab];
+  const handleToggleFavorite = () => {
+    addNotification({
+      iconType: "success",
+      title: "В разработке",
+      message: "Требуется реализовать добавление в Избранное",
+    });
+  }
+
   return (
-    <div className="max-w-235">
+    <div>
       <div className="flex justify-between items-center mb-3">
         <Tabs
           value={activeTab}
-          onValueChange={(value) =>
-            setActiveTab(
-              value as "employees" | "vacancies" | "favorites" | "archive",
-            )
-          }
+          onValueChange={(value) => {
+            const tab = value as "employees" | "vacancies" | "favorites" | "archive";
+            setActiveTab(tab);
+            if (tab === "favorites" || tab === "archive") setViewType("grid");
+          }}
         >
           <TabsList variant="line" className="gap-0 p-0 h-auto">
             <TabsTrigger
@@ -65,7 +85,7 @@ export const EmployeesList = ({
             >
               Сотрудники
               <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {counts.employees}
+                {tabContentMap.employees.length}
               </span>
             </TabsTrigger>
             <TabsTrigger
@@ -74,7 +94,7 @@ export const EmployeesList = ({
             >
               Вакансии
               <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {counts.vacancies}
+                {tabContentMap.vacancies.length}
               </span>
             </TabsTrigger>
             <TabsTrigger
@@ -83,7 +103,7 @@ export const EmployeesList = ({
             >
               Избранное
               <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {counts.favorites}
+                {tabContentMap.favorites.length}
               </span>
             </TabsTrigger>
             {/* TODO: добавить проверку на роль HR */}
@@ -93,7 +113,7 @@ export const EmployeesList = ({
             >
               Архив
               <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {counts.archived}
+                {tabContentMap.archive.length}
               </span>
             </TabsTrigger>
           </TabsList>
@@ -104,6 +124,7 @@ export const EmployeesList = ({
             variant="plain"
             size="plain"
             onClick={() => setViewType("grid")}
+            disabled={activeTab === "favorites" || activeTab === "archive"}
             className={cn(
               "py-1.5 px-2 rounded-none rounded-l-8 h-full transition-none",
               viewType === "grid"
@@ -118,6 +139,7 @@ export const EmployeesList = ({
             variant="plain"
             size="plain"
             onClick={() => setViewType("list")}
+            disabled={activeTab === "favorites" || activeTab === "archive"}
             className={cn(
               "py-1.5 px-2 rounded-none rounded-r-8 h-full transition-none",
               viewType === "list"
@@ -131,6 +153,14 @@ export const EmployeesList = ({
         </div>
       </div>
 
+      {viewType === "list" && activeTab === "employees" ? (
+        <DataTable columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)} data={tabContentMap.employees} />
+      ) : viewType === "list" && activeTab === "vacancies" ? (
+        <DataTable columns={getVacancyColumns(favoritesIds, handleToggleFavorite)} data={tabContentMap.vacancies} />
+      ) : (
+        <RenderCards items={itemsByTab} emptyText={emptyText} favoritesIds={favoritesIds} onToggleFavorite={handleToggleFavorite} />
+      )}
+      {/*
       {activeTab === "employees" && (
         <EmployeesTab employees={employees} viewType={viewType} />
       )}
@@ -146,6 +176,7 @@ export const EmployeesList = ({
       {activeTab === "archive" && (
         <ArchiveTab archived={allArchived} viewType={viewType} />
       )}
+      */}
     </div>
   );
 };
