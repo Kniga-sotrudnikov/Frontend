@@ -45,17 +45,15 @@ export const EmployeePrimaryInfo = ({
           </div>
         )}
       </div>
-      <div className="flex-1">
-        <h3 className="body-s-semibold text-black max-w-72.5 mb-2 truncate">
+      <div className="flex-1 min-w-0">
+        <h3 className="body-s-semibold text-black mb-2 wrap-break-word">
           {name}
         </h3>
-        <p className="body-s mb-3 max-w-72.5 truncate text-gray-600">
-          {position}
-        </p>
-        <p className="body-overline mb-2 max-w-72.5 truncate text-gray-600">
+        <p className="body-s mb-3 wrap-break-word text-gray-600">{position}</p>
+        <p className="body-overline mb-2 wrap-break-word text-gray-600">
           {franchise}
         </p>
-        <p className="body-overline max-w-72.5 truncate text-gray-600">
+        <p className="body-overline wrap-break-word text-gray-600">
           {department}
         </p>
       </div>

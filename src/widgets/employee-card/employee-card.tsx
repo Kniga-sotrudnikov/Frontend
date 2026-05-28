@@ -8,10 +8,6 @@ import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 
 interface EmployeeCardProps {
-  /**
-   * Блок основной информации сотрудника.
-   * Используется EmployeePrimaryInfo.
-   */
   primaryInfo: ReactElement;
   city: string;
   linearManager: string;
@@ -31,7 +27,6 @@ export const EmployeeCard = ({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const addNotification = useNotificationStore((state) => state.add);
 
-  // Дефолтные обработчики с уведомлениями
   const handleFavoriteDefault = () => {
     addNotification({
       iconType: "success",
@@ -56,7 +51,6 @@ export const EmployeeCard = ({
     });
   };
 
-  // Используем переданные обработчики или дефолтные
   const onFavoriteClick = onFavorite || handleFavoriteDefault;
   const onEditClick = onEdit || handleEditDefault;
   const onArchiveClick = onArchive || handleArchiveDefault;
@@ -72,9 +66,9 @@ export const EmployeeCard = ({
   };
 
   return (
-    <div className="  h-auto min-h-54.25 p-5.75 border border-gray-200 rounded-8 bg-white">
+    <div className="flex flex-col p-5.75 border border-gray-200 rounded-8 bg-white">
       <div className="flex items-center justify-between mb-4">
-        <span className="body-overline text-gray-600 max-w-72.5 truncate">
+        <span className="body-overline text-gray-600 wrap-break-word">
           {city}
         </span>
         <div className="flex items-center gap-2 shrink-0">
@@ -128,13 +122,15 @@ export const EmployeeCard = ({
 
       <div className="border-b pb-3 mb-3">{primaryInfo}</div>
 
-      <div className="flex items-center gap-2">
-        <span className="body-overline-semibold text-black">
-          Линейный рук.:
-        </span>
-        <span className="body-overline text-black truncate">
-          {linearManager}
-        </span>
+      <div className="mt-auto">
+        <div className="flex items-center gap-2">
+          <span className="body-overline-semibold text-black">
+            Линейный рук.:
+          </span>
+          <span className="body-overline text-black wrap-break-word">
+            {linearManager}
+          </span>
+        </div>
       </div>
     </div>
   );

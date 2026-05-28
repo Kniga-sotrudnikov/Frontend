@@ -30,7 +30,6 @@ export const ProfessionCard = ({
 }: ProfessionCardProps) => {
   const addNotification = useNotificationStore((state) => state.add);
 
-  // Дефолтные обработчики с уведомлениями
   const handleFavoriteDefault = () => {
     addNotification({
       iconType: "success",
@@ -47,14 +46,13 @@ export const ProfessionCard = ({
     });
   };
 
-  // Используем переданные обработчики или дефолтные
   const onFavoriteClick = onFavorite || handleFavoriteDefault;
   const onRespondClick = onRespond || handleRespondDefault;
 
   return (
-    <div className="  h-auto min-h-60.5 p-5.75 border border-gray-200 rounded-8 bg-white">
+    <div className="flex flex-col p-5.75 border border-gray-200 rounded-8 bg-white">
       <div className="flex items-center justify-between mb-4">
-        <span className="body-overline text-gray-600 max-w-72.5 truncate">
+        <span className="body-overline text-gray-600 wrap-break-word">
           {city}
         </span>
         <div className="flex items-center gap-2 shrink-0">
@@ -77,38 +75,40 @@ export const ProfessionCard = ({
           />
         </div>
 
-        <div className="flex-1">
-          <h3 className="body-s-semibold text-black max-w-72.5 mb-2 truncate">
+        <div className="flex-1 min-w-0">
+          <h3 className="body-s-semibold text-black mb-2 wrap-break-word">
             {profession}
           </h3>
-          <p className="body-s mb-3 max-w-72.5 truncate text-gray-600">
+          <p className="body-s mb-3 wrap-break-word text-gray-600">
             {position}
           </p>
-          <p className="body-overline mb-2 max-w-72.5 truncate text-gray-600">
+          <p className="body-overline mb-2 wrap-break-word text-gray-600">
             {franchise}
           </p>
-          <p className="body-overline max-w-72.5 truncate text-gray-600">
+          <p className="body-overline wrap-break-word text-gray-600">
             {department}
           </p>
         </div>
       </div>
 
-      <Button
-        variant="default"
-        size="default"
-        onClick={onRespondClick}
-        className="w-full p-4 hover:bg-purple-400 hover:text-white disabled:opacity-100 disabled:bg-gray-300"
-        disabled={isArchived}
-      >
-        {isArchived ? (
-          "Архивировано"
-        ) : (
-          <>
-            <PlusIcon className="size-4 mr-1 brightness-0 invert" />
-            Откликнуться
-          </>
-        )}
-      </Button>
+      <div className="mt-auto">
+        <Button
+          variant="default"
+          size="default"
+          onClick={onRespondClick}
+          className="w-full p-4 hover:bg-purple-400 hover:text-white disabled:opacity-100 disabled:bg-gray-300"
+          disabled={isArchived}
+        >
+          {isArchived ? (
+            "Архивировано"
+          ) : (
+            <>
+              <PlusIcon className="size-4 mr-1 brightness-0 invert" />
+              Откликнуться
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 };

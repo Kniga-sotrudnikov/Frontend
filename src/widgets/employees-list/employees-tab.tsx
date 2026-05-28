@@ -19,7 +19,7 @@ export const EmployeesTab = ({ employees, viewType }: EmployeesTabProps) => {
     <div
       className={
         viewType === "grid"
-          ? "grid gap-6 grid-cols-[repeat(auto-fit,minmax(370px,1fr))]"
+          ? "grid gap-6 grid-cols-[repeat(auto-fill,minmax(370px,1fr))]"
           : "flex flex-col gap-4"
       }
     >
