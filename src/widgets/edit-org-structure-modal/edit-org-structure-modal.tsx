@@ -97,10 +97,6 @@ export function EditOrgStructureModal({
     }
   };
 
-  const handleCancel = () => {
-    setOpen(false);
-  };
-
   const handleSave = () => {
     if (onSave) {
       onSave({ directions: localDirections, sisList: localSisList });
@@ -108,15 +104,23 @@ export function EditOrgStructureModal({
     setOpen(false);
   };
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setLocalDirections(initialDirections);
+      setLocalSisList(initialSisList);
+    }
+    setOpen(isOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-188! rounded-8 gap-6 px-7 py-8 flex flex-col h-auto max-h-237">
+      <DialogContent className="max-w-188! rounded-8 gap-6 px-7 py-8 flex flex-col h-auto">
         <div className="flex items-center justify-between shrink-0">
           <h2 className="body-m-semibold text-black">
             Редактировать оргструктуру
           </h2>
-          <DialogClose variant="icon" onClick={handleCancel} />
+          <DialogClose variant="icon" />
         </div>
 
         <div className="flex flex-col flex-1 gap-6 overflow-y-auto">
@@ -141,14 +145,15 @@ export function EditOrgStructureModal({
         </div>
 
         <div className="flex justify-end gap-3.75 shrink-0">
-          <Button
-            variant="ghost"
-            size="plain"
-            className="button-small px-4 h-8"
-            onClick={handleCancel}
-          >
-            Отмена
-          </Button>
+          <DialogClose variant="custom" asChild>
+            <Button
+              variant="ghost"
+              size="plain"
+              className="button-small px-4 h-8"
+            >
+              Отмена
+            </Button>
+          </DialogClose>
           <Button
             variant="default"
             size="plain"

@@ -1,10 +1,5 @@
-import { useState, useEffect } from "react";
-import { DndContext, closestCenter, type DragEndEvent } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
+import { useDraggableList } from "@/shared/lib/hooks/use-draggable-list";
+import { DraggableList } from "@/shared/ui/draggable-list";
 import { Button } from "@/shared/ui/button";
 import { OrgItem } from "./org-item";
 import { EmptyPlaceholder } from "@/shared/ui/empty-placeholder";
@@ -34,25 +29,7 @@ export const OrgSection = ({
   onDelete,
   onReorder,
 }: OrgSectionProps) => {
-  const [orderedItems, setOrderedItems] = useState(items);
-
-  useEffect(() => {
-    setOrderedItems(items);
-  }, [items]);
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (active.id !== over?.id) {
-      const oldIndex = orderedItems.findIndex((item) => item.id === active.id);
-      const newIndex = orderedItems.findIndex((item) => item.id === over?.id);
-      const newItems = arrayMove(orderedItems, oldIndex, newIndex);
-
-      setOrderedItems(newItems);
-
-      onReorder?.(newItems);
-    }
-  };
+  const { orderedItems, handleDragEnd } = useDraggableList(items, onReorder);
 
   return (
     <div>
@@ -68,26 +45,19 @@ export const OrgSection = ({
         </Button>
       </div>
 
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={orderedItems.map((item) => item.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="space-y-3 flex-col fit-content overflow-y-hidden overflow-x-hidden">
-            {orderedItems.map((item) => (
-              <OrgItem
-                key={item.id}
-                item={item}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
-            ))}
-            {orderedItems.length === 0 && (
-              <EmptyPlaceholder text="Нет данных" />
-            )}
-          </div>
-        </SortableContext>
-      </DndContext>
+      <DraggableList items={orderedItems} onDragEnd={handleDragEnd}>
+        <div className="space-y-3">
+          {orderedItems.map((item) => (
+            <OrgItem
+              key={item.id}
+              item={item}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          ))}
+          {orderedItems.length === 0 && <EmptyPlaceholder text="Нет данных" />}
+        </div>
+      </DraggableList>
     </div>
   );
 };

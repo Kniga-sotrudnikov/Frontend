@@ -5,7 +5,7 @@ interface ActionItemProps {
   className?: string;
 }
 
-export const ActionItem = ({ actions, className = "" }: ActionItemProps) => {
+export const ActionsGroup = ({ actions, className = "" }: ActionItemProps) => {
   return (
     <div className={`flex items-center gap-5 ${className}`}>
       {actions.map((action, index) => (

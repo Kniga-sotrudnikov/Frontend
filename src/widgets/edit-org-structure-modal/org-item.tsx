@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useDraggableRow } from "@/shared/lib/hooks/use-draggable-row";
 import { Button } from "@/shared/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
-import { ActionItem } from "@/shared/ui/action-item";
+import { ActionsGroup } from "@/shared/ui/actions-group";
 import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
@@ -24,20 +23,7 @@ interface OrgItemProps {
 export const OrgItem = ({ item, onEdit, onDelete }: OrgItemProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: item.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
+  const { ref, style, listeners, attributes } = useDraggableRow(item.id);
 
   const handleEdit = () => {
     setPopoverOpen(false);
@@ -88,7 +74,7 @@ export const OrgItem = ({ item, onEdit, onDelete }: OrgItemProps) => {
 
   return (
     <div
-      ref={setNodeRef}
+      ref={ref}
       style={style}
       className="flex items-center justify-between py-2.5 px-3 rounded-8 border border-gray-100 bg-white"
     >
@@ -108,7 +94,7 @@ export const OrgItem = ({ item, onEdit, onDelete }: OrgItemProps) => {
         </div>
       </div>
 
-      <ActionItem actions={actions} />
+      <ActionsGroup actions={actions} />
     </div>
   );
 };
