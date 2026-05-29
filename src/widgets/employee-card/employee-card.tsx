@@ -15,6 +15,8 @@ interface EmployeeCardProps {
   primaryInfo: ReactElement;
   city: string;
   linearManager: string;
+  // TODO: убрать после подключения TanStack Query — получать из useFavoritesQuery()
+  isFavorite?: boolean;
   onFavorite?: () => void;
   onEdit?: () => void;
   onArchive?: () => void;
@@ -24,6 +26,7 @@ export const EmployeeCard = ({
   city,
   linearManager,
   primaryInfo,
+  isFavorite = false,
   onFavorite,
   onEdit,
   onArchive,
@@ -83,7 +86,7 @@ export const EmployeeCard = ({
             className="p-0 text-gray-500 cursor-pointer"
             aria-label="В избранное"
           >
-            <StarIcon className="size-5" />
+            <StarIcon className={isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"} />
           </button>
 
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>

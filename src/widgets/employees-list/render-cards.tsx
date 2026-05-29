@@ -1,35 +1,33 @@
-// src/widgets/employees-list/archive-tab.tsx
 import { EmployeeCard } from "@/widgets/employee-card";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
 import { ProfessionCard } from "@/widgets/profession-card";
 import { EmptyPlaceholder } from "@ui/empty-placeholder";
 import type { EmployeesListType } from "./types";
 
-interface ArchiveTabProps {
-  archived: EmployeesListType[];
-  viewType: "grid" | "list";
+interface RenderCardsProps {
+  items: EmployeesListType[];
+  emptyText: string;
+  // TODO: убрать favoritesIds после подключения TanStack Query — получать из useFavoritesQuery()
+  favoritesIds?: (number | string)[];
+  onToggleFavorite?: (id: number | string) => void;
 }
 
-export const ArchiveTab = ({ archived, viewType }: ArchiveTabProps) => {
-  if (archived.length === 0) {
-    return <EmptyPlaceholder text="В архиве ничего нет" />;
+export const RenderCards = ({ items, emptyText, favoritesIds = [], onToggleFavorite }: RenderCardsProps) => {
+  if (items.length === 0) {
+    return <EmptyPlaceholder text={emptyText} />;
   }
 
   return (
-    <div
-      className={
-        viewType === "grid"
-          ? "grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2"
-          : "flex flex-col gap-4"
-      }
-    >
-      {archived.map((item) => {
+    <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
+      {items.map((item) => {
         if ("name" in item && "linearManager" in item) {
           return (
             <EmployeeCard
               key={item.id}
               city={item.city}
               linearManager={item.linearManager}
+              isFavorite={favoritesIds.includes(item.id)}
+              onFavorite={() => onToggleFavorite?.(item.id)}
               primaryInfo={
                 <EmployeePrimaryInfo
                   name={item.name}
@@ -43,10 +41,17 @@ export const ArchiveTab = ({ archived, viewType }: ArchiveTabProps) => {
               }
             />
           );
-        } else {
-          const { id, ...vacancyProps } = item;
-          return <ProfessionCard key={id} {...vacancyProps} />;
         }
+
+        const { id, ...vacancyProps } = item;
+        return (
+          <ProfessionCard
+            key={id}
+            {...vacancyProps}
+            isFavorite={favoritesIds.includes(id)}
+            onFavorite={() => onToggleFavorite?.(id)}
+          />
+        );
       })}
     </div>
   );
