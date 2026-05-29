@@ -46,7 +46,7 @@ export const OrgSection = ({
       </div>
 
       <DraggableList items={orderedItems} onDragEnd={handleDragEnd}>
-        <div className="space-y-3">
+        <div className="space-y-3  flex-col fit-content overflow-y-hidden overflow-x-hidden">
           {orderedItems.map((item) => (
             <OrgItem
               key={item.id}
