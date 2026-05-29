@@ -160,23 +160,6 @@ export const EmployeesList = ({
       ) : (
         <RenderCards items={itemsByTab} emptyText={emptyText} favoritesIds={favoritesIds} onToggleFavorite={handleToggleFavorite} />
       )}
-      {/*
-      {activeTab === "employees" && (
-        <EmployeesTab employees={employees} viewType={viewType} />
-      )}
-
-      {activeTab === "vacancies" && (
-        <VacanciesTab vacancies={vacancies} viewType={viewType} />
-      )}
-
-      {activeTab === "favorites" && (
-        <FavoritesTab favorites={allFavorites} viewType={viewType} />
-      )}
-
-      {activeTab === "archive" && (
-        <ArchiveTab archived={allArchived} viewType={viewType} />
-      )}
-      */}
     </div>
   );
 };
