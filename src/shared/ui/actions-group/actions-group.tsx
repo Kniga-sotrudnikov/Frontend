@@ -1,11 +1,14 @@
 import type { ReactNode } from "react";
 
-interface ActionItemProps {
+interface ActionsGroupProps {
   actions: ReactNode[];
   className?: string;
 }
 
-export const ActionsGroup = ({ actions, className = "" }: ActionItemProps) => {
+export const ActionsGroup = ({
+  actions,
+  className = "",
+}: ActionsGroupProps) => {
   return (
     <div className={`flex items-center gap-5 ${className}`}>
       {actions.map((action, index) => (
