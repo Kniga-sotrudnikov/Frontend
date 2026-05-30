@@ -22,6 +22,7 @@ type TCheckboxSelectProps = {
   onValueChange: (value: string[]) => void;
   visibleCount?: number;
   title?: string;
+  forceOpen?: boolean;
 };
 
 export const CheckboxSelect = ({
@@ -30,9 +31,12 @@ export const CheckboxSelect = ({
   onValueChange,
   visibleCount = 4,
   title = "Выберите",
+  forceOpen,
 }: TCheckboxSelectProps) => {
   const [open, setIsOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+
+  const isOpen = forceOpen || open;
 
   const visibleOptions = options.slice(0, visibleCount);
   const hiddenOptions = options.slice(visibleCount);
@@ -64,13 +68,14 @@ export const CheckboxSelect = ({
             <li key={option.value}>
               <label className="flex items-center gap-2 cursor-pointer">
                 <Checkbox
+                  className="shrink-0"
                   checked={checked}
                   disabled={option.disabled}
                   onCheckedChange={(checked) =>
                     handleChecked(option.value, checked === true)
                   }
                 />
-                <span className="text-(length:--font-size-body-s)">
+                <span className="truncate text-(length:--font-size-body-s)">
                   {option.label}
                 </span>
               </label>
@@ -82,7 +87,7 @@ export const CheckboxSelect = ({
   };
 
   return (
-    <Collapsible open={open} onOpenChange={handleOpen} className="w-full">
+    <Collapsible open={isOpen} onOpenChange={handleOpen} className="w-full">
       <CollapsibleTrigger asChild className="mb-2.75">
         <Button
           variant="plain"
@@ -90,7 +95,7 @@ export const CheckboxSelect = ({
           className="flex justify-between w-full hover:text-primary"
         >
           <span className="text-(length:--font-size-body-m)">{title}</span>
-          {open ? (
+          {isOpen ? (
             <ArrowUpIcon className="size-5" />
           ) : (
             <ArrowDownIcon className="size-5" />
