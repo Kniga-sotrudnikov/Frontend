@@ -1,152 +1,36 @@
-import { FilterTrigger } from "@/features/employee/ui/filter-trigger.tsx";
 import { useState } from "react";
+
+import { Button } from "@ui/button";
+import { FilterTrigger } from "@/features/employee/ui/filter-trigger";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { CheckboxSelect } from "@ui/checkbox-select";
 import { DropdownMenuSeparator } from "@ui/dropdown-menu";
 import { SearchInput } from "@ui/input";
-import { Button } from "@ui/button";
-import { FilterRemoveBadge } from "@/features/employee/ui/filter-remove-badge.tsx";
+import { FilterRemoveBadge } from "@/features/employee/ui/filter-remove-badge";
+import type {
+  TExpertiseFilterGroup,
+  TExpertiseFilterValue,
+} from "../model/types";
 
-type TExpertiseFilterOption = {
-  value: string;
-  label: string;
+type TExpertiseFilterProps = {
+  groups: TExpertiseFilterGroup[];
+  value: TExpertiseFilterValue;
+  onApply: (value: TExpertiseFilterValue) => void;
 };
 
-type TExpertiseFilterGroup = {
-  key: string;
-  title: string;
-  options: TExpertiseFilterOption[];
-};
-
-type TExpertiseFilterValue = Record<string, string[]>;
-
-const expertiseFilterGroups: TExpertiseFilterGroup[] = [
-  {
-    key: "expertise",
-    title: "Навыки и компетенции",
-    options: [
-      { value: "volunteer-management", label: "Волонтёрский менеджмент" },
-      { value: "fundraising", label: "Фандрайзинг" },
-      { value: "grant-application", label: "Грантовая заявка" },
-      { value: "methodical-development", label: "Методическая разработка" },
-      { value: "expertise-additional-1", label: "Дополнительные данные-1" },
-      { value: "expertise-additional-2", label: "Дополнительные данные-2" },
-      { value: "expertise-additional-3", label: "Дополнительные данные-3" },
-      { value: "expertise-additional-4", label: "Дополнительные данные-4" },
-      { value: "expertise-additional-5", label: "Дополнительные данные-5" },
-      { value: "expertise-additional-6", label: "Дополнительные данные-6" },
-      { value: "expertise-additional-7", label: "Дополнительные данные-7" },
-      { value: "expertise-additional-8", label: "Дополнительные данные-8" },
-      { value: "expertise-additional-9", label: "Дополнительные данные-9" },
-      { value: "expertise-additional-10", label: "Дополнительные данные-10" },
-      { value: "expertise-additional-11", label: "Дополнительные данные-11" },
-      { value: "expertise-additional-12", label: "Дополнительные данные-12" },
-    ],
-  },
-  {
-    key: "availability",
-    title: "Статус и доступность",
-    options: [
-      { value: "active", label: "В работе" },
-      { value: "vacation", label: "В отпуске" },
-      { value: "sick", label: "На больничном" },
-      { value: "maternity", label: "В декрете" },
-      {
-        value: "availability-additional-1",
-        label: "Дополнительные данные-1",
-      },
-      {
-        value: "availability-additional-2",
-        label: "Дополнительные данные-2",
-      },
-      {
-        value: "availability-additional-3",
-        label: "Дополнительные данные-3",
-      },
-      {
-        value: "availability-additional-4",
-        label: "Дополнительные данные-4",
-      },
-      {
-        value: "availability-additional-5",
-        label: "Дополнительные данные-5",
-      },
-      {
-        value: "availability-additional-6",
-        label: "Дополнительные данные-6",
-      },
-      {
-        value: "availability-additional-7",
-        label: "Дополнительные данные-7",
-      },
-      {
-        value: "availability-additional-8",
-        label: "Дополнительные данные-8",
-      },
-      {
-        value: "availability-additional-9",
-        label: "Дополнительные данные-9",
-      },
-      {
-        value: "availability-additional-10",
-        label: "Дополнительные данные-10",
-      },
-      {
-        value: "availability-additional-11",
-        label: "Дополнительные данные-11",
-      },
-      {
-        value: "availability-additional-12",
-        label: "Дополнительные данные-12",
-      },
-    ],
-  },
-  {
-    key: "experience",
-    title: "Опыт",
-    options: [
-      { value: "hr-experience", label: "Опыт в HR" },
-      { value: "research-experience", label: "Опыт в исследованиях" },
-      { value: "coaching-experience", label: "Опыт в коучинге" },
-      {
-        value: "psychological-counseling-experience",
-        label: "Опыт в психологическом консультировании",
-      },
-      { value: "experience-additional-1", label: "Дополнительные данные-1" },
-      { value: "experience-additional-2", label: "Дополнительные данные-2" },
-      { value: "experience-additional-3", label: "Дополнительные данные-3" },
-      { value: "experience-additional-4", label: "Дополнительные данные-4" },
-      { value: "experience-additional-5", label: "Дополнительные данные-5" },
-      { value: "experience-additional-6", label: "Дополнительные данные-6" },
-      { value: "experience-additional-7", label: "Дополнительные данные-7" },
-      { value: "experience-additional-8", label: "Дополнительные данные-8" },
-      { value: "experience-additional-9", label: "Дополнительные данные-9" },
-      {
-        value: "experience-additional-10",
-        label: "Дополнительные данные-10",
-      },
-      {
-        value: "experience-additional-11",
-        label: "Дополнительные данные-11",
-      },
-      {
-        value: "experience-additional-12",
-        label: "Дополнительные данные-12",
-      },
-    ],
-  },
-];
-
-export const ExpertiseFilter = () => {
+export const ExpertiseFilter = ({
+  groups,
+  value,
+  onApply,
+}: TExpertiseFilterProps) => {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<TExpertiseFilterValue>({});
+  const [draftValue, setDraftValue] = useState<TExpertiseFilterValue>(value);
   const [searchValue, setSearchValue] = useState("");
-  console.log(value);
 
   const normalizedSearchValue = searchValue.trim().toLowerCase();
 
   const filteredGroups = normalizedSearchValue
-    ? expertiseFilterGroups
+    ? groups
         .map((group) => ({
           ...group,
           options: group.options.filter((option) =>
@@ -154,13 +38,11 @@ export const ExpertiseFilter = () => {
           ),
         }))
         .filter((group) => group.options.length > 0)
-    : expertiseFilterGroups;
+    : groups;
 
-  const activeFilters = Object.entries(value).flatMap(
+  const activeFilters = Object.entries(draftValue).flatMap(
     ([groupKey, selectedValues]) => {
-      const group = expertiseFilterGroups.find(
-        (group) => group.key === groupKey,
-      );
+      const group = groups.find((group) => group.key === groupKey);
 
       if (!group) {
         return [];
@@ -187,7 +69,7 @@ export const ExpertiseFilter = () => {
   );
 
   const handleRemoveFilter = (groupKey: string, optionValue: string) => {
-    setValue((prevState) => {
+    setDraftValue((prevState) => {
       const nextValue = { ...prevState };
 
       const nextGroupValue = (nextValue[groupKey] ?? []).filter(
@@ -205,19 +87,32 @@ export const ExpertiseFilter = () => {
   };
 
   const handleResetFilters = () => {
-    setValue({});
+    setDraftValue({});
+  };
+
+  const handleClearAll = () => {
+    setDraftValue({});
+    setSearchValue("");
+  };
+
+  const handleApplyFilters = () => {
+    onApply(draftValue);
+    setOpen(false);
   };
 
   const handleGroupChange = (groupKey: string, groupValue: string[]) => {
-    setValue((prevState) => ({
+    setDraftValue((prevState) => ({
       ...prevState,
       [groupKey]: groupValue,
     }));
   };
 
-  const selectedCount = Object.values(value).reduce((count, groupValue) => {
-    return count + groupValue.length;
-  }, 0);
+  const selectedCount = Object.values(draftValue).reduce(
+    (count, groupValue) => {
+      return count + groupValue.length;
+    },
+    0,
+  );
 
   return (
     <div>
@@ -231,7 +126,7 @@ export const ExpertiseFilter = () => {
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="p-6 w-98 max-h-[min(var(--radix-popover-content-available-height),750px)] overflow-y-auto"
+          className="p-6 w-100 max-h-[min(var(--radix-popover-content-available-height),750px)]"
           sideOffset={10}
         >
           <SearchInput
@@ -267,13 +162,13 @@ export const ExpertiseFilter = () => {
           </ul>
 
           {filteredGroups.length > 0 ? (
-            <ul>
+            <ul className="overflow-y-auto overflow-x-hidden">
               {filteredGroups.map((item) => (
                 <li key={item.key}>
                   <CheckboxSelect
                     title={item.title}
                     options={item.options}
-                    value={value[item.key] ?? []}
+                    value={draftValue[item.key] ?? []}
                     onValueChange={(nextValue) =>
                       handleGroupChange(item.key, nextValue)
                     }
@@ -282,13 +177,21 @@ export const ExpertiseFilter = () => {
                     }
                     forceOpen={Boolean(normalizedSearchValue)}
                   />
-                  <DropdownMenuSeparator className="mt-4" />
+                  <DropdownMenuSeparator className="my-4" />
                 </li>
               ))}
             </ul>
           ) : (
-            <div>Ничего не найдено</div>
+            <div className="body-m text-(--color-gray-500) mb-5">
+              Ничего не найдено
+            </div>
           )}
+          <div className="flex gap-3 self-end">
+            <Button variant="outline" onClick={handleClearAll}>
+              Очистить
+            </Button>
+            <Button onClick={handleApplyFilters}>Применить</Button>
+          </div>
         </PopoverContent>
       </Popover>
     </div>
