@@ -1,62 +1,197 @@
-import type { TExpertiseFilterGroup } from "../model/types";
+import type { TExpertiseFilterGroup } from "./types";
 
 export const expertiseFilterGroups: TExpertiseFilterGroup[] = [
+  {
+    key: "direction",
+    title: "По направлению",
+    options: [
+      { value: "employment", label: "Трудоустройство" },
+      { value: "social-franchise", label: "Социальная франшиза" },
+      { value: "expertise-center", label: "Центр экспертизы" },
+      { value: "fundraising-and-trainings", label: "Фандрайзинг и тренинги" },
+      { value: "direction-additional-1", label: "Дополнительные данные-1" },
+      { value: "direction-additional-2", label: "Дополнительные данные-2" },
+      { value: "direction-additional-3", label: "Дополнительные данные-3" },
+      { value: "direction-additional-4", label: "Дополнительные данные-4" },
+      { value: "direction-additional-5", label: "Дополнительные данные-5" },
+    ],
+  },
+  {
+    key: "projectManager",
+    title: "По менеджеру проекта",
+    options: [
+      {
+        value: "krakavina-natalya-valerevna",
+        label: "Кракавина Наталья Валерьевна",
+      },
+      {
+        value: "chistyakova-svetlana-antonovna",
+        label: "Чистякова Светлана Антоновна",
+      },
+      {
+        value: "kandakova-evgeniya-evgenevna",
+        label: "Кандакова Евгения Евгеньевна",
+      },
+      {
+        value: "repina-elizaveta-nikolaevna",
+        label: "Репина Елизавета Николаевна",
+      },
+      {
+        value: "project-manager-additional-1",
+        label: "Дополнительные данные-1",
+      },
+      {
+        value: "project-manager-additional-2",
+        label: "Дополнительные данные-2",
+      },
+      {
+        value: "project-manager-additional-3",
+        label: "Дополнительные данные-3",
+      },
+      {
+        value: "project-manager-additional-4",
+        label: "Дополнительные данные-4",
+      },
+      {
+        value: "project-manager-additional-5",
+        label: "Дополнительные данные-5",
+      },
+      {
+        value: "project-manager-additional-6",
+        label: "Дополнительные данные-6",
+      },
+      {
+        value: "project-manager-additional-7",
+        label: "Дополнительные данные-7",
+      },
+      {
+        value: "project-manager-additional-8",
+        label: "Дополнительные данные-8",
+      },
+      {
+        value: "project-manager-additional-9",
+        label: "Дополнительные данные-9",
+      },
+      {
+        value: "project-manager-additional-10",
+        label: "Дополнительные данные-10",
+      },
+      {
+        value: "project-manager-additional-11",
+        label: "Дополнительные данные-11",
+      },
+      {
+        value: "project-manager-additional-12",
+        label: "Дополнительные данные-12",
+      },
+    ],
+  },
+  {
+    key: "projectParticipant",
+    title: "По участнику проекта",
+    options: [
+      {
+        value: "krylova-darya-olegovna",
+        label: "Крылова Дарья Олеговна",
+      },
+      {
+        value: "sokolova-mariya-sergeevna",
+        label: "Соколова Мария Сергеевна",
+      },
+      {
+        value: "vlasov-egor-borisovich",
+        label: "Власов Егор Борисович",
+      },
+      {
+        value: "nikolaev-petr-aleksandrovich",
+        label: "Николаев Пётр Александрович",
+      },
+      {
+        value: "project-participant-additional-1",
+        label: "Дополнительные данные-1",
+      },
+      {
+        value: "project-participant-additional-2",
+        label: "Дополнительные данные-2",
+      },
+      {
+        value: "project-participant-additional-3",
+        label: "Дополнительные данные-3",
+      },
+      {
+        value: "project-participant-additional-4",
+        label: "Дополнительные данные-4",
+      },
+      {
+        value: "project-participant-additional-5",
+        label: "Дополнительные данные-5",
+      },
+      {
+        value: "project-participant-additional-6",
+        label: "Дополнительные данные-6",
+      },
+      {
+        value: "project-participant-additional-7",
+        label: "Дополнительные данные-7",
+      },
+      {
+        value: "project-participant-additional-8",
+        label: "Дополнительные данные-8",
+      },
+      {
+        value: "project-participant-additional-9",
+        label: "Дополнительные данные-9",
+      },
+      {
+        value: "project-participant-additional-10",
+        label: "Дополнительные данные-10",
+      },
+      {
+        value: "project-participant-additional-11",
+        label: "Дополнительные данные-11",
+      },
+      {
+        value: "project-participant-additional-12",
+        label: "Дополнительные данные-12",
+      },
+      {
+        value: "project-participant-additional-13",
+        label: "Дополнительные данные-13",
+      },
+      {
+        value: "project-participant-additional-14",
+        label: "Дополнительные данные-14",
+      },
+      {
+        value: "project-participant-additional-15",
+        label: "Дополнительные данные-15",
+      },
+      {
+        value: "project-participant-additional-16",
+        label: "Дополнительные данные-16",
+      },
+      {
+        value: "project-participant-additional-17",
+        label: "Дополнительные данные-17",
+      },
+    ],
+  },
   {
     key: "availability",
     title: "Статус и доступность",
     options: [
-      { value: "active", label: "В работе" },
-      { value: "vacation", label: "В отпуске" },
-      { value: "sick", label: "На больничном" },
-      { value: "maternity", label: "В декрете" },
+      { value: "alumni-status", label: "Alumni статус" },
       {
-        value: "availability-additional-1",
-        label: "Дополнительные данные-1",
+        value: "completed-adaptation-cycle",
+        label: "Прошёл полный цикл адаптации",
       },
-      {
-        value: "availability-additional-2",
-        label: "Дополнительные данные-2",
-      },
-      {
-        value: "availability-additional-3",
-        label: "Дополнительные данные-3",
-      },
-      {
-        value: "availability-additional-4",
-        label: "Дополнительные данные-4",
-      },
-      {
-        value: "availability-additional-5",
-        label: "Дополнительные данные-5",
-      },
-      {
-        value: "availability-additional-6",
-        label: "Дополнительные данные-6",
-      },
-      {
-        value: "availability-additional-7",
-        label: "Дополнительные данные-7",
-      },
-      {
-        value: "availability-additional-8",
-        label: "Дополнительные данные-8",
-      },
-      {
-        value: "availability-additional-9",
-        label: "Дополнительные данные-9",
-      },
-      {
-        value: "availability-additional-10",
-        label: "Дополнительные данные-10",
-      },
-      {
-        value: "availability-additional-11",
-        label: "Дополнительные данные-11",
-      },
-      {
-        value: "availability-additional-12",
-        label: "Дополнительные данные-12",
-      },
+      { value: "flexible-schedule", label: "Гибкий график возможно" },
+      { value: "ready-for-business-trips", label: "Готов к командировкам" },
+      { value: "availability-additional-1", label: "Дополнительные данные-1" },
+      { value: "availability-additional-2", label: "Дополнительные данные-2" },
+      { value: "availability-additional-3", label: "Дополнительные данные-3" },
+      { value: "availability-additional-4", label: "Дополнительные данные-4" },
+      { value: "availability-additional-5", label: "Дополнительные данные-5" },
     ],
   },
   {
@@ -67,6 +202,10 @@ export const expertiseFilterGroups: TExpertiseFilterGroup[] = [
       { value: "fundraising", label: "Фандрайзинг" },
       { value: "grant-application", label: "Грантовая заявка" },
       { value: "methodical-development", label: "Методическая разработка" },
+      { value: "hr-experience", label: "Опыт в HR" },
+      { value: "research-interest", label: "Интерес к исследованиям" },
+      { value: "webinar-speaker", label: "Спикер вебинаров" },
+      { value: "english-b1", label: "Английский (B1)" },
       { value: "expertise-additional-1", label: "Дополнительные данные-1" },
       { value: "expertise-additional-2", label: "Дополнительные данные-2" },
       { value: "expertise-additional-3", label: "Дополнительные данные-3" },
@@ -75,44 +214,6 @@ export const expertiseFilterGroups: TExpertiseFilterGroup[] = [
       { value: "expertise-additional-6", label: "Дополнительные данные-6" },
       { value: "expertise-additional-7", label: "Дополнительные данные-7" },
       { value: "expertise-additional-8", label: "Дополнительные данные-8" },
-      { value: "expertise-additional-9", label: "Дополнительные данные-9" },
-      { value: "expertise-additional-10", label: "Дополнительные данные-10" },
-      { value: "expertise-additional-11", label: "Дополнительные данные-11" },
-      { value: "expertise-additional-12", label: "Дополнительные данные-12" },
-    ],
-  },
-  {
-    key: "experience",
-    title: "Опыт",
-    options: [
-      { value: "hr-experience", label: "Опыт в HR" },
-      { value: "research-experience", label: "Опыт в исследованиях" },
-      { value: "coaching-experience", label: "Опыт в коучинге" },
-      {
-        value: "psychological-counseling-experience",
-        label: "Опыт в психологическом консультировании",
-      },
-      { value: "experience-additional-1", label: "Дополнительные данные-1" },
-      { value: "experience-additional-2", label: "Дополнительные данные-2" },
-      { value: "experience-additional-3", label: "Дополнительные данные-3" },
-      { value: "experience-additional-4", label: "Дополнительные данные-4" },
-      { value: "experience-additional-5", label: "Дополнительные данные-5" },
-      { value: "experience-additional-6", label: "Дополнительные данные-6" },
-      { value: "experience-additional-7", label: "Дополнительные данные-7" },
-      { value: "experience-additional-8", label: "Дополнительные данные-8" },
-      { value: "experience-additional-9", label: "Дополнительные данные-9" },
-      {
-        value: "experience-additional-10",
-        label: "Дополнительные данные-10",
-      },
-      {
-        value: "experience-additional-11",
-        label: "Дополнительные данные-11",
-      },
-      {
-        value: "experience-additional-12",
-        label: "Дополнительные данные-12",
-      },
     ],
   },
 ];
