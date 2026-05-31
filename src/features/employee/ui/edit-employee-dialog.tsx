@@ -263,7 +263,7 @@ export const EditEmployeeDialog = ({
                 type="submit"
                 ref={submitButtonRef}
                 disabled={isSubmitDisabled}
-                className="w-[165px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-[180px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center gap-2">
@@ -279,7 +279,7 @@ export const EditEmployeeDialog = ({
                     Сохранение...
                   </span>
                 ) : (
-                  "Сохранить изменения"
+                  "Сохранить карточку"
                 )}
               </Button>
             </div>
