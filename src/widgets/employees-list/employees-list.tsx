@@ -15,12 +15,14 @@ interface EmployeesListProps {
   employees: EmployeeData[];
   vacancies: VacancyData[];
   favoritesIds?: (number | string)[];
+  onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
 }
 
 export const EmployeesList = ({
   employees,
   vacancies,
   favoritesIds = [],
+  onUpdateEmployee,
 }: EmployeesListProps) => {
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
@@ -106,7 +108,6 @@ export const EmployeesList = ({
                 {tabContentMap.favorites.length}
               </span>
             </TabsTrigger>
-            {/* TODO: добавить проверку на роль HR */}
             <TabsTrigger
               value="archive"
               className="flex items-center justify-center gap-1 px-3 py-2 button-small cursor-pointer"
@@ -158,7 +159,13 @@ export const EmployeesList = ({
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable columns={getVacancyColumns(favoritesIds, handleToggleFavorite)} data={tabContentMap.vacancies} />
       ) : (
-        <RenderCards items={itemsByTab} emptyText={emptyText} favoritesIds={favoritesIds} onToggleFavorite={handleToggleFavorite} />
+        <RenderCards 
+          items={itemsByTab} 
+          emptyText={emptyText} 
+          favoritesIds={favoritesIds} 
+          onToggleFavorite={handleToggleFavorite}
+          onUpdateEmployee={onUpdateEmployee}
+        />
       )}
     </div>
   );

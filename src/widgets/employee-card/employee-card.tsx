@@ -6,6 +6,8 @@ import StarIcon from "@/shared/assets/icons/star.svg?react";
 import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
+import { EditEmployeeButton } from "@/features/employee";
+import type { EmployeeData } from "@/entities/employee";
 
 interface EmployeeCardProps {
   /**
@@ -15,21 +17,23 @@ interface EmployeeCardProps {
   primaryInfo: ReactElement;
   city: string;
   linearManager: string;
+  employeeData: EmployeeData;
   // TODO: убрать после подключения TanStack Query — получать из useFavoritesQuery()
   isFavorite?: boolean;
   onFavorite?: () => void;
-  onEdit?: () => void;
   onArchive?: () => void;
+  onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
 }
 
 export const EmployeeCard = ({
   city,
   linearManager,
   primaryInfo,
+  employeeData,
   isFavorite = false,
   onFavorite,
-  onEdit,
   onArchive,
+  onUpdateEmployee,
 }: EmployeeCardProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const addNotification = useNotificationStore((state) => state.add);
@@ -43,14 +47,6 @@ export const EmployeeCard = ({
     });
   };
 
-  const handleEditDefault = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Редактирование будет доступно в ближайшее время",
-    });
-  };
-
   const handleArchiveDefault = () => {
     addNotification({
       iconType: "success",
@@ -61,13 +57,12 @@ export const EmployeeCard = ({
 
   // Используем переданные обработчики или дефолтные
   const onFavoriteClick = onFavorite || handleFavoriteDefault;
-  const onEditClick = onEdit || handleEditDefault;
   const onArchiveClick = onArchive || handleArchiveDefault;
 
-  const handleEdit = () => {
+  const handleEditSuccess = (updatedEmployee: EmployeeData) => {
     setPopoverOpen(false);
-    onEditClick();
-  };
+    onUpdateEmployee?.(updatedEmployee);
+  }
 
   const handleArchive = () => {
     setPopoverOpen(false);
@@ -105,15 +100,15 @@ export const EmployeeCard = ({
               alignOffset={-20}
             >
               <div className="flex flex-col">
-                <Button
-                  variant="ghost"
-                  size="default"
-                  onClick={handleEdit}
-                  className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200"
+                <EditEmployeeButton 
+                  employee={employeeData} 
+                  onSuccess={handleEditSuccess}
                 >
-                  <EditIcon className="size-5" />
-                  <span>Редактировать</span>
-                </Button>
+                  <div className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200">
+                    <EditIcon className="size-5" />
+                    <span>Редактировать</span>
+                  </div>
+                </EditEmployeeButton>
                 <Button
                   variant="ghost"
                   size="default"

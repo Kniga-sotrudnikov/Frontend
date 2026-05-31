@@ -14,3 +14,16 @@ export type TEmployee = {
 };
 
 export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
+
+export interface EmployeeData {
+  id: number | string;
+  city: string;
+  linearManager: string;
+  name: string;
+  position: string;
+  franchise: string;
+  department: string;
+  status: EmployeeStatus;
+  photo?: string;
+  isArchived?: boolean;
+}

@@ -3,6 +3,7 @@ import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-inf
 import { ProfessionCard } from "@/widgets/profession-card";
 import { EmptyPlaceholder } from "@ui/empty-placeholder";
 import type { EmployeesListType } from "./types";
+import type { EmployeeData } from "@/entities/employee";
 
 interface RenderCardsProps {
   items: EmployeesListType[];
@@ -10,9 +11,16 @@ interface RenderCardsProps {
   // TODO: убрать favoritesIds после подключения TanStack Query — получать из useFavoritesQuery()
   favoritesIds?: (number | string)[];
   onToggleFavorite?: (id: number | string) => void;
+  onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
 }
 
-export const RenderCards = ({ items, emptyText, favoritesIds = [], onToggleFavorite }: RenderCardsProps) => {
+export const RenderCards = ({
+  items,
+  emptyText,
+  favoritesIds = [],
+  onToggleFavorite,
+  onUpdateEmployee,
+}: RenderCardsProps) => {
   if (items.length === 0) {
     return <EmptyPlaceholder text={emptyText} />;
   }
@@ -21,13 +29,16 @@ export const RenderCards = ({ items, emptyText, favoritesIds = [], onToggleFavor
     <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
       {items.map((item) => {
         if ("name" in item && "linearManager" in item) {
+          const employee = item as EmployeeData
           return (
             <EmployeeCard
               key={item.id}
               city={item.city}
               linearManager={item.linearManager}
+              employeeData={employee}
               isFavorite={favoritesIds.includes(item.id)}
               onFavorite={() => onToggleFavorite?.(item.id)}
+              onUpdateEmployee={onUpdateEmployee}
               primaryInfo={
                 <EmployeePrimaryInfo
                   name={item.name}
