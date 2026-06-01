@@ -90,11 +90,6 @@ export const ExpertiseFilter = ({
     setDraftValue({});
   };
 
-  const handleClearAll = () => {
-    setDraftValue({});
-    setSearchValue("");
-  };
-
   const handleApplyFilters = () => {
     onApply(draftValue);
     setOpen(false);
@@ -186,12 +181,9 @@ export const ExpertiseFilter = ({
               Ничего не найдено
             </div>
           )}
-          <div className="flex gap-3 self-end">
-            <Button variant="outline" onClick={handleClearAll}>
-              Очистить
-            </Button>
-            <Button onClick={handleApplyFilters}>Применить</Button>
-          </div>
+          <Button onClick={handleApplyFilters} className="self-end">
+            Применить
+          </Button>
         </PopoverContent>
       </Popover>
     </div>
