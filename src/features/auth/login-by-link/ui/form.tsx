@@ -8,10 +8,8 @@ import { cn } from "@/shared/lib";
 
 import type { TLinkCooldown } from "../model/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  linkLoginSchema,
-  type TLinkLoginFormValues,
-} from "../model/link-login-schema";
+import { linkLoginSchema, type TLinkLoginFormValues } from "../model/schema";
+import { useSendMagicLink } from "../model/use-send-link";
 
 import mailIcon from "@icons/mail.svg";
 
@@ -23,6 +21,7 @@ const getLinkCooldownExpiresAt = () => {
 
 export const LinkLoginForm = () => {
   const [linkCooldown, setLinkCooldown] = useState<TLinkCooldown | null>(null);
+  const { mutate, isPending } = useSendMagicLink();
 
   const form = useForm<TLinkLoginFormValues>({
     resolver: zodResolver(linkLoginSchema),
@@ -33,10 +32,19 @@ export const LinkLoginForm = () => {
   });
 
   const onSubmit = (values: TLinkLoginFormValues) => {
-    console.log("вход по ссылке", values.email);
-    setLinkCooldown({
-      email: values.email,
-      expiresAt: getLinkCooldownExpiresAt(),
+    form.clearErrors("root");
+    mutate(values, {
+      onSuccess: () => {
+        setLinkCooldown({
+          email: values.email,
+          expiresAt: getLinkCooldownExpiresAt(),
+        });
+      },
+      onError: (error) => {
+        form.setError("root", {
+          message: error.detail,
+        });
+      },
     });
   };
 
@@ -44,7 +52,8 @@ export const LinkLoginForm = () => {
     setLinkCooldown(null);
   };
 
-  const isSubmitDisabled = linkCooldown !== null || !form.formState.isValid;
+  const isSubmitDisabled =
+    linkCooldown !== null || !form.formState.isValid || isPending;
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
@@ -53,6 +62,7 @@ export const LinkLoginForm = () => {
           Email
         </label>
         <Input
+          disabled={isPending}
           id="link"
           type="email"
           autoComplete="email"
@@ -71,6 +81,11 @@ export const LinkLoginForm = () => {
           Мы отправим ссылку для входа на вашу почту. Ссылка действует 15 минут
         </p>
       </div>
+      {form.formState.errors.root?.message && (
+        <p className="min-h-5 body-overline text-destructive">
+          {form.formState.errors.root.message}
+        </p>
+      )}
       <Button
         variant="default"
         disabled={isSubmitDisabled}

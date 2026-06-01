@@ -8,9 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   passwordLoginSchema,
   type TPasswordLoginFormValues,
-} from "../model/password-login-schema";
+} from "../model/schema";
 
 import mailIcon from "@icons/mail.svg";
+import { useLoginByPassword } from "../model/use-login-by-password";
 
 export const PasswordLoginForm = () => {
   const form = useForm<TPasswordLoginFormValues>({
@@ -22,11 +23,24 @@ export const PasswordLoginForm = () => {
     },
   });
 
+  const { mutate, isPending } = useLoginByPassword();
+
+  // Вывел ошибку в root и сделал отдельный текстовый элемент.
+  // В фигме этого нет.
   const onSubmit = (values: TPasswordLoginFormValues) => {
-    console.log("вход по паролю", values.email, values.password);
+    mutate(values, {
+      onSuccess: () => {
+        form.reset();
+      },
+      onError: (error) => {
+        form.setError("root", {
+          message: error.detail,
+        });
+      },
+    });
   };
 
-  const isSubmitDisabled = !form.formState.isValid;
+  const isSubmitDisabled = !form.formState.isValid || isPending;
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
@@ -44,7 +58,9 @@ export const PasswordLoginForm = () => {
             "h-11",
             form.formState.errors.email && "border-destructive",
           )}
-          {...form.register("email")}
+          {...form.register("email", {
+            onChange: () => form.clearErrors("root"),
+          })}
         />
         <p className="min-h-5 body-overline text-destructive">
           {form.formState.errors.email?.message}
@@ -62,12 +78,20 @@ export const PasswordLoginForm = () => {
             "h-11",
             form.formState.errors.password && "border-destructive",
           )}
-          {...form.register("password")}
+          {...form.register("password", {
+            onChange: () => form.clearErrors("root"),
+          })}
         />
         <p className="min-h-5 body-overline text-destructive">
           {form.formState.errors.password?.message}
         </p>
       </div>
+
+      {form.formState.errors.root?.message && (
+        <p className="min-h-5 body-overline text-destructive">
+          {form.formState.errors.root.message}
+        </p>
+      )}
 
       <div className="flex flex-col gap-4">
         <Button

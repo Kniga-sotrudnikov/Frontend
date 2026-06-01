@@ -1,4 +1,6 @@
-import axios, { type AxiosInstance } from "axios";
+import axios, {
+  type AxiosInstance,
+} from "axios";
 import { handleHttpError } from "./handle-http-error";
 
 const baseURL = import.meta.env.VITE_API_URL ?? "";
@@ -15,8 +17,8 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: unknown) => {
     if (axios.isAxiosError(error)) {
-      handleHttpError(error);
+       return Promise.reject(handleHttpError(error));
     }
     return Promise.reject(error);
-  },
+  }
 );
