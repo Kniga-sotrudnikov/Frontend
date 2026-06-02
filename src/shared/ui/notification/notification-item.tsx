@@ -32,7 +32,7 @@ export const NotificationItem = ({
 }: Notification) => {
   const remove = useNotificationStore((state) => state.remove);
 
-  const iconSrc = iconMap[iconType] || iconMap.success;
+  const iconSrc = iconType && iconMap[iconType] ? iconMap[iconType] : iconMap.success;
   const hasButtons = actions && actions.length > 0;
 
   const handleClose = () => {
