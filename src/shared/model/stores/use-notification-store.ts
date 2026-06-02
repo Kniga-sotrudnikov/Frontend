@@ -5,7 +5,7 @@ export type IconType = "success" | "birthday";
 export interface Notification {
   id: string;
   type?: NotificationType;
-  iconType: IconType;
+  iconType?: IconType;
   title: string;
   message?: string;
   actions?: Array<{ label: string; onClick: () => void }>;
