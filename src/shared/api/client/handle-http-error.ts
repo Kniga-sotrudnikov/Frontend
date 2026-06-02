@@ -1,7 +1,6 @@
+import { useNotificationStore } from "@/shared/model/stores";
 import type { AxiosError } from "axios";
-import { ApiError, type BackendErrorResponse } from "./types";
-
-
+import type { BackendErrorResponse, HttpError } from "@/shared/api/client";
 
 function isBackendError(data: unknown): data is BackendErrorResponse {
   return (
@@ -11,40 +10,32 @@ function isBackendError(data: unknown): data is BackendErrorResponse {
   );
 }
 
-export function handleHttpError(error: AxiosError): never {
+export function handleHttpError(error: AxiosError): HttpError {
   const status = error.response?.status;
   const data = error.response?.data;
 
-  let backendMessage = "UNKNOWN_ERROR";
+  let backendMessage = "Произошла ошибка";
 
   //Этот ужас пока я не знаю что возвращает бекенд в ошибках. В будущем можно типизировать нормально когда будет контракт
   if (isBackendError(data)) {
-    backendMessage = data.detail || data.message || "UNKNOWN_ERROR";
+    backendMessage = data.detail || data.message || backendMessage;
   }
 
   if (!status) {
-    throw new ApiError("NETWORK_ERROR");
+    backendMessage = "Ошибка сети. Попробуйте позже";
   }
 
-  if (status === 400) {
-    throw new ApiError(
-      "BAD_REQUEST",
-      400,
-      backendMessage
-    );
-  }
+  useNotificationStore.getState().add({
+    type: "error",
+    iconType: "warning",
+    title: "Ошибка",
+    message: backendMessage,
+  });
 
-  if (status === 401) {
-    throw new ApiError("UNAUTHORIZED", 401, backendMessage);
-  }
+  //TODO: Написать обработку определённых ошибок. Например при 401 - redirect
 
-  if (status === 403) {
-    throw new ApiError("FORBIDDEN", 403);
-  }
-
-  if (status >= 500) {
-    throw new ApiError("SERVER_ERROR", status);
-  }
-  
-  throw new ApiError(backendMessage, status);
+  return {
+    detail: backendMessage,
+    status,
+  };
 }

@@ -1,10 +1,13 @@
 import { useMutation } from "@tanstack/react-query";
-import { sendMagicLink, type SendLinkRequest } from "../api/send-link";
-import type { ApiError } from "@/shared/api/client/types";
-import type { SendLinkResponse } from "./types";
+import {
+  sendMagicLink,
+  type SendLinkRequest,
+  type SendLinkResponse,
+} from "@/features/auth";
+import type { HttpError } from "@/shared/api/client/types";
 
 export const useSendMagicLink = () => {
-  return useMutation<SendLinkResponse, ApiError, SendLinkRequest>({
+  return useMutation<SendLinkResponse, HttpError, SendLinkRequest>({
     mutationFn: sendMagicLink,
   });
 };

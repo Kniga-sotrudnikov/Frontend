@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { CurrentUser } from "./types";
 
 type AuthState = {
@@ -15,22 +16,29 @@ type AuthState = {
   logout: () => void;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  accessToken: null,
-  refreshToken: null,
-
-  setAuth: (data) =>
-    set({
-      user: data.user,
-      accessToken: data.access,
-      refreshToken: data.refresh,
-    }),
-
-  logout: () =>
-    set({
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
       user: null,
       accessToken: null,
       refreshToken: null,
+
+      setAuth: (data) =>
+        set({
+          user: data.user,
+          accessToken: data.access,
+          refreshToken: data.refresh,
+        }),
+
+      logout: () =>
+        set({
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+        }),
     }),
-}));
+    {
+      name: "auth-storage",
+    },
+  ),
+);

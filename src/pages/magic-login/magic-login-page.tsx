@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router";
-import { useVerifyMagicLink } from "@/features/auth/login-by-link/model/use-verify-link";
+import { useVerifyMagicLink } from "@/features/auth";
 
 const MagicLoginPage = () => {
   const [searchParams] = useSearchParams();

@@ -3,13 +3,16 @@ import { useForm } from "react-hook-form";
 
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
-import { LinkSentNotice } from "./link-sent-notice";
+import {
+  LinkSentNotice,
+  useSendMagicLink,
+  linkLoginSchema,
+  type TLinkCooldown,
+  type TLinkLoginFormValues,
+} from "@/features/auth";
 import { cn } from "@/shared/lib";
 
-import type { TLinkCooldown } from "../model/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { linkLoginSchema, type TLinkLoginFormValues } from "../model/schema";
-import { useSendMagicLink } from "../model/use-send-link";
 
 import mailIcon from "@icons/mail.svg";
 
@@ -32,17 +35,11 @@ export const LinkLoginForm = () => {
   });
 
   const onSubmit = (values: TLinkLoginFormValues) => {
-    form.clearErrors("root");
     mutate(values, {
       onSuccess: () => {
         setLinkCooldown({
           email: values.email,
           expiresAt: getLinkCooldownExpiresAt(),
-        });
-      },
-      onError: (error) => {
-        form.setError("root", {
-          message: error.detail,
         });
       },
     });
@@ -81,11 +78,7 @@ export const LinkLoginForm = () => {
           Мы отправим ссылку для входа на вашу почту. Ссылка действует 15 минут
         </p>
       </div>
-      {form.formState.errors.root?.message && (
-        <p className="min-h-5 body-overline text-destructive">
-          {form.formState.errors.root.message}
-        </p>
-      )}
+
       <Button
         variant="default"
         disabled={isSubmitDisabled}

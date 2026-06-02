@@ -1,12 +1,6 @@
-export class ApiError extends Error  {
+export type HttpError = {
+  detail: string;
   status?: number;
-  detail?: string;
-
-  constructor(message: string, status?: number, detail?: string) {
-    super(message);
-    this.status = status;
-    this.detail = detail;
-  }
 };
 
 export type BackendErrorResponse = {
