@@ -20,6 +20,13 @@ export type TEmployee = {
   linear_manager?: string;
 };
 
+export type TShortEmployee = {
+  id: number;
+  name: string;
+  job: string;
+  photo: string;
+};
+
 export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
 
 export interface EmployeeData {

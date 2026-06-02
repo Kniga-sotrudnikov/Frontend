@@ -1,4 +1,4 @@
-import type { TEmployee } from "./types.ts";
+import type { TEmployee, TShortEmployee } from "./types.ts";
 
 export const employees: TEmployee[] = [
   {
@@ -114,6 +114,27 @@ export const employees: TEmployee[] = [
     birthday: "1993-05-14",
     competencies: ["business", "fundraising", "presentation"],
     linear_manager: "Сергей Иванов",
+  },
+];
+
+export const shortEmployees: TShortEmployee[] = [
+  {
+    id: 1,
+    name: "Пётр Михайлов",
+    job: "Координатор",
+    photo: "/src/shared/assets/images/avatar-2.png",
+  },
+  {
+    id: 2,
+    name: "Анна Иванова",
+    job: "Менеджер",
+    photo: "/src/shared/assets/images/avatar-1.png",
+  },
+  {
+    id: 3,
+    name: "Алексей Морозов",
+    job: "QA инженер",
+    photo: "/src/shared/assets/images/avatar-2.png",
   },
 ];
 
