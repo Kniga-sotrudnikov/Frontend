@@ -11,6 +11,13 @@ export type TEmployee = {
   birthday_display: string;
   city: string;
   tags: string[];
+  email_corporate?: string;
+  email_personal?: string;
+  phone_corporate?: string;
+  phone_personal?: string;
+  birthday?: string | Date;
+  competencies?: string[];
+  linear_manager?: string;
 };
 
 export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
@@ -26,4 +33,10 @@ export interface EmployeeData {
   status: EmployeeStatus;
   photo?: string;
   isArchived?: boolean;
+  emailCorporate?: string;
+  emailPersonal?: string;
+  phoneCorporate?: string;
+  phonePersonal?: string;
+  birthday?: string | Date;
+  competencies?: string[];
 }

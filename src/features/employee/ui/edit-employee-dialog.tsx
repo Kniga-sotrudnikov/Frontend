@@ -12,6 +12,7 @@ import type { EmployeeData } from "@/entities/employee";
 import type { CreateEmployeeFormValues } from "@/features/create-employee/model/types";
 import { validateForm, type ValidationErrors } from "@/features/create-employee/model/validation";
 import { EmployeeForm } from "@/features/create-employee/ui/employee-form";
+import { mapEmployeeToFormValues, mapStatusBack } from "@/features/create-employee/utils";
 
 interface EditEmployeeDialogProps {
   open: boolean;
@@ -19,39 +20,6 @@ interface EditEmployeeDialogProps {
   employee: EmployeeData;
   onSuccess?: (updatedEmployee: EmployeeData) => void;
 }
-
-const mapEmployeeToFormValues = (employee: EmployeeData): CreateEmployeeFormValues => {
-  const mapStatus = (status: EmployeeData["status"]): CreateEmployeeFormValues["status"] => {
-    switch (status) {
-      case "working":
-        return "active";
-      case "vacation":
-        return "vacation";
-      case "bizTrip":
-        return "active";
-      case "sick":
-        return "sick";
-      default:
-        return "active";
-    }
-  };
-
-  return {
-    photo: employee.photo,
-    fullName: employee.name,
-    position: employee.position,
-    department: employee.department,
-    leader: employee.linearManager,
-    emailCorporate: "",
-    emailPersonal: "",
-    phoneCorporate: "",
-    phonePersonal: "",
-    birthday: undefined,
-    city: employee.city,
-    status: mapStatus(employee.status),
-    competencies: [],
-  };
-};
 
 export const EditEmployeeDialog = ({
   open,
@@ -141,19 +109,6 @@ export const EditEmployeeDialog = ({
 
       setIsSubmitting(true);
       try {
-        const mapStatusBack = (status: string): EmployeeData["status"] => {
-          switch (status) {
-            case "active":
-              return "working";
-            case "vacation":
-              return "vacation";
-            case "sick":
-              return "sick";
-            default:
-              return "working";
-          }
-        };
-
         const updatedEmployee: EmployeeData = {
           ...employee,
           name: values.fullName,
@@ -178,7 +133,6 @@ export const EditEmployeeDialog = ({
         console.error("Failed to update employee:", error);
         addNotification({
           type: "error",
-          iconType: "success",
           title: "Ошибка",
           message: error instanceof Error ? error.message : "Не удалось обновить карточку сотрудника",
         });
