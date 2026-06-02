@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@ui/button";
 import { FilterTrigger } from "@/features/employee/ui/filter-trigger";
@@ -10,7 +10,7 @@ import { FilterRemoveBadge } from "@/features/employee/ui/filter-remove-badge";
 import type {
   TExpertiseFilterGroup,
   TExpertiseFilterValue,
-} from "../model/types";
+} from "@/features/employee/model/types";
 
 type TExpertiseFilterProps = {
   groups: TExpertiseFilterGroup[];
@@ -28,6 +28,8 @@ export const ExpertiseFilter = ({
   const [searchValue, setSearchValue] = useState("");
 
   const normalizedSearchValue = searchValue.trim().toLowerCase();
+  const isClearButtonVisible =
+    Object.keys(draftValue).length > 0 || searchValue.length > 0;
 
   const filteredGroups = normalizedSearchValue
     ? groups
@@ -90,16 +92,28 @@ export const ExpertiseFilter = ({
     setDraftValue({});
   };
 
+  const handleClearAll = () => {
+    setDraftValue({});
+    setSearchValue("");
+  };
+
   const handleApplyFilters = () => {
     onApply(draftValue);
     setOpen(false);
   };
 
   const handleGroupChange = (groupKey: string, groupValue: string[]) => {
-    setDraftValue((prevState) => ({
-      ...prevState,
-      [groupKey]: groupValue,
-    }));
+    setDraftValue((prevState) => {
+      const nextValue = { ...prevState };
+
+      if (groupValue.length > 0) {
+        nextValue[groupKey] = groupValue;
+      } else {
+        delete nextValue[groupKey];
+      }
+
+      return nextValue;
+    });
   };
 
   const selectedCount = Object.values(draftValue).reduce(
@@ -108,6 +122,12 @@ export const ExpertiseFilter = ({
     },
     0,
   );
+
+  useEffect(() => {
+    if (!open) {
+      setSearchValue("");
+    }
+  }, [open]);
 
   return (
     <div>
@@ -181,9 +201,14 @@ export const ExpertiseFilter = ({
               Ничего не найдено
             </div>
           )}
-          <Button onClick={handleApplyFilters} className="self-end">
-            Применить
-          </Button>
+          <div className="flex self-end gap-2">
+            {isClearButtonVisible && (
+              <Button variant="outline" onClick={handleClearAll}>
+                Очистить
+              </Button>
+            )}
+            <Button onClick={handleApplyFilters}>Применить</Button>
+          </div>
         </PopoverContent>
       </Popover>
     </div>

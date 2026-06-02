@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { TEmployeeStatus } from "@/entities/employee";
-import type { TExpertiseFilterValue } from "@/features/employee/model/types.ts";
+import type { TExpertiseFilterValue } from "@/features/employee/model/types";
 
 interface EmployeesUIState {
   viewType: "grid" | "list";
