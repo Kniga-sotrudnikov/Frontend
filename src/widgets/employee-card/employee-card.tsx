@@ -86,7 +86,11 @@ export const EmployeeCard = ({
             className="p-0 text-gray-500 cursor-pointer"
             aria-label="В избранное"
           >
-            <StarIcon className={isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"} />
+            <StarIcon
+              className={
+                isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"
+              }
+            />
           </button>
 
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
