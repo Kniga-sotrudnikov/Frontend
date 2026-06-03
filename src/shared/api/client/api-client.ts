@@ -1,8 +1,7 @@
 import axios, { type AxiosInstance } from "axios";
 import { handleHttpError } from "./handle-http-error";
 
-const apiUrl = import.meta.env.VITE_API_URL;
-const baseURL = apiUrl ? `${apiUrl}/api/v1` : "";
+const baseURL = import.meta.env.VITE_API_URL;
 
 export const apiClient: AxiosInstance = axios.create({
   baseURL,
