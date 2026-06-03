@@ -15,13 +15,15 @@ const EmployeesPage = () => {
         stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
         search={<SearchInput placeholder="Поиск по ФИО, должности, тегам..." />}
         birthday={<BirthdaysPopover />}
-        user={<HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />}
+        user={
+          <HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />
+        }
       />
 
       <div className="mx-10 mt-5 grid grid-cols-[295px_1fr] gap-x-7 min-h-screen">
         <Navbar unitsList={orgTree} />
 
-        <div className="space-y-3 max-w-235">
+        <div className="space-y-3">
           <EmployeesFilterBar />
           <EmployeesList
             employees={mockEmployees}
