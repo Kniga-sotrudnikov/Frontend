@@ -1,7 +1,9 @@
-import type { TShortEmployee } from "@/entities/employee";
-import { SelectedEmployee } from "@/entities/employee/ui/selected-employee.tsx";
-import { Button } from "@ui/button";
 import { useState } from "react";
+
+import type { TShortEmployee } from "@/entities/employee";
+
+import { Button } from "@ui/button";
+import { SelectedEmployee } from "@/entities/employee/ui/selected-employee.tsx";
 import {
   Collapsible,
   CollapsibleContent,
@@ -11,11 +13,13 @@ import {
 type TSelectedEmployeesListProps = {
   employees: TShortEmployee[];
   maxVisible?: number;
+  onDelete: (employeeId: number) => void;
 };
 
 export const SelectedEmployeesList = ({
   employees,
   maxVisible = 3,
+  onDelete,
 }: TSelectedEmployeesListProps) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -25,13 +29,14 @@ export const SelectedEmployeesList = ({
 
   const renderEmployees = (employees: TShortEmployee[]) => {
     return (
-      <ul className="flex justify-between">
+      <ul className="flex flex-wrap gap-4 mb-4">
         {employees.map((employee) => (
           <li key={employee.id}>
             <SelectedEmployee
               name={employee.name}
               job={employee.job}
               photo={employee.photo}
+              onDelete={() => onDelete(employee.id)}
             />
           </li>
         ))}
@@ -45,15 +50,17 @@ export const SelectedEmployeesList = ({
 
       {hiddenCount > 0 && (
         <Collapsible open={expanded} onOpenChange={setExpanded}>
-          <CollapsibleTrigger asChild>
-            <Button
-              variant="plain"
-              size="plain"
-              className="font-(--font-weight-regular) text-muted-foreground"
-            >
-              {`Показать всех (${hiddenCount})`}
-            </Button>
-          </CollapsibleTrigger>
+          {!expanded && (
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="plain"
+                size="plain"
+                className="font-(--font-weight-regular) text-muted-foreground"
+              >
+                {`Показать всех (${hiddenCount})`}
+              </Button>
+            </CollapsibleTrigger>
+          )}
 
           <CollapsibleContent>
             {renderEmployees(hiddenEmployees)}
