@@ -60,6 +60,10 @@ export const router = createBrowserRouter([
         lazy: () => import("@/pages/login/login-page"),
       },
       {
+        path: ROUTES.MAGIC_LOGIN,
+        lazy: () => import("@/pages/magic-login/magic-login-page"),
+      },
+      {
         path: "*",
         lazy: () => import("@/pages/404/not-found-page"),
       },

@@ -1,11 +1,13 @@
 import { Outlet } from "react-router";
 import { NotificationProvider } from "@/shared/ui/notification/notification-provider";
+import { QueryProvider } from "@/app/providers/query-provider";
 
 export function ProvidersLayout() {
   return (
-    <>
-      <Outlet />
-      <NotificationProvider />
-    </>
+    <NotificationProvider>
+      <QueryProvider>
+        <Outlet />
+      </QueryProvider>
+    </NotificationProvider>
   );
 }

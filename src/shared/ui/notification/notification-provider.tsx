@@ -1,10 +1,20 @@
 import { createPortal } from "react-dom";
 import { NotificationContainer } from "./notification-container";
+import type { ReactNode } from "react";
 
-export const NotificationProvider = () => {
+type NotificationProviderProps = {
+  children: ReactNode;
+};
+
+export const NotificationProvider = ({
+  children,
+}: NotificationProviderProps) => {
   const portalElement = document.getElementById("notification-root");
 
-  if (!portalElement) return null;
-
-  return createPortal(<NotificationContainer />, portalElement);
+  return (
+    <>
+      {children}
+      {portalElement && createPortal(<NotificationContainer />, portalElement)}
+    </>
+  );
 };

@@ -1,7 +1,6 @@
 import { Button } from "@ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { LinkLoginForm } from "./ui/link-login-form";
-import { PasswordLoginForm } from "./ui/password-login-form";
+import { LinkLoginForm, PasswordLoginForm } from "@/features/auth";
 
 import LogoFull from "@/shared/assets/images/full-logo.svg?react";
 import ShieldIcon from "@icons/shield.svg?react";
