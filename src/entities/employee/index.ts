@@ -1,4 +1,10 @@
-export type { TEmployee, EmployeeStatus, TEmployeeStatus, EmployeeData } from "./model/types";
+export type {
+  TEmployee,
+  EmployeeStatus,
+  TEmployeeStatus,
+  EmployeeData,
+  TShortEmployee,
+} from "./model/types";
 export type { BirthdayPerson } from "./model/mock";
 export { employees, shortEmployees } from "./model/mock";
 export { statusFilterOptions } from "./model/constants";
