@@ -26,10 +26,10 @@ export const RenderCards = ({
   }
 
   return (
-    <div className="grid grid-cols-1 gap-6 min-[1300px]:grid-cols-2">
+    <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(370px,1fr))]">
       {items.map((item) => {
         if ("name" in item && "linearManager" in item) {
-          const employee = item as EmployeeData
+          const employee = item as EmployeeData;
           return (
             <EmployeeCard
               key={item.id}

@@ -62,7 +62,7 @@ export const EmployeeCard = ({
   const handleEditSuccess = (updatedEmployee: EmployeeData) => {
     setPopoverOpen(false);
     onUpdateEmployee?.(updatedEmployee);
-  }
+  };
 
   const handleArchive = () => {
     setPopoverOpen(false);
@@ -70,9 +70,9 @@ export const EmployeeCard = ({
   };
 
   return (
-    <div className="w-full max-w-114.5 min-w-72 h-auto min-h-54.25 p-5.75 border border-gray-200 rounded-8 bg-white">
+    <div className="flex flex-col p-5.75 border border-gray-200 rounded-8 bg-white">
       <div className="flex items-center justify-between mb-4">
-        <span className="body-overline text-gray-600 max-w-72.5 truncate">
+        <span className="body-overline text-gray-600 wrap-break-word">
           {city}
         </span>
         <div className="flex items-center gap-2 shrink-0">
@@ -81,7 +81,11 @@ export const EmployeeCard = ({
             className="p-0 text-gray-500 cursor-pointer"
             aria-label="В избранное"
           >
-            <StarIcon className={isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"} />
+            <StarIcon
+              className={
+                isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"
+              }
+            />
           </button>
 
           <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
@@ -100,8 +104,8 @@ export const EmployeeCard = ({
               alignOffset={-20}
             >
               <div className="flex flex-col">
-                <EditEmployeeButton 
-                  employee={employeeData} 
+                <EditEmployeeButton
+                  employee={employeeData}
                   onSuccess={handleEditSuccess}
                 >
                   <div className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200">
@@ -126,13 +130,15 @@ export const EmployeeCard = ({
 
       <div className="border-b pb-3 mb-3">{primaryInfo}</div>
 
-      <div className="flex items-center gap-2">
-        <span className="body-overline-semibold text-black">
-          Линейный рук.:
-        </span>
-        <span className="body-overline text-black truncate">
-          {linearManager}
-        </span>
+      <div className="mt-auto">
+        <div className="flex items-center gap-2">
+          <span className="body-overline-semibold text-black">
+            Линейный рук.:
+          </span>
+          <span className="body-overline text-black wrap-break-word">
+            {linearManager}
+          </span>
+        </div>
       </div>
     </div>
   );
