@@ -216,10 +216,6 @@ export const shortEmployees: TShortEmployee[] = [
   },
 ];
 
-alert(
-  "пока что не понятно, откуда берется поле city, в сваггере от бэка такого поля нет",
-);
-
 export interface BirthdayPerson {
   name: string;
   date: string; // формат "DD MMM"

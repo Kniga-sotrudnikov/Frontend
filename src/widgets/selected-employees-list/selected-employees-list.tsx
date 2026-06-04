@@ -3,7 +3,7 @@ import { useState } from "react";
 import type { TShortEmployee } from "@/entities/employee";
 
 import { Button } from "@ui/button";
-import { SelectedEmployee } from "@/entities/employee/ui/selected-employee.tsx";
+import { SelectedEmployee } from "@/entities/employee";
 import {
   Collapsible,
   CollapsibleContent,
