@@ -4,6 +4,7 @@ import { ProfessionCard } from "@/widgets/profession-card";
 import { EmptyPlaceholder } from "@ui/empty-placeholder";
 import type { EmployeesListType } from "./types";
 import type { EmployeeData } from "@/entities/employee";
+import { useVacancyModalStore } from "@/features/vacancy-respond";
 
 interface RenderCardsProps {
   items: EmployeesListType[];
@@ -21,6 +22,8 @@ export const RenderCards = ({
   onToggleFavorite,
   onUpdateEmployee,
 }: RenderCardsProps) => {
+  const openModal = useVacancyModalStore((state) => state.openModal);
+
   if (items.length === 0) {
     return <EmptyPlaceholder text={emptyText} />;
   }
@@ -61,6 +64,7 @@ export const RenderCards = ({
             {...vacancyProps}
             isFavorite={favoritesIds.includes(id)}
             onFavorite={() => onToggleFavorite?.(id)}
+            onRespond={() => openModal(item)}
           />
         );
       })}
