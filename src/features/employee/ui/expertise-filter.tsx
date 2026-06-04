@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@ui/button";
 import { FilterTrigger } from "@/features/employee/ui/filter-trigger";
@@ -70,6 +70,15 @@ export const ExpertiseFilter = ({
     },
   );
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+
+    if (!nextOpen) {
+      setSearchValue("");
+      setDraftValue(value);
+    }
+  };
+
   const handleRemoveFilter = (groupKey: string, optionValue: string) => {
     setDraftValue((prevState) => {
       const nextValue = { ...prevState };
@@ -99,6 +108,7 @@ export const ExpertiseFilter = ({
 
   const handleApplyFilters = () => {
     onApply(draftValue);
+    setSearchValue("");
     setOpen(false);
   };
 
@@ -123,15 +133,9 @@ export const ExpertiseFilter = ({
     0,
   );
 
-  useEffect(() => {
-    if (!open) {
-      setSearchValue("");
-    }
-  }, [open]);
-
   return (
     <div>
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <FilterTrigger
             selectedCount={selectedCount}
