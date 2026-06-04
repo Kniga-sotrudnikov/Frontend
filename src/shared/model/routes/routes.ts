@@ -16,6 +16,7 @@ export const ROUTES = {
   PROJECTS: "/projects",
   SETTINGS: "/settings",
   HELP: "/help",
+  MAGIC_LOGIN: "/magic-login",
 
   /*
    * пример: путь с параметром

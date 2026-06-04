@@ -1,11 +1,11 @@
 import { create } from "zustand";
 
 export type NotificationType = "success" | "error" | "info" | "warning";
-export type IconType = "success" | "birthday";
+export type IconType = "success" | "birthday" | "warning";
 export interface Notification {
   id: string;
   type?: NotificationType;
-  iconType: IconType;
+  iconType?: IconType;
   title: string;
   message?: string;
   actions?: Array<{ label: string; onClick: () => void }>;

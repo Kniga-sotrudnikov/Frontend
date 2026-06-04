@@ -1,24 +1,41 @@
+import { useNotificationStore } from "@/shared/model/stores";
 import type { AxiosError } from "axios";
+import type { BackendErrorResponse, HttpError } from "@/shared/api/client";
 
-export function handleHttpError(error: AxiosError): void {
+function isBackendError(data: unknown): data is BackendErrorResponse {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    ("detail" in data || "message" in data)
+  );
+}
+
+export function handleHttpError(error: AxiosError): HttpError {
   const status = error.response?.status;
-  if (status === undefined) {
-    // TODO: обработка сетевых ошибок
-    return;
+  const data = error.response?.data;
+
+  let backendMessage = "Произошла ошибка";
+
+  //Этот ужас пока я не знаю что возвращает бекенд в ошибках. В будущем можно типизировать нормально когда будет контракт
+  if (isBackendError(data)) {
+    backendMessage = data.detail || data.message || backendMessage;
   }
 
-  if (status === 401) {
-    // TODO: обработка ошибок авторизации
-    return;
+  if (!status) {
+    backendMessage = "Ошибка сети. Попробуйте позже";
   }
 
-  if (status === 403) {
-    // TODO: обработка ошибок доступа
-    return;
-  }
+  useNotificationStore.getState().add({
+    type: "error",
+    iconType: "warning",
+    title: "Ошибка",
+    message: backendMessage,
+  });
 
-  if (status >= 500) {
-    // TODO: обработка серверных ошибок
-    return;
-  }
+  //TODO: Написать обработку определённых ошибок. Например при 401 - redirect
+
+  return {
+    detail: backendMessage,
+    status,
+  };
 }

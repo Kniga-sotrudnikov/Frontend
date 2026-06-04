@@ -7,8 +7,9 @@ import { cn } from "@/shared/lib";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   passwordLoginSchema,
+  useLoginByPassword,
   type TPasswordLoginFormValues,
-} from "../model/password-login-schema";
+} from "@/features/auth";
 
 import mailIcon from "@icons/mail.svg";
 
@@ -22,11 +23,17 @@ export const PasswordLoginForm = () => {
     },
   });
 
+  const { mutate, isPending } = useLoginByPassword();
+
   const onSubmit = (values: TPasswordLoginFormValues) => {
-    console.log("вход по паролю", values.email, values.password);
+    mutate(values, {
+      onSuccess: () => {
+        form.reset();
+      },
+    });
   };
 
-  const isSubmitDisabled = !form.formState.isValid;
+  const isSubmitDisabled = !form.formState.isValid || isPending;
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)}>

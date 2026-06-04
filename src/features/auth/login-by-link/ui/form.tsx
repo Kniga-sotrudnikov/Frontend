@@ -3,15 +3,16 @@ import { useForm } from "react-hook-form";
 
 import { Input } from "@ui/input";
 import { Button } from "@ui/button";
-import { LinkSentNotice } from "./link-sent-notice";
+import {
+  LinkSentNotice,
+  useSendMagicLink,
+  linkLoginSchema,
+  type TLinkCooldown,
+  type TLinkLoginFormValues,
+} from "@/features/auth";
 import { cn } from "@/shared/lib";
 
-import type { TLinkCooldown } from "../model/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  linkLoginSchema,
-  type TLinkLoginFormValues,
-} from "../model/link-login-schema";
 
 import mailIcon from "@icons/mail.svg";
 
@@ -23,6 +24,7 @@ const getLinkCooldownExpiresAt = () => {
 
 export const LinkLoginForm = () => {
   const [linkCooldown, setLinkCooldown] = useState<TLinkCooldown | null>(null);
+  const { mutate, isPending } = useSendMagicLink();
 
   const form = useForm<TLinkLoginFormValues>({
     resolver: zodResolver(linkLoginSchema),
@@ -33,10 +35,13 @@ export const LinkLoginForm = () => {
   });
 
   const onSubmit = (values: TLinkLoginFormValues) => {
-    console.log("вход по ссылке", values.email);
-    setLinkCooldown({
-      email: values.email,
-      expiresAt: getLinkCooldownExpiresAt(),
+    mutate(values, {
+      onSuccess: () => {
+        setLinkCooldown({
+          email: values.email,
+          expiresAt: getLinkCooldownExpiresAt(),
+        });
+      },
     });
   };
 
@@ -44,7 +49,8 @@ export const LinkLoginForm = () => {
     setLinkCooldown(null);
   };
 
-  const isSubmitDisabled = linkCooldown !== null || !form.formState.isValid;
+  const isSubmitDisabled =
+    linkCooldown !== null || !form.formState.isValid || isPending;
 
   return (
     <form noValidate onSubmit={form.handleSubmit(onSubmit)}>
@@ -53,6 +59,7 @@ export const LinkLoginForm = () => {
           Email
         </label>
         <Input
+          disabled={isPending}
           id="link"
           type="email"
           autoComplete="email"
@@ -71,6 +78,7 @@ export const LinkLoginForm = () => {
           Мы отправим ссылку для входа на вашу почту. Ссылка действует 15 минут
         </p>
       </div>
+
       <Button
         variant="default"
         disabled={isSubmitDisabled}
