@@ -4,7 +4,8 @@ import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
 import { Button } from "@/shared/ui/button";
-import type { EmployeeData, VacancyData } from "./types";
+import type { EmployeeData } from "@/entities/employee";
+import type { VacancyData } from "@/entities/vacancy";
 import { RenderCards } from "./render-cards";
 import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
@@ -15,12 +16,14 @@ interface EmployeesListProps {
   employees: EmployeeData[];
   vacancies: VacancyData[];
   favoritesIds?: (number | string)[];
+  onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
 }
 
 export const EmployeesList = ({
   employees,
   vacancies,
   favoritesIds = [],
+  onUpdateEmployee,
 }: EmployeesListProps) => {
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
@@ -106,7 +109,6 @@ export const EmployeesList = ({
                 {tabContentMap.favorites.length}
               </span>
             </TabsTrigger>
-            {/* TODO: добавить проверку на роль HR */}
             <TabsTrigger
               value="archive"
               className="flex items-center justify-center gap-1 px-3 py-2 button-small cursor-pointer"
@@ -158,7 +160,13 @@ export const EmployeesList = ({
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable columns={getVacancyColumns(favoritesIds, handleToggleFavorite)} data={tabContentMap.vacancies} />
       ) : (
-        <RenderCards items={itemsByTab} emptyText={emptyText} favoritesIds={favoritesIds} onToggleFavorite={handleToggleFavorite} />
+        <RenderCards 
+          items={itemsByTab} 
+          emptyText={emptyText} 
+          favoritesIds={favoritesIds} 
+          onToggleFavorite={handleToggleFavorite}
+          onUpdateEmployee={onUpdateEmployee}
+        />
       )}
     </div>
   );

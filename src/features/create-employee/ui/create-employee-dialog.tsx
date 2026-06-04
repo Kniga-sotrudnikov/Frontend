@@ -141,7 +141,6 @@ export const CreateEmployeeDialog = ({
         console.error("Failed to create employee:", error);
         addNotification({
           type: "error",
-          iconType: "success",
           title: "Ошибка",
           message:
             error instanceof Error

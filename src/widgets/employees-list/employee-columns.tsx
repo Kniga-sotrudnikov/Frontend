@@ -1,7 +1,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/shared/ui/badge";
 import StarIcon from "@/shared/assets/icons/star.svg?react";
-import type { EmployeeData, VacancyData } from "./types";
+import type { EmployeeData } from "@/entities/employee";
+import type { VacancyData } from "@/entities/vacancy";
 
 const statusConfig: Record<
   EmployeeData["status"],
