@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Checkbox } from "@ui/checkbox";
 import { Button } from "@ui/button";
 import { cn } from "@/shared/lib";
@@ -52,6 +52,18 @@ export const EmployeeSelect = ({
     }
   };
 
+  const handleOpen = () => {
+    setOpen(true);
+    setTempSelected([...selectedEmployees]);
+    setSearchQuery("");
+  };
+
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    setTempSelected([...selectedEmployees]);
+    setSearchQuery("");
+  }, [selectedEmployees]);
+
   const handleClear = () => {
     setTempSelected([]);
   };
@@ -68,7 +80,7 @@ export const EmployeeSelect = ({
         wrapperRef.current &&
         !wrapperRef.current.contains(event.target as Node)
       ) {
-        setOpen(false);
+        handleClose();
       }
     };
 
@@ -77,14 +89,7 @@ export const EmployeeSelect = ({
       return () =>
         document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [open]);
-
-  useEffect(() => {
-    if (open) {
-      setTempSelected([...selectedEmployees]);
-      setSearchQuery("");
-    }
-  }, [open, selectedEmployees]);
+  }, [open, selectedEmployees, handleClose]);
 
   return (
     <div
@@ -96,6 +101,7 @@ export const EmployeeSelect = ({
       )}
     >
       <h3 className="body-s text-black mb-2">{title}</h3>
+
       <div className="relative">
         <input
           type="text"
@@ -103,16 +109,16 @@ export const EmployeeSelect = ({
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value);
-            if (!open) setOpen(true);
+            if (!open) handleOpen();
           }}
-          onClick={() => setOpen(true)}
+          onClick={handleOpen}
           className="w-full px-4 py-2.5 body-m text-gray-600 border border-gray-200 rounded-8 bg-white focus:outline-none focus:border-purple-500"
         />
         <Button
           type="button"
           variant="plain"
           size="plain"
-          onClick={() => setOpen(!open)}
+          onClick={open ? handleClose : handleOpen}
           className="absolute right-4 top-1/2 -translate-y-1/2 p-0 w-5 h-5 [&_svg]:w-5 [&_svg]:h-5"
         >
           {open ? (
@@ -138,8 +144,7 @@ export const EmployeeSelect = ({
                   >
                     <Checkbox
                       checked={isSelected(employee.id)}
-                      onCheckedChange={() => toggleEmployee(employee)}
-                      className="shrink-0 w-5 h-5 [&_button]:w-5 [&_button]:h-5"
+                      className="shrink-0 w-5 h-5 [&_button]:w-5 [&_button]:h-5 pointer-events-none"
                     />
                     <EmployeeCardSmall employee={employee} />
                   </div>
