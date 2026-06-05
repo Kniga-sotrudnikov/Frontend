@@ -70,6 +70,13 @@ export const ExpertiseFilter = ({
     },
   );
 
+  const selectedCount = Object.values(draftValue).reduce(
+    (count, groupValue) => {
+      return count + groupValue.length;
+    },
+    0,
+  );
+
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
 
@@ -126,13 +133,6 @@ export const ExpertiseFilter = ({
     });
   };
 
-  const selectedCount = Object.values(draftValue).reduce(
-    (count, groupValue) => {
-      return count + groupValue.length;
-    },
-    0,
-  );
-
   return (
     <div>
       <Popover open={open} onOpenChange={handleOpenChange}>
@@ -150,7 +150,7 @@ export const ExpertiseFilter = ({
         >
           <SearchInput
             wrapperClassName="h-11 shrink-0"
-            placeholder="Поиск"
+            placeholder="Найти тег"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />

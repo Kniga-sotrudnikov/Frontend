@@ -1,26 +1,32 @@
 import { Button } from "@/shared/ui/button";
 import ExportIcon from "@/shared/assets/icons/export.svg?react";
 import {
+  StatusFilter,
+  FilterCities,
   ExpertiseFilter,
   expertiseFilterGroups,
-  StatusFilter,
+  citiesFilterOptions,
   useEmployeesPageStore,
 } from "@/features/employee";
-import { FilterCities } from "@/features/filter-cities";
 import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useNotificationStore } from "@/shared/model/stores";
 
 export const EmployeesFilterBar = () => {
   const viewType = useEmployeesPageStore((state) => state.viewType);
   const statusFilter = useEmployeesPageStore((state) => state.statusFilter);
+  const citiesFilter = useEmployeesPageStore((state) => state.citiesFilter);
   const expertiseFilter = useEmployeesPageStore(
     (state) => state.expertiseFilter,
   );
+
   const setStatusFilter = useEmployeesPageStore(
     (state) => state.setStatusFilter,
   );
   const setExpertiseFilter = useEmployeesPageStore(
     (state) => state.setExpertiseFilter,
+  );
+  const setCitiesFilter = useEmployeesPageStore(
+    (state) => state.setCitiesFilter,
   );
   const addNotification = useNotificationStore((state) => state.add);
 
@@ -35,7 +41,11 @@ export const EmployeesFilterBar = () => {
   return (
     <div className="flex items-center gap-3 flex-wrap">
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
-      <FilterCities cities={["Москва", "Сочи"]} />
+      <FilterCities
+        options={citiesFilterOptions}
+        value={citiesFilter}
+        onApply={setCitiesFilter}
+      />
       <ExpertiseFilter
         groups={expertiseFilterGroups}
         value={expertiseFilter}

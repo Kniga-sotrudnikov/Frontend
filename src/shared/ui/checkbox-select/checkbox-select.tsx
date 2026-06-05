@@ -30,7 +30,7 @@ export const CheckboxSelect = ({
   value,
   onValueChange,
   visibleCount = 4,
-  title = "Выберите",
+  title,
   forceOpen,
 }: TCheckboxSelectProps) => {
   const [open, setIsOpen] = useState(false);
@@ -86,6 +86,48 @@ export const CheckboxSelect = ({
     );
   };
 
+  const optionsContent = (
+    <>
+      {renderOptions(visibleOptions)}
+
+      {hiddenOptionsCount > 0 && (
+        <Collapsible open={expanded} onOpenChange={setExpanded}>
+          {!expanded && (
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="plain"
+                size="plain"
+                className="font-(--font-weight-regular) text-muted-foreground"
+              >
+                {`Показать все (${hiddenOptionsCount})`}
+              </Button>
+            </CollapsibleTrigger>
+          )}
+
+          <CollapsibleContent>
+            {renderOptions(hiddenOptions)}
+
+            {expanded && (
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="plain"
+                  size="plain"
+                  className="font-(--font-weight-regular) text-muted-foreground"
+                >
+                  {`Скрыть`}
+                </Button>
+              </CollapsibleTrigger>
+            )}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+    </>
+  );
+
+  if (!title) {
+    return <div className="w-full">{optionsContent}</div>;
+  }
+
   return (
     <Collapsible open={isOpen} onOpenChange={handleOpen} className="w-full">
       <CollapsibleTrigger asChild className="mb-2.75">
@@ -103,41 +145,7 @@ export const CheckboxSelect = ({
         </Button>
       </CollapsibleTrigger>
 
-      <CollapsibleContent>
-        {renderOptions(visibleOptions)}
-
-        {hiddenOptionsCount > 0 && (
-          <Collapsible open={expanded} onOpenChange={setExpanded}>
-            {!expanded && (
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="plain"
-                  size="plain"
-                  className="font-(--font-weight-regular) text-muted-foreground"
-                >
-                  {`Показать все (${hiddenOptionsCount})`}
-                </Button>
-              </CollapsibleTrigger>
-            )}
-
-            <CollapsibleContent>
-              {renderOptions(hiddenOptions)}
-
-              {expanded && (
-                <CollapsibleTrigger asChild>
-                  <Button
-                    variant="plain"
-                    size="plain"
-                    className="font-(--font-weight-regular) text-muted-foreground"
-                  >
-                    {`Скрыть`}
-                  </Button>
-                </CollapsibleTrigger>
-              )}
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-      </CollapsibleContent>
+      <CollapsibleContent>{optionsContent}</CollapsibleContent>
     </Collapsible>
   );
 };

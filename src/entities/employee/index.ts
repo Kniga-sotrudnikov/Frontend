@@ -4,8 +4,17 @@ export type {
   EmployeeStatus,
   TEmployeeStatus,
   EmployeeData,
+} from "./model/types";
+export type {
+  TEmployee,
+  EmployeeStatus,
+  TEmployeeStatus,
+  EmployeeData,
   TShortEmployee,
 } from "./model/types";
+export { employees } from "./model/mock";
+export { employeeTableColumns } from "./ui/employee-table-columns";
+export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-data";
 export {
   employees,
   shortEmployees,
