@@ -31,7 +31,7 @@ export const FilterTrigger = forwardRef<HTMLButtonElement, TFilterTriggerProps>(
         <div className="flex items-center gap-2.5">
           <span className="font-regular text-(--color-gray-500)">{label}</span>
           {selectedCount > 0 && (
-            <span className="flex items-center justify-center size-5.75 rounded-(--radius-4) bg-muted body-overline font-medium leading-none">
+            <span className="flex items-center justify-center size-5.75 rounded-(--radius-4) bg-(--color-gray-100) body-overline font-medium leading-none">
               {selectedCount}
             </span>
           )}
