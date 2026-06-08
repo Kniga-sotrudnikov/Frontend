@@ -5,7 +5,7 @@ import type { TEmployeeStatus } from "@/entities/employee/model/types.ts";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { Checkbox } from "@ui/checkbox";
 import { FilterTrigger } from "./filter-trigger";
-import { statusFilterOptions } from "@/entities/employee/model/constants";
+import { statusFilterOptions } from "@/features/employee/model/constants";
 
 type TStatusFilterProps = {
   value: TEmployeeStatus[];
