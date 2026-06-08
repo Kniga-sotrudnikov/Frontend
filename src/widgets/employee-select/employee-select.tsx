@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Checkbox } from "@ui/checkbox";
 import { Button } from "@ui/button";
 import { cn } from "@/shared/lib";
@@ -45,11 +45,11 @@ export const EmployeeSelect = ({
   };
 
   const toggleEmployee = (employee: Employee) => {
-    if (isSelected(employee.id)) {
-      setTempSelected(tempSelected.filter((emp) => emp.id !== employee.id));
-    } else {
-      setTempSelected([...tempSelected, employee]);
-    }
+    setTempSelected((tempSelected) => {
+      return isSelected(employee.id)
+        ? tempSelected.filter((emp) => emp.id !== employee.id)
+        : [...tempSelected, employee];
+    });
   };
 
   const handleOpen = () => {
@@ -64,6 +64,17 @@ export const EmployeeSelect = ({
     setSearchQuery("");
   }, [selectedEmployees]);
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+    if (!open) handleOpen();
+  };
+
+  const handleArrowMouseDown = (event: React.MouseEvent) => {
+    event.preventDefault();
+    if (open) handleClose();
+    else handleOpen();
+  };
+
   const handleClear = () => {
     setTempSelected([]);
   };
@@ -75,6 +86,8 @@ export const EmployeeSelect = ({
   };
 
   useEffect(() => {
+    if (!open) return;
+
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&
@@ -84,12 +97,9 @@ export const EmployeeSelect = ({
       }
     };
 
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [open, selectedEmployees, handleClose]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open, handleClose]);
 
   return (
     <div
@@ -107,18 +117,17 @@ export const EmployeeSelect = ({
           type="text"
           placeholder={searchPlaceholder}
           value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
+          onChange={handleInputChange}
+          onClick={() => {
             if (!open) handleOpen();
           }}
-          onClick={handleOpen}
           className="w-full px-4 py-2.5 body-m text-gray-600 border border-gray-200 rounded-8 bg-white focus:outline-none focus:border-purple-500"
         />
         <Button
           type="button"
           variant="plain"
           size="plain"
-          onClick={open ? handleClose : handleOpen}
+          onMouseDown={handleArrowMouseDown}
           className="absolute right-4 top-1/2 -translate-y-1/2 p-0 w-5 h-5 [&_svg]:w-5 [&_svg]:h-5"
         >
           {open ? (
