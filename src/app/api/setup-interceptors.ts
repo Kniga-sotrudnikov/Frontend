@@ -17,10 +17,14 @@ export const setupInterceptors = () => {
           if (location.pathname !== ROUTES.LOGIN) {
             const url = location.pathname + location.search + location.hash;
 
-            void router.navigate(ROUTES.LOGIN, {
-              replace: true,
-              state: { from: url },
-            });
+            router
+              .navigate(ROUTES.LOGIN, {
+                replace: true,
+                state: { from: url },
+              })
+              .catch((navigationError) => {
+                console.error("Ошибка навигации", navigationError);
+              });
           }
         }
         return Promise.reject(handleHttpError(error));
