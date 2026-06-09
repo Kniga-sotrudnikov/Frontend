@@ -32,8 +32,6 @@ export function handleHttpError(error: AxiosError): HttpError {
     message: backendMessage,
   });
 
-  //TODO: Написать обработку определённых ошибок. Например при 401 - redirect
-
   return {
     detail: backendMessage,
     status,

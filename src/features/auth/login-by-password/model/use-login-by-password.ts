@@ -5,12 +5,9 @@ import {
   type LoginResponse,
 } from "@/features/auth";
 import type { HttpError } from "@/shared/api/client/types";
-import { useAuthStore } from "@/entities/user/model/store";
-import { useNavigate } from "react-router";
-import { ROUTES } from "@/shared/model/routes/routes";
+import { useAuthStore } from "@/entities/user";
 
 export const useLoginByPassword = () => {
-  const navigate = useNavigate();
   const { setAuth } = useAuthStore();
 
   return useMutation<LoginResponse, HttpError, LoginRequest>({
@@ -18,7 +15,6 @@ export const useLoginByPassword = () => {
 
     onSuccess: (data) => {
       setAuth(data);
-      navigate(ROUTES.EMPLOYEES);
     },
   });
 };
