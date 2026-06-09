@@ -27,7 +27,7 @@ export function handleHttpError(error: AxiosError): HttpError {
 
   useNotificationStore.getState().add({
     type: "error",
-    iconType: "warning",
+    iconType: "error",
     title: "Ошибка",
     message: backendMessage,
   });
