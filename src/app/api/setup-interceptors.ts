@@ -61,7 +61,7 @@ export const setupInterceptors = () => {
 
         try {
           const refreshResponse = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/v1/auth/token/refresh/`,
+            `${import.meta.env.VITE_API_URL}/auth/token/refresh/`,
             { refresh: refreshToken },
           );
 
