@@ -5,6 +5,15 @@ import { ROUTES } from "@/shared/model/routes/routes";
 import { router } from "@/app/routes";
 
 export const setupInterceptors = () => {
+  apiClient.interceptors.request.use((config) => {
+    const accessToken = useAuthStore.getState().accessToken;
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+    return config;
+  });
+
   apiClient.interceptors.response.use(
     (response) => response,
     (error: unknown) => {
