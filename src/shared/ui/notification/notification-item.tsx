@@ -4,12 +4,14 @@ import SuccessIcon from "@/shared/assets/icons/toast-2.svg";
 import CakeIcon from "@/shared/assets/icons/birthday.svg";
 import WarningIcon from "@/shared/assets/icons/warning.svg";
 import CloseIcon from "@/shared/assets/icons/close.svg";
+import ErrorIcon from "@/shared/assets/icons/alert.svg";
 import { Button } from "@ui/button";
 
 const iconMap: Record<string, string> = {
   success: SuccessIcon,
   birthday: CakeIcon,
-  warning: WarningIcon
+  warning: WarningIcon,
+  error: ErrorIcon,
 };
 
 // Маппинг стилей кнопок в зависимости от label
@@ -34,7 +36,8 @@ export const NotificationItem = ({
 }: Notification) => {
   const remove = useNotificationStore((state) => state.remove);
 
-  const iconSrc = iconType && iconMap[iconType] ? iconMap[iconType] : iconMap.success;
+  const iconSrc =
+    iconType && iconMap[iconType] ? iconMap[iconType] : iconMap.success;
   const hasButtons = actions && actions.length > 0;
 
   const handleClose = () => {
