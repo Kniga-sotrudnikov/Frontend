@@ -1,4 +1,4 @@
-import type { OrgUnit } from "@/widgets/navbar/ui/navbar-types"
+import type { OrgUnit } from "@/entities/org-structure"
 
 function countEmployee(unit: OrgUnit): number {
     if (!unit.items?.length) return unit.employeeCount ?? 0

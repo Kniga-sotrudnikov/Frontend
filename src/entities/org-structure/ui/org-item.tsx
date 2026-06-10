@@ -8,7 +8,7 @@ import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 
-interface OrgItem {
+export interface OrgItem {
   id: string;
   name: string;
   headName: string;

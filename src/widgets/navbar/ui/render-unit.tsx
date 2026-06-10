@@ -7,7 +7,7 @@ import {
   CollapsibleTrigger,
 } from "@/shared/ui/collapsible"
 import ArrowIcon from "@icons/arrow-right.svg?react"
-import type { OrgUnit } from "@/widgets/navbar/ui/navbar-types"
+import type { OrgUnit } from "@/entities/org-structure"
 import countEmployee  from "@/widgets/navbar/assets/count-employee"
 
 interface RenderUnitProps { 

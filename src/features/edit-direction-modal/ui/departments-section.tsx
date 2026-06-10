@@ -4,43 +4,39 @@ import { Button } from "@/shared/ui/button";
 import { OrgItem, type OrgItemType } from "@/entities/org-structure";
 import { EmptyPlaceholder } from "@/shared/ui/empty-placeholder";
 
-interface OrgSectionProps {
-  title: string;
+interface DepartmentsSectionProps {
   items: OrgItemType[];
-  addButtonText: string;
   onAdd: () => void;
   onEdit: (item: OrgItemType) => void;
   onDelete: (item: OrgItemType) => void;
   onReorder?: (items: OrgItemType[]) => void;
 }
 
-export const OrgSection = ({
-  title,
+export const DepartmentsSection = ({
   items,
-  addButtonText,
   onAdd,
   onEdit,
   onDelete,
   onReorder,
-}: OrgSectionProps) => {
+}: DepartmentsSectionProps) => {
   const { orderedItems, handleDragEnd } = useDraggableList(items, onReorder);
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h3 className="body-m-semibold tracking-[0.15px] text-black">
-          {title}
+          Отделы
           <span className="body-m-semibold tracking-[0.15px] text-black">
             ({orderedItems.length})
           </span>
         </h3>
         <Button variant="ghost" className="px-4" onClick={onAdd}>
-          <span className="button-small text-purple-400">{`+ ${addButtonText}`}</span>
+          <span className="button-small text-purple-400">+ Добавить отдел</span>
         </Button>
       </div>
 
       <DraggableList items={orderedItems} onDragEnd={handleDragEnd}>
-        <div className="space-y-3  flex-col fit-content overflow-y-hidden overflow-x-hidden">
+        <div className="space-y-3 flex-col fit-content overflow-y-hidden overflow-x-hidden">
           {orderedItems.map((item) => (
             <OrgItem
               key={item.id}
