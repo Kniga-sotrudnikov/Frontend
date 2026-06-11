@@ -11,7 +11,7 @@ const isHrForTest = true;
 function Navbar() {
   const tree = useOrgStructureStore((state) => state.tree);
   const [selectedName, setSelectedName] = useState<string | null>(null);
-  
+
   return (
     <div className="h-full w-full bg-white px-2.5 pt-2.5 pb-5 rounded-t-2xl border-t border-l border-r border-border">
       <div className="flex items-center justify-between">

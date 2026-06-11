@@ -1,1 +1,1 @@
-export { ZoomablePDF } from "./zoomable-pdf"
+export { ZoomablePDF } from "./zoomable-pdf";

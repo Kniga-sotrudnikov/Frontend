@@ -64,13 +64,17 @@ export const CompetenciesContent = ({
         Компетенции
       </p>
 
-      <div className={variant === "dialog" ? "flex flex-col gap-1.5" : "flex flex-col gap-1"}>
+      <div
+        className={
+          variant === "dialog" ? "flex flex-col gap-1.5" : "flex flex-col gap-1"
+        }
+      >
         {options.map((option) => (
           <label
             key={option.id}
             className={cn(
               "flex items-center gap-1 cursor-pointer",
-              variant === "dialog" && "hover:bg-gray-50"
+              variant === "dialog" && "hover:bg-gray-50",
             )}
           >
             <Checkbox

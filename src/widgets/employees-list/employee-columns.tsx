@@ -32,7 +32,7 @@ const statusConfig: Record<
 
 export const getEmployeeColumns = (
   favoritesIds: (number | string)[],
-  onToggleFavorite: (id: number | string) => void
+  onToggleFavorite: (id: number | string) => void,
 ): ColumnDef<EmployeeData>[] => [
   {
     id: "favorite",
@@ -46,8 +46,8 @@ export const getEmployeeColumns = (
           onClick={() => onToggleFavorite(row.original.id)}
           className={isFavorite ? "text-accent" : "text-gray-300"}
         />
-      )
-    }, 
+      );
+    },
   },
   {
     accessorKey: "name",
@@ -94,7 +94,7 @@ export const getEmployeeColumns = (
 
 export const getVacancyColumns = (
   favoritesIds: (number | string)[],
-  onToggleFavorite: (id: number | string) => void
+  onToggleFavorite: (id: number | string) => void,
 ): ColumnDef<VacancyData>[] => [
   {
     id: "favorite",

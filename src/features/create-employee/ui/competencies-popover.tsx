@@ -19,5 +19,11 @@ export const CompetenciesPopoverContent = ({
   displayedOptions,
   ...props
 }: CompetenciesPopoverContentProps) => {
-  return <CompetenciesContent {...props} options={displayedOptions} variant="popover" />;
+  return (
+    <CompetenciesContent
+      {...props}
+      options={displayedOptions}
+      variant="popover"
+    />
+  );
 };

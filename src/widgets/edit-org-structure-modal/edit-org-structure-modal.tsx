@@ -1,39 +1,39 @@
 import { useState } from "react";
-import { useOrgStructureStore } from "@/entities/org-structure";
+import {
+  useOrgStructureStore,
+  OrgSection,
+  type OrgItemType,
+} from "@/entities/org-structure";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
-import { OrgSection } from "./org-section";
 import { useNotificationStore } from "@/shared/model/stores";
-import type { OrgItem } from "@/entities/org-structure";
 import {
   EditDirectionModal,
   type Department,
+  type DirectionFormValues,
 } from "@/features/edit-direction-modal";
 
 interface EditOrgStructureModalProps {
   children: React.ReactNode;
   onAddDirection?: () => void;
   onAddSis?: () => void;
-  // onEditSis?: (item: OrgItem) => void;
-  onDeleteDirection?: (item: OrgItem) => void;
-  onDeleteSis?: (item: OrgItem) => void;
-  onSave?: (data: { directions: OrgItem[]; sisList: OrgItem[] }) => void;
+  onDeleteDirection?: (item: OrgItemType) => void;
+  onDeleteSis?: (item: OrgItemType) => void;
 }
 
 export function EditOrgStructureModal({
   children,
-  // directions: initialDirections,
-  // sisList: initialSisList,
   onAddDirection,
   onAddSis,
-  // onEditDirection,
-  // onEditSis,
   onDeleteDirection,
   onDeleteSis,
-  onSave,
 }: EditOrgStructureModalProps) {
-  const direction = useOrgStructureStore((state) => state.directions);
+  const directions = useOrgStructureStore((state) => state.directions);
   const sisList = useOrgStructureStore((state) => state.sisList);
+  const updateItem = useOrgStructureStore((state) => state.updateItem);
+  const setDirections = useOrgStructureStore((state) => state.setDirections);
+  const setSisList = useOrgStructureStore((state) => state.setSisList);
+
   const [open, setOpen] = useState(false);
   const [editingDirection, setEditingDirection] = useState<{
     id: string;
@@ -42,7 +42,7 @@ export function EditOrgStructureModal({
     entityType: "direction" | "sis";
   } | null>(null);
 
-  const [localDirections, setLocalDirections] = useState(direction);
+  const [localDirections, setLocalDirections] = useState(directions);
   const [localSisList, setLocalSisList] = useState(sisList);
   const addNotification = useNotificationStore((state) => state.add);
 
@@ -76,15 +76,15 @@ export function EditOrgStructureModal({
     }
   };
 
-  const handleEditDirection = (item: OrgItem) => {
-    setEditingDirection({...item, entityType: "direction"});
-  }
+  const handleEditDirection = (item: OrgItemType) => {
+    setEditingDirection({ ...item, entityType: "direction" });
+  };
 
-  const handleEditSis = (item: OrgItem) => {
+  const handleEditSis = (item: OrgItemType) => {
     setEditingDirection({ ...item, entityType: "sis" });
   };
 
-  const handleDeleteDirection = (item: OrgItem) => {
+  const handleDeleteDirection = (item: OrgItemType) => {
     if (onDeleteDirection) {
       onDeleteDirection(item);
     } else {
@@ -92,7 +92,7 @@ export function EditOrgStructureModal({
     }
   };
 
-  const handleDeleteSis = (item: OrgItem) => {
+  const handleDeleteSis = (item: OrgItemType) => {
     if (onDeleteSis) {
       onDeleteSis(item);
     } else {
@@ -100,16 +100,45 @@ export function EditOrgStructureModal({
     }
   };
 
-  const handleSave = () => {
-    if (onSave) {
-      onSave({ directions: localDirections, sisList: localSisList });
+  const handleDirectionSave = (values: DirectionFormValues) => {
+    if (!editingDirection) return;
+
+    const updated: OrgItemType = {
+      id: editingDirection.id,
+      name: values.name,
+      headName: values.headName,
+    };
+
+    // 1. Пишем в стор — «источник правды» обновлён
+    updateItem(editingDirection.entityType, updated);
+
+    // 2. Обновляем открытый черновик, иначе список в модалке
+    //    покажет старое имя (localDirections — снапшот, он стор не слушает)
+    const patch = (items: OrgItemType[]) =>
+      items.map((i) => (i.id === updated.id ? updated : i));
+    if (editingDirection.entityType === "direction") {
+      setLocalDirections(patch);
+    } else {
+      setLocalSisList(patch);
     }
+
+    setEditingDirection(null);
+    addNotification({
+      iconType: "success",
+      title: "Сохранено",
+      message: `«${values.name}» обновлено`,
+    });
+  };
+
+  const handleSave = () => {
+    setDirections(localDirections);
+    setSisList(localSisList);
     setOpen(false);
   };
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      setLocalDirections(direction);
+    if (isOpen) {
+      setLocalDirections(directions);
       setLocalSisList(sisList);
     }
     setOpen(isOpen);
@@ -126,7 +155,7 @@ export function EditOrgStructureModal({
             </h2>
             <DialogClose variant="icon" />
           </div>
-  
+
           <div className="flex flex-col flex-1 gap-6 overflow-y-auto">
             <OrgSection
               title="Направления"
@@ -147,7 +176,7 @@ export function EditOrgStructureModal({
               onReorder={setLocalSisList}
             />
           </div>
-  
+
           <div className="flex justify-end gap-3.75 shrink-0">
             <DialogClose variant="custom" asChild>
               <Button
@@ -177,7 +206,7 @@ export function EditOrgStructureModal({
         initialName={editingDirection?.name ?? ""}
         initialHeadName={editingDirection?.headName ?? ""}
         departments={mockDepartments}
-        onSave={() => setEditingDirection(null)}
+        onSave={handleDirectionSave}
       />
     </>
   );

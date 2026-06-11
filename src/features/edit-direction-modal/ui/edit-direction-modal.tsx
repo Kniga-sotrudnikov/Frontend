@@ -4,12 +4,12 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { useNotificationStore } from "@/shared/model/stores";
-import { EmployeeSelect, shortEmployees as mockEmployees } from "@/entities/employee";
-import { DepartmentsSection } from "./departments-section";
-import type {
-  EditDirectionModalProps,
-  Department,
-} from "../model/types";
+import {
+  EmployeeSelect,
+  shortEmployees as mockEmployees,
+} from "@/entities/employee";
+import { OrgSection } from "@/entities/org-structure";
+import type { EditDirectionModalProps, Department } from "../model/types";
 
 const DESCRIPTION_MAX_LENGTH = 300;
 
@@ -39,7 +39,8 @@ export function EditDirectionModal({
   const [headName, setHeadName] = useState(initialHeadName);
   const [headId, setHeadId] = useState<number | null>(initialHeadId);
   const [description, setDescription] = useState(initialDescription);
-  const [departments, setDepartments] = useState<Department[]>(initialDepartments);
+  const [departments, setDepartments] =
+    useState<Department[]>(initialDepartments);
 
   const addNotification = useNotificationStore((state) => state.add);
 
@@ -66,7 +67,7 @@ export function EditDirectionModal({
     if (onSave) {
       onSave?.({ name, headName, description }, departments);
     } else {
-       showDevNotification();
+      showDevNotification();
     }
   };
 
@@ -100,7 +101,9 @@ export function EditDirectionModal({
       <DialogContent className="max-w-188! rounded-8 gap-6 px-7 py-8 flex flex-col h-auto">
         <div className="flex items-center justify-between shrink-0">
           <h2 className="body-m-semibold text-black">
-            {(entityType === 'direction') ? "Редактировать направление" : "Редактировать СИС"}
+            {entityType === "direction"
+              ? "Редактировать направление"
+              : "Редактировать СИС"}
           </h2>
           <DialogClose variant="icon" />
         </div>
@@ -109,7 +112,9 @@ export function EditDirectionModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="body-s-semibold text-gray-700">
-                {(entityType === 'direction') ? "Название направления" : "Название службы"}
+                {entityType === "direction"
+                  ? "Название направления"
+                  : "Название службы"}
               </label>
               <Input
                 value={name}
@@ -119,12 +124,17 @@ export function EditDirectionModal({
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="body-s-semibold text-gray-700">
-                {(entityType === "direction") ? "Руководитель направления" : "Руководитель службы"}
+                {entityType === "direction"
+                  ? "Руководитель направления"
+                  : "Руководитель службы"}
               </label>
               <EmployeeSelect
                 value={headId}
                 employees={shortEmployees}
-                onSelect={(id, name) => { setHeadId(id); setHeadName(name); }}
+                onSelect={(id, name) => {
+                  setHeadId(id);
+                  setHeadName(name);
+                }}
               />
             </div>
           </div>
@@ -144,7 +154,9 @@ export function EditDirectionModal({
             </span>
           </div>
 
-          <DepartmentsSection
+          <OrgSection
+            title="Отделы"
+            addButtonText="Добавить отдел"
             items={departments}
             onAdd={handleAddDepartment}
             onEdit={handleEditDepartment}

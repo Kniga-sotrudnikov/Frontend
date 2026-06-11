@@ -1,1 +1,1 @@
-export { ClarifyingModal } from "./clarifying-modal"
+export { ClarifyingModal } from "./clarifying-modal";

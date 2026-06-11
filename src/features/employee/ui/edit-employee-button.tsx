@@ -8,7 +8,11 @@ interface EditEmployeeButtonProps {
   children: React.ReactNode;
 }
 
-export const EditEmployeeButton = ({ employee, onSuccess, children }: EditEmployeeButtonProps) => {
+export const EditEmployeeButton = ({
+  employee,
+  onSuccess,
+  children,
+}: EditEmployeeButtonProps) => {
   const [open, setOpen] = useState(false);
 
   const handleSuccess = (updatedEmployee: EmployeeData) => {

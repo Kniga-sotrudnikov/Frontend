@@ -43,7 +43,7 @@ export const CompetenciesSelect = ({
     setTempValue((prev) =>
       prev.includes(competencyId)
         ? prev.filter((id) => id !== competencyId)
-        : [...prev, competencyId]
+        : [...prev, competencyId],
     );
   };
 
@@ -51,7 +51,7 @@ export const CompetenciesSelect = ({
     setFullTempValue((prev) =>
       prev.includes(competencyId)
         ? prev.filter((id) => id !== competencyId)
-        : [...prev, competencyId]
+        : [...prev, competencyId],
     );
   };
 
@@ -88,7 +88,7 @@ export const CompetenciesSelect = ({
     if (!searchQuery.trim()) return COMPETENCY_OPTIONS;
     const query = searchQuery.toLowerCase();
     return COMPETENCY_OPTIONS.filter((option) =>
-      option.label.toLowerCase().includes(query)
+      option.label.toLowerCase().includes(query),
     );
   }, [searchQuery]);
 
@@ -96,7 +96,7 @@ export const CompetenciesSelect = ({
     if (!fullSearchQuery.trim()) return COMPETENCY_OPTIONS;
     const query = fullSearchQuery.toLowerCase();
     return COMPETENCY_OPTIONS.filter((option) =>
-      option.label.toLowerCase().includes(query)
+      option.label.toLowerCase().includes(query),
     );
   }, [fullSearchQuery]);
 
@@ -106,7 +106,7 @@ export const CompetenciesSelect = ({
   const hasMore = filteredOptions.length > VISIBLE_COUNT;
 
   const selectedLabels = value.map(
-    (id) => COMPETENCY_OPTIONS.find((opt) => opt.id === id)?.label || id
+    (id) => COMPETENCY_OPTIONS.find((opt) => opt.id === id)?.label || id,
   );
 
   const labelToIdMap = useMemo(() => {
@@ -127,7 +127,7 @@ export const CompetenciesSelect = ({
             className={cn(
               "w-full justify-start font-normal h-[44px] mt-1 hover:bg-transparent",
               error && "border-red-600",
-              !error && "border-gray-200"
+              !error && "border-gray-200",
             )}
           >
             <div className="flex flex-nowrap items-center gap-1 flex-1 min-w-0 overflow-hidden">

@@ -1,6 +1,12 @@
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
 import ExitIcon from "@/shared/assets/icons/exit.svg?react";
-import UserIcon from "@/shared/assets/icons/user.svg?react"
+import UserIcon from "@/shared/assets/icons/user.svg?react";
 import { useNavigate } from "react-router";
 import { ROUTES } from "@/shared/model/routes/routes";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
@@ -16,7 +22,13 @@ interface HeaderUserCardProps {
 
 const mockEmployeeProfile = {
   primaryInfo: (
-    <EmployeePrimaryInfo status="working" name="Алексеева Виктория" position="Менеджер по карьерному развитию" franchise="Фандрайзинг и продажи" department="Бизнес"/>
+    <EmployeePrimaryInfo
+      status="working"
+      name="Алексеева Виктория"
+      position="Менеджер по карьерному развитию"
+      franchise="Фандрайзинг и продажи"
+      department="Бизнес"
+    />
   ),
 
   roles: [
@@ -27,15 +39,26 @@ const mockEmployeeProfile = {
   ],
 
   emailInfo: (
-    <EmployeeContacts type="email" corpContact="victoria.alekseeva@company.com" persContact="victoria.alekseeva2@company.com"/>
+    <EmployeeContacts
+      type="email"
+      corpContact="victoria.alekseeva@company.com"
+      persContact="victoria.alekseeva2@company.com"
+    />
   ),
 
   phoneInfo: (
-        <EmployeeContacts type="phone" corpContact="+420777123456" persContact="+420777123457"/>
+    <EmployeeContacts
+      type="phone"
+      corpContact="+420777123456"
+      persContact="+420777123457"
+    />
   ),
 
   leader: (
-    <LeaderPrimaryInfo leaderName="Иванов Игорь Сергеевич" leaderPosition="HR"/>
+    <LeaderPrimaryInfo
+      leaderName="Иванов Игорь Сергеевич"
+      leaderPosition="HR"
+    />
   ),
 
   city: "Прага",
@@ -60,62 +83,67 @@ const mockEmployeeProfile = {
     "Communication",
     "Leadership",
   ],
-  onExportPDF : () => {
+  onExportPDF: () => {
     console.log("Export PDF");
-  }
+  },
 };
 
-export function HeaderUserCard({ name, position, avatar }: HeaderUserCardProps) {
+export function HeaderUserCard({
+  name,
+  position,
+  avatar,
+}: HeaderUserCardProps) {
   // Получаем первую букву имени для аватара-заглушки
   const firstLetter = name.charAt(0);
   const navigate = useNavigate();
 
-const handleLogout = () => {
-  navigate(ROUTES.LOGIN);
-};
-
+  const handleLogout = () => {
+    navigate(ROUTES.LOGIN);
+  };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger hasArrow>
-            <div className="flex h-[60px] w-[247px] items-center gap-3 rounded-lg  px-2 py-2">
-      {/* Аватар */}
-      {avatar ? (
-        <img
-          src={avatar}
-          alt={name}
-          className="h-11 w-11 rounded-full object-cover"
-        />
-      ) : (
-        <div className="flex shrink-0 h-11 w-11 items-center justify-center rounded-full bg-purple-100 text-purple-600">
-          <span className="text-lg font-semibold">{firstLetter}</span>
-        </div>
-      )}
+        <div className="flex h-[60px] w-[247px] items-center gap-3 rounded-lg  px-2 py-2">
+          {/* Аватар */}
+          {avatar ? (
+            <img
+              src={avatar}
+              alt={name}
+              className="h-11 w-11 rounded-full object-cover"
+            />
+          ) : (
+            <div className="flex shrink-0 h-11 w-11 items-center justify-center rounded-full bg-purple-100 text-purple-600">
+              <span className="text-lg font-semibold">{firstLetter}</span>
+            </div>
+          )}
 
-      {/* Имя и должность */}
-      <div className="flex flex-col gap-1 items-start">
-        <span className="body-m-semibold whitespace-nowrap text-black">
-          {name}
-        </span>
-        <span className="body-m text-black">{position}</span>
-      </div>
-    </div>
+          {/* Имя и должность */}
+          <div className="flex flex-col gap-1 items-start">
+            <span className="body-m-semibold whitespace-nowrap text-black">
+              {name}
+            </span>
+            <span className="body-m text-black">{position}</span>
+          </div>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={8}>
         <EmployeeProfileDialog {...mockEmployeeProfile}>
-          <DropdownMenuItem onSelect={(event) => {
-            event.preventDefault();
-          }}>
-          <UserIcon className="size-5 text-current"/>
-          Мой профиль
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={(event) => {
+              event.preventDefault();
+            }}
+          >
+            <UserIcon className="size-5 text-current" />
+            Мой профиль
+          </DropdownMenuItem>
         </EmployeeProfileDialog>
 
-        <DropdownMenuSeparator/>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-          <ExitIcon/>
+          <ExitIcon />
           Выйти
-          </DropdownMenuItem>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -1,5 +1,5 @@
-import type { ComponentProps } from 'react'
-import { Collapsible as CollapsiblePrimitive } from 'radix-ui'
+import type { ComponentProps } from "react";
+import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 
 function CollapsibleTrigger({
   ...props
@@ -9,7 +9,7 @@ function CollapsibleTrigger({
       data-slot="collapsible-trigger"
       {...props}
     />
-  )
+  );
 }
 
-export { CollapsibleTrigger }
+export { CollapsibleTrigger };

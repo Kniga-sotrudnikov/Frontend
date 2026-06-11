@@ -8,16 +8,16 @@ import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 
-export interface OrgItem {
+export interface OrgItemType {
   id: string;
   name: string;
   headName: string;
 }
 
 interface OrgItemProps {
-  item: OrgItem;
-  onEdit: (item: OrgItem) => void;
-  onDelete: (item: OrgItem) => void;
+  item: OrgItemType;
+  onEdit: (item: OrgItemType) => void;
+  onDelete: (item: OrgItemType) => void;
 }
 
 export const OrgItem = ({ item, onEdit, onDelete }: OrgItemProps) => {

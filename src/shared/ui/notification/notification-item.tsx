@@ -9,7 +9,7 @@ import { Button } from "@ui/button";
 const iconMap: Record<string, string> = {
   success: SuccessIcon,
   birthday: CakeIcon,
-  warning: WarningIcon
+  warning: WarningIcon,
 };
 
 // Маппинг стилей кнопок в зависимости от label
@@ -34,7 +34,8 @@ export const NotificationItem = ({
 }: Notification) => {
   const remove = useNotificationStore((state) => state.remove);
 
-  const iconSrc = iconType && iconMap[iconType] ? iconMap[iconType] : iconMap.success;
+  const iconSrc =
+    iconType && iconMap[iconType] ? iconMap[iconType] : iconMap.success;
   const hasButtons = actions && actions.length > 0;
 
   const handleClose = () => {

@@ -1,10 +1,10 @@
-import type { ComponentProps } from 'react'
-import { Collapsible as CollapsiblePrimitive } from 'radix-ui'
+import type { ComponentProps } from "react";
+import { Collapsible as CollapsiblePrimitive } from "radix-ui";
 
 function Collapsible({
   ...props
 }: ComponentProps<typeof CollapsiblePrimitive.Root>) {
-  return <CollapsiblePrimitive.Root data-slot="collapsible" {...props} />
+  return <CollapsiblePrimitive.Root data-slot="collapsible" {...props} />;
 }
 
-export { Collapsible }
+export { Collapsible };

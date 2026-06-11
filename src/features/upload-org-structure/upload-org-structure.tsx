@@ -1,5 +1,5 @@
-import { useState, useRef } from "react"
-import type { DragEvent } from "react"
+import { useState, useRef } from "react";
+import type { DragEvent } from "react";
 import {
   Dialog,
   DialogContent,
@@ -7,52 +7,58 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/shared/ui/dialog"
-import { Button } from "@/shared/ui/button"
-import ImportIcon from "@/shared/assets/icons/import.svg?react"
+} from "@/shared/ui/dialog";
+import { Button } from "@/shared/ui/button";
+import ImportIcon from "@/shared/assets/icons/import.svg?react";
 
 interface UploadOrgStructureProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-const ACCEPTED_TYPES = ["application/pdf", "image/png", "image/jpeg"]
-const MAX_SIZE_MB = 10
+const ACCEPTED_TYPES = ["application/pdf", "image/png", "image/jpeg"];
+const MAX_SIZE_MB = 10;
 
 function UploadOrgStructure({ open, onOpenChange }: UploadOrgStructureProps) {
-  const [file, setFile] = useState<File | null>(null)
-  const [isDragging, setIsDragging] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFile(incoming: File) {
-    if (!ACCEPTED_TYPES.includes(incoming.type)) return
-    if (incoming.size > MAX_SIZE_MB * 1024 * 1024) return
-    setFile(incoming)
+    if (!ACCEPTED_TYPES.includes(incoming.type)) return;
+    if (incoming.size > MAX_SIZE_MB * 1024 * 1024) return;
+    setFile(incoming);
   }
 
   function onDragOver(e: DragEvent<HTMLDivElement>) {
-    e.preventDefault()
-    setIsDragging(true)
+    e.preventDefault();
+    setIsDragging(true);
   }
 
   function onDragLeave() {
-    setIsDragging(false)
+    setIsDragging(false);
   }
 
   function onDrop(e: DragEvent<HTMLDivElement>) {
-    e.preventDefault()
-    setIsDragging(false)
-    const dropped = e.dataTransfer.files[0]
-    if (dropped) handleFile(dropped)
+    e.preventDefault();
+    setIsDragging(false);
+    const dropped = e.dataTransfer.files[0];
+    if (dropped) handleFile(dropped);
   }
 
   function handleClose() {
-    setFile(null)
-    onOpenChange(false)
+    setFile(null);
+    onOpenChange(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={(value) => { if (!value) handleClose(); else onOpenChange(value) }}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (!value) handleClose();
+        else onOpenChange(value);
+      }}
+    >
       <DialogContent className="min-w-[420px] gap-3">
         <DialogHeader className="justify-center">
           <DialogTitle className="font-bold text-lg">
@@ -95,8 +101,8 @@ function UploadOrgStructure({ open, onOpenChange }: UploadOrgStructureProps) {
             className="hidden"
             accept=".pdf,.png,.jpg,.jpeg"
             onChange={(e) => {
-              const picked = e.target.files?.[0]
-              if (picked) handleFile(picked)
+              const picked = e.target.files?.[0];
+              if (picked) handleFile(picked);
             }}
           />
         </div>
@@ -104,11 +110,16 @@ function UploadOrgStructure({ open, onOpenChange }: UploadOrgStructureProps) {
           <Button variant="outline" onClick={handleClose}>
             Отмена
           </Button>
-          <Button disabled={!file} className="disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100">Обновить структуру</Button>
+          <Button
+            disabled={!file}
+            className="disabled:bg-muted disabled:text-muted-foreground disabled:opacity-100"
+          >
+            Обновить структуру
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
-export { UploadOrgStructure }
+export { UploadOrgStructure };

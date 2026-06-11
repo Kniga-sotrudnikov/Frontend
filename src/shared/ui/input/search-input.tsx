@@ -1,6 +1,6 @@
-import { Input } from "./input"
-import { type InputProps } from "./input-types"
-import SearchIcon from "@/shared/assets/icons/search.svg"
+import { Input } from "./input";
+import { type InputProps } from "./input-types";
+import SearchIcon from "@/shared/assets/icons/search.svg";
 
 function SearchInput(props: Omit<InputProps, "iconLeft">) {
   return (
@@ -9,7 +9,7 @@ function SearchInput(props: Omit<InputProps, "iconLeft">) {
       iconLeft={SearchIcon}
       placeholder={props.placeholder || "Поиск..."}
     />
-  )
+  );
 }
 
-export { SearchInput }
+export { SearchInput };

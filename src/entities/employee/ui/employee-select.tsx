@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
+import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib";
 import ArrowDownIcon from "@/shared/assets/icons/arrow-down.svg?react";
 import ArrowUpIcon from "@/shared/assets/icons/arrow-up.svg?react";
-import type { TShortEmployee } from "../model/types";
+import type { TShortEmployee } from "@/entities/employee";
 
 interface EmployeeSelectProps {
   value: number | null;
@@ -24,11 +25,12 @@ export const EmployeeSelect = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
+        <Button
           type="button"
+          variant="plain"
+          size="plain"
           className={cn(
-            "flex h-8 w-full items-center justify-between gap-2 rounded-(--radius-8) border border-input bg-transparent px-2.5 transition-colors",
-            "focus-visible:outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+            "h-8 w-full justify-between gap-2 border-input px-2.5 font-normal transition-colors",
             open && "border-ring ring-3 ring-ring/50",
           )}
         >
@@ -45,7 +47,7 @@ export const EmployeeSelect = ({
           ) : (
             <ArrowDownIcon className="size-4 shrink-0 text-muted-foreground" />
           )}
-        </button>
+        </Button>
       </PopoverTrigger>
 
       <PopoverContent
@@ -55,15 +57,17 @@ export const EmployeeSelect = ({
       >
         <div className="flex flex-col max-h-52 overflow-y-auto">
           {employees.map((e) => (
-            <button
+            <Button
               key={e.id}
               type="button"
+              variant="ghost"
+              size="plain"
               onClick={() => {
                 onSelect(e.id, e.name);
                 setOpen(false);
               }}
               className={cn(
-                "flex flex-col gap-0.5 px-3 py-2 text-left hover:bg-gray-100 transition-colors",
+                "w-full flex-col items-start gap-0.5 rounded-none px-3 py-2 font-normal text-left hover:bg-gray-100 transition-colors",
                 e.id === value && "bg-gray-50",
               )}
             >
@@ -71,7 +75,7 @@ export const EmployeeSelect = ({
                 {e.name}
               </span>
               <span className="text-xs text-gray-500">{e.job}</span>
-            </button>
+            </Button>
           ))}
           {employees.length === 0 && (
             <span className="px-3 py-2 text-xs text-muted-foreground">
