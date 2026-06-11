@@ -14,6 +14,8 @@ import TrashIcon from "@icons/trash.svg?react";
 import EyevisibleIcon from "@icons/eye-visible.svg?react";
 import EditIcon from "@icons/edit.svg?react";
 import GridIcon from "@icons/grid.svg?react";
+import { AddTagDialog } from "./add-tag-dialog";
+import { EmployeesListDialog } from "./employees-list-dialog";
 import type {
   TExpertiseFilterGroup,
   TExpertiseFilterOption,
@@ -28,12 +30,20 @@ type TagsManagerProps = {
     groupKey: string,
     tagValue: string,
   ) => Array<{ name: string; position: string; photo?: string }>;
+  getAllEmployees?: () => Array<{ id: string; name: string; position: string; photo?: string }>;
 };
 
 type EditingTag = {
   groupKey: string;
   optionValue: string;
   newLabel: string;
+};
+
+type Employee = {
+  id: string;
+  name: string;
+  position: string;
+  photo?: string;
 };
 
 const labelToValue = (label: string): string => {
@@ -65,6 +75,7 @@ export const TagsManager = ({
   trigger,
   getTagUsageCount,
   getEmployeesByTag,
+  getAllEmployees,
 }: TagsManagerProps) => {
   const [open, setOpen] = useState(false);
   const [localGroups, setLocalGroups] =
@@ -79,6 +90,11 @@ export const TagsManager = ({
     tagValue: string;
     label: string;
   } | null>(null);
+  
+  // Состояния для выбора сотрудников при создании тега
+  const [employeesListForTag, setEmployeesListForTag] = useState<Employee[]>([]);
+  const [selectedEmployeesForTag, setSelectedEmployeesForTag] = useState<string[]>([]);
+  
   const addNotification = useNotificationStore((state) => state.add);
 
   const handleSave = () => {
@@ -207,6 +223,11 @@ export const TagsManager = ({
   };
 
   const handleAddTagClick = () => {
+    // Загружаем список сотрудников при открытии диалога
+    if (getAllEmployees) {
+      setEmployeesListForTag(getAllEmployees());
+    }
+    setSelectedEmployeesForTag([]);
     setIsAddDialogOpen(true);
     if (localGroups.length > 0 && !selectedGroupForNewTag) {
       setSelectedGroupForNewTag(localGroups[0].key);
@@ -221,9 +242,44 @@ export const TagsManager = ({
     setSelectedTagForEmployees({ groupKey, tagValue, label });
   };
 
+  const handleAddTag = () => {
+    addTag(selectedGroupForNewTag, newTagName);
+    // TODO: Здесь также нужно добавить тег выбранным сотрудникам
+    // selectedEmployeesForTag.forEach(employeeId => {
+    //   addTagToEmployee(employeeId, newTagName);
+    // });
+  };
+
+  const handleEmployeeToggle = (employeeId: string) => {
+    setSelectedEmployeesForTag((prev) =>
+      prev.includes(employeeId)
+        ? prev.filter((id) => id !== employeeId)
+        : [...prev, employeeId]
+    );
+  };
+
+  const handleClearEmployees = () => {
+    setSelectedEmployeesForTag([]);
+  };
+
+  const employeesList = selectedTagForEmployees
+    ? getEmployeesByTag?.(
+        selectedTagForEmployees.groupKey,
+        selectedTagForEmployees.tagValue,
+      ) ?? []
+    : [];
+
+  const employeesCount = selectedTagForEmployees
+    ? getTagUsageCount?.(
+        selectedTagForEmployees.groupKey,
+        selectedTagForEmployees.tagValue,
+      ) ?? 0
+    : 0;
+
   return (
     <>
       <div onClick={() => setOpen(true)}>{trigger}</div>
+      
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="!w-[752px] !h-[912px] !max-w-none !p-0 !rounded-8 !border !border-gray-200 !bg-white">
           <div className="flex justify-between items-center px-5 pt-5 pb-0 flex-shrink-0">
@@ -391,152 +447,29 @@ export const TagsManager = ({
         </DialogContent>
       </Dialog>
 
-      {/* Диалог добавления тега */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="!w-[500px] !max-w-none !p-0 !rounded-8 !border !border-gray-200 !bg-white">
-          <div className="flex justify-between items-center px-5 pt-5 pb-0 flex-shrink-0">
-            <DialogHeader className="!p-0">
-              <DialogTitle className="text-[16px] font-semibold text-gray-900 leading-[22px]">
-                Добавить тег
-              </DialogTitle>
-            </DialogHeader>
-            <DialogClose variant="icon" />
-          </div>
+      <AddTagDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        groups={localGroups}
+        selectedGroup={selectedGroupForNewTag}
+        onGroupChange={setSelectedGroupForNewTag}
+        tagName={newTagName}
+        onTagNameChange={setNewTagName}
+        employees={employeesListForTag}
+        selectedEmployees={selectedEmployeesForTag}
+        onEmployeeToggle={handleEmployeeToggle}
+        onClearEmployees={handleClearEmployees}
+        onAdd={handleAddTag}
+        onSave={handleAddTag}
+      />
 
-          <div className="px-5 py-5">
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-[#2C2A29]">
-                Категория
-              </label>
-              <select
-                value={selectedGroupForNewTag}
-                onChange={(e) => setSelectedGroupForNewTag(e.target.value)}
-                className="w-full h-10 px-3 text-sm border border-[#DFDDDD] rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500"
-              >
-                <option value="" disabled>
-                  Выберите категорию
-                </option>
-                {localGroups.map((group) => (
-                  <option key={group.key} value={group.key}>
-                    {group.title}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2 text-[#2C2A29]">
-                Название тега
-              </label>
-              <Input
-                placeholder="Введите название тега"
-                value={newTagName}
-                onChange={(e) => setNewTagName(e.target.value)}
-                className="h-10 text-sm"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && selectedGroupForNewTag) {
-                    addTag(selectedGroupForNewTag, newTagName);
-                  }
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-3 px-5 pb-5 pt-0">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setIsAddDialogOpen(false);
-                setNewTagName("");
-                setSelectedGroupForNewTag("");
-              }}
-              className="w-[89px] h-[32px]"
-            >
-              Отмена
-            </Button>
-            <Button
-              onClick={() => addTag(selectedGroupForNewTag, newTagName)}
-              disabled={!selectedGroupForNewTag || !newTagName.trim()}
-              className="w-[89px] h-[32px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Добавить
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Диалог со списком сотрудников */}
-      <Dialog
+      <EmployeesListDialog
         open={!!selectedTagForEmployees}
         onOpenChange={() => setSelectedTagForEmployees(null)}
-      >
-        <DialogContent className="!w-[500px] !max-w-none !p-0 !rounded-8 !border !border-gray-200 !bg-white">
-          <div className="flex justify-between items-center px-5 pt-5 pb-0 flex-shrink-0">
-            <DialogHeader className="!p-0">
-              <DialogTitle className="text-[16px] font-semibold text-gray-900 leading-[22px]">
-                {selectedTagForEmployees?.label}
-              </DialogTitle>
-            </DialogHeader>
-            <DialogClose variant="icon" />
-          </div>
-
-          <div className="px-5 py-5">
-            <div className="mb-4">
-              <span className="text-sm text-gray-600">
-                Сотрудники:{" "}
-                {getTagUsageCount?.(
-                  selectedTagForEmployees?.groupKey || "",
-                  selectedTagForEmployees?.tagValue || "",
-                ) ?? 0}
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-3 max-h-[400px] overflow-y-auto">
-              {getEmployeesByTag?.(
-                selectedTagForEmployees?.groupKey || "",
-                selectedTagForEmployees?.tagValue || "",
-              ).map((employee, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-3 p-2 border-b border-gray-100"
-                >
-                  <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
-                    {employee.photo ? (
-                      <img
-                        src={employee.photo}
-                        alt={employee.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">
-                        Нет фото
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    <div className="font-medium text-sm">{employee.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {employee.position}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex justify-end px-5 pb-5 pt-0">
-            <Button
-              variant="outline"
-              onClick={() => setSelectedTagForEmployees(null)}
-              className="w-[89px] h-[32px]"
-            >
-              Закрыть
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+        title={selectedTagForEmployees?.label ?? ""}
+        employees={employeesList}
+        totalCount={employeesCount}
+      />
     </>
   );
 };

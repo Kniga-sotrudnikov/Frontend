@@ -21,6 +21,13 @@ type TExpertiseFilterProps = {
   onApply: (value: TExpertiseFilterValue) => void;
   isAdmin?: boolean;
   onTagsUpdate?: (updatedGroups: TExpertiseFilterGroup[]) => void;
+  // Новые пропсы для работы с сотрудниками
+  getTagUsageCount?: (groupKey: string, tagValue: string) => number;
+  getEmployeesByTag?: (
+    groupKey: string,
+    tagValue: string,
+  ) => Array<{ name: string; position: string; photo?: string }>;
+  getAllEmployees?: () => Array<{ id: string; name: string; position: string; photo?: string }>;
 };
 
 export const ExpertiseFilter = ({
@@ -29,6 +36,9 @@ export const ExpertiseFilter = ({
   onApply,
   isAdmin = true,
   onTagsUpdate,
+  getTagUsageCount,
+  getEmployeesByTag,
+  getAllEmployees,
 }: TExpertiseFilterProps) => {
   const [open, setOpen] = useState(false);
   const [draftValue, setDraftValue] = useState<TExpertiseFilterValue>(value);
@@ -168,6 +178,9 @@ export const ExpertiseFilter = ({
                     <EditIcon className="size-4" />
                   </Button>
                 }
+                getTagUsageCount={getTagUsageCount}
+                getEmployeesByTag={getEmployeesByTag}
+                getAllEmployees={getAllEmployees}
               />
             </div>
           )}

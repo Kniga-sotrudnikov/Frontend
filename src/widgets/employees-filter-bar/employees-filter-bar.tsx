@@ -10,6 +10,7 @@ import {
 } from "@/features/employee";
 import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useNotificationStore } from "@/shared/model/stores";
+import { employees } from "@/entities/employee/model/mock";
 
 export const EmployeesFilterBar = () => {
   const viewType = useEmployeesPageStore((state) => state.viewType);
@@ -38,6 +39,41 @@ export const EmployeesFilterBar = () => {
     });
   };
 
+  // Функция для подсчета количества сотрудников с тегом
+  // groupKey пока не используется, но может понадобиться в будущем для фильтрации по группе
+  const getTagUsageCount = (_groupKey: string, tagValue: string) => {
+    // Ищем сотрудников у которых есть этот тег в competencies или tags
+    return employees.filter(emp => 
+      emp.competencies?.includes(tagValue) || 
+      emp.tags?.includes(tagValue)
+    ).length;
+  };
+
+  // Функция для получения списка сотрудников с тегом
+  // groupKey пока не используется, но может понадобиться в будущем для фильтрации по группе
+  const getEmployeesByTag = (
+    _groupKey: string,
+    tagValue: string,
+  ) => {
+    return employees
+      .filter(emp => emp.competencies?.includes(tagValue) || emp.tags?.includes(tagValue))
+      .map(emp => ({
+        name: emp.full_name,
+        position: emp.job_title,
+        photo: emp.photo_url,
+      }));
+  };
+
+  // Функция для получения всех сотрудников (для выбора при создании тега)
+  const getAllEmployees = () => {
+    return employees.map(emp => ({
+      id: String(emp.id),
+      name: emp.full_name,
+      position: emp.job_title,
+      photo: emp.photo_url,
+    }));
+  };
+
   return (
     <div className="flex items-center gap-3 flex-nowrap">
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
@@ -50,6 +86,10 @@ export const EmployeesFilterBar = () => {
         groups={expertiseFilterGroups}
         value={expertiseFilter}
         onApply={setExpertiseFilter}
+        isAdmin={true}
+        getTagUsageCount={getTagUsageCount}
+        getEmployeesByTag={getEmployeesByTag}
+        getAllEmployees={getAllEmployees}
       />
 
       <div className="ml-auto" />
