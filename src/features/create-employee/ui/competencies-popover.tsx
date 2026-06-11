@@ -13,11 +13,20 @@ interface CompetenciesPopoverContentProps {
   hasMore: boolean;
   showAll: boolean;
   filteredCount: number;
+  onAddTag: (tagName: string, color?: string) => void;
 }
 
 export const CompetenciesPopoverContent = ({
   displayedOptions,
+  onAddTag,
   ...props
 }: CompetenciesPopoverContentProps) => {
-  return <CompetenciesContent {...props} options={displayedOptions} variant="popover" />;
+  return (
+    <CompetenciesContent
+      {...props}
+      options={displayedOptions}
+      variant="popover"
+      onAddTag={onAddTag}
+    />
+  );
 };

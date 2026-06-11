@@ -12,10 +12,12 @@ interface CompetenciesDialogContentProps {
   filteredOptions: CompetencyOption[];
   onClear: () => void;
   onApply: () => void;
+  onAddTag: (tagName: string, color?: string) => void;
 }
 
 export const CompetenciesDialogContent = ({
   filteredOptions,
+  onAddTag,
   ...props
 }: CompetenciesDialogContentProps) => {
   return (
@@ -25,6 +27,7 @@ export const CompetenciesDialogContent = ({
           {...props}
           options={filteredOptions}
           variant="dialog"
+          onAddTag={onAddTag}
         />
       </DialogContent>
     </Dialog>
