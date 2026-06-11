@@ -25,14 +25,14 @@ export function handleHttpError(error: AxiosError): HttpError {
     backendMessage = "Ошибка сети. Попробуйте позже";
   }
 
-  useNotificationStore.getState().add({
-    type: "error",
-    iconType: "warning",
-    title: "Ошибка",
-    message: backendMessage,
-  });
-
-  //TODO: Написать обработку определённых ошибок. Например при 401 - redirect
+  if (status !== 401) {
+    useNotificationStore.getState().add({
+      type: "error",
+      iconType: "error",
+      title: "Ошибка",
+      message: backendMessage,
+    });
+  }
 
   return {
     detail: backendMessage,
