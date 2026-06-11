@@ -39,7 +39,7 @@ export const EmployeesFilterBar = () => {
   };
 
   return (
-    <div className="flex items-center gap-3 flex-wrap">
+    <div className="flex items-center gap-3 flex-nowrap">
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
       <FilterCities
         options={citiesFilterOptions}
@@ -51,6 +51,9 @@ export const EmployeesFilterBar = () => {
         value={expertiseFilter}
         onApply={setExpertiseFilter}
       />
+
+      <div className="ml-auto" />
+      
       <div className="flex items-center gap-3">
         {viewType === "list" && (
           <Button

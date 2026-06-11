@@ -7,29 +7,35 @@ import { CheckboxSelect } from "@ui/checkbox-select";
 import { DropdownMenuSeparator } from "@ui/dropdown-menu";
 import { SearchInput } from "@ui/input";
 import { FilterRemoveBadge } from "@/features/employee/ui/filter-remove-badge";
+import { TagsManager } from "./tags-manager";
 import type {
   TExpertiseFilterGroup,
   TExpertiseFilterValue,
 } from "@/features/employee/model/types";
+import FilterIcon from "@icons/filter.svg?react";
+import EditIcon from "@icons/edit.svg?react";
 
 type TExpertiseFilterProps = {
   groups: TExpertiseFilterGroup[];
   value: TExpertiseFilterValue;
   onApply: (value: TExpertiseFilterValue) => void;
+  isAdmin?: boolean;
+  onTagsUpdate?: (updatedGroups: TExpertiseFilterGroup[]) => void;
 };
 
 export const ExpertiseFilter = ({
   groups,
   value,
   onApply,
+  isAdmin = true,
+  onTagsUpdate,
 }: TExpertiseFilterProps) => {
   const [open, setOpen] = useState(false);
   const [draftValue, setDraftValue] = useState<TExpertiseFilterValue>(value);
   const [searchValue, setSearchValue] = useState("");
+  const [currentGroups, setCurrentGroups] = useState<TExpertiseFilterGroup[]>(groups);
 
   const normalizedSearchValue = searchValue.trim().toLowerCase();
-  const isClearButtonVisible =
-    Object.keys(draftValue).length > 0 || searchValue.length > 0;
 
   const filteredGroups = normalizedSearchValue
     ? groups
@@ -108,11 +114,6 @@ export const ExpertiseFilter = ({
     setDraftValue({});
   };
 
-  const handleClearAll = () => {
-    setDraftValue({});
-    setSearchValue("");
-  };
-
   const handleApplyFilters = () => {
     onApply(draftValue);
     setSearchValue("");
@@ -133,6 +134,11 @@ export const ExpertiseFilter = ({
     });
   };
 
+  const handleTagsUpdate = (updatedGroups: TExpertiseFilterGroup[]) => {
+    setCurrentGroups(updatedGroups);
+    onTagsUpdate?.(updatedGroups);
+  };
+
   return (
     <div>
       <Popover open={open} onOpenChange={handleOpenChange}>
@@ -145,22 +151,39 @@ export const ExpertiseFilter = ({
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="p-6 w-100 max-h-[min(var(--radix-popover-content-available-height),750px)]"
+          className="p-4 w-78 max-h-[min(var(--radix-popover-content-available-height),750px)]"
           sideOffset={10}
         >
+          {isAdmin && (
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <FilterIcon className="size-5" />
+                <span className="body-m-semibold">Теги</span>
+              </div>
+              <TagsManager
+                groups={currentGroups}
+                onSave={handleTagsUpdate}
+                trigger={
+                  <Button variant="ghost" size="icon-sm" className="h-6 w-6">
+                    <EditIcon className="size-4" />
+                  </Button>
+                }
+              />
+            </div>
+          )}
           <SearchInput
-            wrapperClassName="h-11 shrink-0"
+            wrapperClassName="h-9 shrink-0"
             placeholder="Найти тег"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
           />
 
-          <div className="flex justify-between mt-4">
+          <div className="flex justify-between mt-2">
             <span className="body-m-semibold">{`Активные фильтры (${activeFilters.length})`}</span>
             <Button
               type="button"
               variant="link"
-              size="plain"
+              size="xs"
               onClick={handleResetFilters}
             >
               Сбросить
@@ -206,12 +229,7 @@ export const ExpertiseFilter = ({
             </div>
           )}
           <div className="flex self-end gap-2">
-            {isClearButtonVisible && (
-              <Button variant="outline" onClick={handleClearAll}>
-                Очистить
-              </Button>
-            )}
-            <Button onClick={handleApplyFilters}>Применить</Button>
+            <Button onClick={handleApplyFilters} className="w-[118px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)] disabled:opacity-50 disabled:cursor-not-allowed">Применить</Button>
           </div>
         </PopoverContent>
       </Popover>
