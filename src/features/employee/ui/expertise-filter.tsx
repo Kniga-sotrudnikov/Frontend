@@ -21,7 +21,6 @@ type TExpertiseFilterProps = {
   onApply: (value: TExpertiseFilterValue) => void;
   isAdmin?: boolean;
   onTagsUpdate?: (updatedGroups: TExpertiseFilterGroup[]) => void;
-  // Новые пропсы для работы с сотрудниками
   getTagUsageCount?: (groupKey: string, tagValue: string) => number;
   getEmployeesByTag?: (
     groupKey: string,

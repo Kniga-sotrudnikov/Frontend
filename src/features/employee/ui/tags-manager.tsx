@@ -326,7 +326,6 @@ export const TagsManager = ({
                       >
                         {isEditing ? (
                           <div className="flex flex-col gap-2 mt-1">
-                            {/* Категория и Название */}
                             <div className="flex gap-3">
                               <div className="flex-1">
                                 <label className="block text-[14px] font-normal leading-5 tracking-[0.1px] text-[#141615] mb-2">
@@ -364,9 +363,6 @@ export const TagsManager = ({
                               </div>
                             </div>
 
-                            {/* Блок с сотрудниками */}
-
-                            {/* Счетчик и кнопка Добавить сотрудников */}
                             <div className="flex justify-between items-center">
                               <span className="text-[14px] font-normal text-[#141615]">
                                 Сотрудники: {usageCount}
@@ -375,14 +371,20 @@ export const TagsManager = ({
                                 variant="ghost"
                                 size="xs"
                                 className="text-purple-500 mb-1 ml-1"
-                                onClick={handleAddTagClick}
+                                onClick={() => {
+                                  addNotification({
+                                    type: "info",
+                                    title: "В разработке",
+                                    message:
+                                      "Функция добавления сотрудников к тегу будет реализована в ближайшее время",
+                                  });
+                                }}
                               >
                                 <PlusIcon className="size-2 mr-1" />
                                 Добавить сотрудников
                               </Button>
                             </div>
 
-                            {/* Список сотрудников */}
                             <div className="flex flex-col gap-2 mt-1">
                               {getEmployeesByTag?.(
                                 editingTag.groupKey,
@@ -427,7 +429,6 @@ export const TagsManager = ({
                                 ))}
                             </div>
 
-                            {/* Показать всех */}
                             {usageCount > 0 && (
                               <button
                                 className="text-xs text-gray-500 tracking-[-0.5px] hover:text-gray-700 text-left w-fit"
@@ -443,7 +444,6 @@ export const TagsManager = ({
                               </button>
                             )}
 
-                            {/* Кнопки Отменить и Сохранить */}
                             <div className="flex justify-end gap-2">
                               <Button
                                 variant="outline"
