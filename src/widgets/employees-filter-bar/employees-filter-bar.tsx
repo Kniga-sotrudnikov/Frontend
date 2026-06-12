@@ -39,32 +39,33 @@ export const EmployeesFilterBar = () => {
     });
   };
 
-  // Функция для подсчета количества сотрудников с тегом
-  // groupKey пока не используется, но может понадобиться в будущем для фильтрации по группе
   const getTagUsageCount = (_groupKey: string, tagValue: string) => {
-    // Ищем сотрудников у которых есть этот тег в competencies или tags
-    return employees.filter(emp => 
-      emp.competencies?.includes(tagValue) || 
-      emp.tags?.includes(tagValue)
-    ).length;
+    const count = employees.filter(emp => {
+      const hasInTags = emp.tags?.includes(tagValue) || false;
+      const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
+      return hasInTags || hasInCompetencies;
+    }).length;
+    
+    return count;
   };
 
-  // Функция для получения списка сотрудников с тегом
-  // groupKey пока не используется, но может понадобиться в будущем для фильтрации по группе
   const getEmployeesByTag = (
     _groupKey: string,
     tagValue: string,
   ) => {
-    return employees
-      .filter(emp => emp.competencies?.includes(tagValue) || emp.tags?.includes(tagValue))
-      .map(emp => ({
-        name: emp.full_name,
-        position: emp.job_title,
-        photo: emp.photo_url,
-      }));
+    const filtered = employees.filter(emp => {
+      const hasInTags = emp.tags?.includes(tagValue) || false;
+      const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
+      return hasInTags || hasInCompetencies;
+    });
+    
+    return filtered.map(emp => ({
+      name: emp.full_name,
+      position: emp.job_title,
+      photo: emp.photo_url,
+    }));
   };
 
-  // Функция для получения всех сотрудников (для выбора при создании тега)
   const getAllEmployees = () => {
     return employees.map(emp => ({
       id: String(emp.id),

@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogClose,
 } from "@ui/dialog";
-import { Input } from "@ui/input";
 import { useNotificationStore } from "@/shared/model/stores";
 import PlusIcon from "@icons/plus.svg?react";
 import TrashIcon from "@icons/trash.svg?react";
@@ -20,6 +19,8 @@ import type {
   TExpertiseFilterGroup,
   TExpertiseFilterOption,
 } from "../model/types";
+import { FormSelect } from "@/features/create-employee/ui/form-select";
+import { FormInput } from "@/features/create-employee/ui/form-input";
 
 type TagsManagerProps = {
   groups: TExpertiseFilterGroup[];
@@ -30,7 +31,12 @@ type TagsManagerProps = {
     groupKey: string,
     tagValue: string,
   ) => Array<{ name: string; position: string; photo?: string }>;
-  getAllEmployees?: () => Array<{ id: string; name: string; position: string; photo?: string }>;
+  getAllEmployees?: () => Array<{
+    id: string;
+    name: string;
+    position: string;
+    photo?: string;
+  }>;
 };
 
 type EditingTag = {
@@ -90,11 +96,14 @@ export const TagsManager = ({
     tagValue: string;
     label: string;
   } | null>(null);
-  
-  // Состояния для выбора сотрудников при создании тега
-  const [employeesListForTag, setEmployeesListForTag] = useState<Employee[]>([]);
-  const [selectedEmployeesForTag, setSelectedEmployeesForTag] = useState<string[]>([]);
-  
+
+  const [employeesListForTag, setEmployeesListForTag] = useState<Employee[]>(
+    [],
+  );
+  const [selectedEmployeesForTag, setSelectedEmployeesForTag] = useState<
+    string[]
+  >([]);
+
   const addNotification = useNotificationStore((state) => state.add);
 
   const handleSave = () => {
@@ -223,9 +232,11 @@ export const TagsManager = ({
   };
 
   const handleAddTagClick = () => {
-    // Загружаем список сотрудников при открытии диалога
     if (getAllEmployees) {
-      setEmployeesListForTag(getAllEmployees());
+      const employeesList = getAllEmployees();
+      setEmployeesListForTag(employeesList || []);
+    } else {
+      setEmployeesListForTag([]);
     }
     setSelectedEmployeesForTag([]);
     setIsAddDialogOpen(true);
@@ -244,17 +255,13 @@ export const TagsManager = ({
 
   const handleAddTag = () => {
     addTag(selectedGroupForNewTag, newTagName);
-    // TODO: Здесь также нужно добавить тег выбранным сотрудникам
-    // selectedEmployeesForTag.forEach(employeeId => {
-    //   addTagToEmployee(employeeId, newTagName);
-    // });
   };
 
   const handleEmployeeToggle = (employeeId: string) => {
     setSelectedEmployeesForTag((prev) =>
       prev.includes(employeeId)
         ? prev.filter((id) => id !== employeeId)
-        : [...prev, employeeId]
+        : [...prev, employeeId],
     );
   };
 
@@ -263,23 +270,23 @@ export const TagsManager = ({
   };
 
   const employeesList = selectedTagForEmployees
-    ? getEmployeesByTag?.(
+    ? (getEmployeesByTag?.(
         selectedTagForEmployees.groupKey,
         selectedTagForEmployees.tagValue,
-      ) ?? []
+      ) ?? [])
     : [];
 
   const employeesCount = selectedTagForEmployees
-    ? getTagUsageCount?.(
+    ? (getTagUsageCount?.(
         selectedTagForEmployees.groupKey,
         selectedTagForEmployees.tagValue,
-      ) ?? 0
+      ) ?? 0)
     : 0;
 
   return (
     <>
       <div onClick={() => setOpen(true)}>{trigger}</div>
-      
+
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="!w-[752px] !h-[912px] !max-w-none !p-0 !rounded-8 !border !border-gray-200 !bg-white">
           <div className="flex justify-between items-center px-5 pt-5 pb-0 flex-shrink-0">
@@ -291,7 +298,7 @@ export const TagsManager = ({
             <DialogClose variant="icon" />
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 pb-6">
+          <div className="flex-1 overflow-y-auto px-4 pb-6">
             {localGroups.map((group) => (
               <div key={group.key} className="mb-6">
                 <div className="flex justify-between items-center mb-3">
@@ -318,40 +325,138 @@ export const TagsManager = ({
                         }`}
                       >
                         {isEditing ? (
-                          <div className="flex flex-col gap-3">
-                            <div className="flex items-center gap-4">
-                              <Input
-                                value={editingTag.newLabel}
-                                onChange={(e) =>
-                                  setEditingTag({
-                                    ...editingTag,
-                                    newLabel: e.target.value,
-                                  })
-                                }
-                                className="h-9 text-sm flex-1 max-w-[300px]"
-                                autoFocus
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter") saveEditTag();
-                                  if (e.key === "Escape") setEditingTag(null);
-                                }}
-                              />
+                          <div className="flex flex-col gap-2 mt-1">
+                            {/* Категория и Название */}
+                            <div className="flex gap-3">
+                              <div className="flex-1">
+                                <label className="block text-[14px] font-normal leading-5 tracking-[0.1px] text-[#141615] mb-2">
+                                  Категория
+                                </label>
+                                <FormSelect
+                                  value={editingTag.groupKey}
+                                  onValueChange={(value) =>
+                                    setEditingTag({
+                                      ...editingTag,
+                                      groupKey: value,
+                                    })
+                                  }
+                                  options={localGroups.map((g) => ({
+                                    value: g.key,
+                                    label: g.title,
+                                  }))}
+                                  placeholder="Выберите категорию"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <label className="block text-[14px] font-normal leading-5 tracking-[0.1px] text-[#141615] mb-2">
+                                  Название
+                                </label>
+                                <FormInput
+                                  placeholder="Например, Опыт в коучинге"
+                                  value={editingTag.newLabel}
+                                  onChange={(e) =>
+                                    setEditingTag({
+                                      ...editingTag,
+                                      newLabel: e.target.value,
+                                    })
+                                  }
+                                />
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2 ml-9">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={saveEditTag}
-                                className="h-8 px-3 text-sm"
-                              >
-                                Сохранить
-                              </Button>
+
+                            {/* Блок с сотрудниками */}
+
+                            {/* Счетчик и кнопка Добавить сотрудников */}
+                            <div className="flex justify-between items-center">
+                              <span className="text-[14px] font-normal text-[#141615]">
+                                Сотрудники: {usageCount}
+                              </span>
                               <Button
                                 variant="ghost"
-                                size="sm"
-                                onClick={() => setEditingTag(null)}
-                                className="h-8 px-3 text-sm"
+                                size="xs"
+                                className="text-purple-500 mb-1 ml-1"
+                                onClick={handleAddTagClick}
                               >
-                                Отмена
+                                <PlusIcon className="size-2 mr-1" />
+                                Добавить сотрудников
+                              </Button>
+                            </div>
+
+                            {/* Список сотрудников */}
+                            <div className="flex flex-col gap-2 mt-1">
+                              {getEmployeesByTag?.(
+                                editingTag.groupKey,
+                                editingTag.optionValue,
+                              )
+                                ?.slice(0, 3)
+                                .map((emp, idx) => (
+                                  <div
+                                    key={idx}
+                                    className="flex items-center w-fit h-[44px] p-1 bg-[#F6F6F6] rounded"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-7 h-7 rounded-full bg-gray-200 overflow-hidden">
+                                        {emp.photo ? (
+                                          <img
+                                            src={emp.photo}
+                                            alt={emp.name}
+                                            className="w-full h-full object-cover"
+                                          />
+                                        ) : (
+                                          <div className="w-7 h-7 flex items-center justify-center text-gray-500 text-xs">
+                                            Нет фото
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <div className="text-[12px] font-normal text-[#2C2A29]">
+                                          {emp.name}
+                                        </div>
+                                        <div className="text-[12px] font-normal text-[#7B7979]">
+                                          {emp.position}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      className="text-[#FF383C] hover:text-red-700"
+                                    >
+                                      <TrashIcon className="size-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                            </div>
+
+                            {/* Показать всех */}
+                            {usageCount > 0 && (
+                              <button
+                                className="text-xs text-gray-500 tracking-[-0.5px] hover:text-gray-700 text-left w-fit"
+                                onClick={() =>
+                                  handleShowEmployees(
+                                    editingTag.groupKey,
+                                    editingTag.optionValue,
+                                    editingTag.newLabel,
+                                  )
+                                }
+                              >
+                                Показать всех ({usageCount})
+                              </button>
+                            )}
+
+                            {/* Кнопки Отменить и Сохранить */}
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                onClick={() => setEditingTag(null)}
+                                className="w-[105px] h-[32px] text-xs font-medium border-purple-500 text-purple-500 hover:bg-purple-50 leading-5 tracking-[-0.75px]"
+                              >
+                                Отменить
+                              </Button>
+                              <Button
+                                onClick={saveEditTag}
+                                className="w-[111px] h-[33px] text-xs font-medium bg-purple-500 hover:bg-purple-600 text-white leading-5 tracking-[-0.75px]"
+                              >
+                                Сохранить
                               </Button>
                             </div>
                           </div>

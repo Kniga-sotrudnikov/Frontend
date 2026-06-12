@@ -11,7 +11,7 @@ export const employees: TEmployee[] = [
     status: "vacation",
     birthday_display: "14.05.1990",
     city: "Москва",
-    tags: ["Английский (В2)", "Готов к командировкам"],
+    tags: ["employment", "english_b1", "ready-for-business-trips"],
     email_corporate: "t.ivanova@company.com",
     email_personal: "t.ivanova@gmail.com",
     phone_corporate: "+7 (495) 123-45-67",
@@ -30,7 +30,7 @@ export const employees: TEmployee[] = [
     status: "active",
     birthday_display: "17.05.1992",
     city: "Санкт-Петербург",
-    tags: ["Английский (С1)", "Готов к командировкам"],
+    tags: ["social-franchise", "flexible-schedule", "event_management"],
     email_corporate: "a.ivanova@company.com",
     email_personal: "a.ivanova@yandex.ru",
     phone_corporate: "+7 (812) 234-56-78",
@@ -49,7 +49,7 @@ export const employees: TEmployee[] = [
     status: "vacation",
     birthday_display: "14.05.1988",
     city: "Москва",
-    tags: ["Методология", "Коучинг"],
+    tags: ["expertise-center", "methodology", "completed-adaptation-cycle"],
     email_corporate: "y.vybornova@company.com",
     email_personal: "y.vybornova@gmail.com",
     phone_corporate: "+7 (495) 345-67-89",
@@ -68,7 +68,7 @@ export const employees: TEmployee[] = [
     status: "active",
     birthday_display: "19.05.1985",
     city: "Москва",
-    tags: ["Управление", "Стратегия"],
+    tags: ["fundraising-and-trainings", "grant-application", "scaling"],
     email_corporate: "m.stremyakov@company.com",
     email_personal: "m.stremyakov@mail.ru",
     phone_corporate: "+7 (495) 456-78-90",
@@ -87,7 +87,7 @@ export const employees: TEmployee[] = [
     status: "vacation",
     birthday_display: "25.05.1991",
     city: "Уфа",
-    tags: ["Аудит", "Методология"],
+    tags: ["methodical-development", "research-interest", "alumni-status"],
     email_corporate: "a.manshin@company.com",
     email_personal: "a.manshin@gmail.com",
     phone_corporate: "+7 (347) 234-56-78",
@@ -106,7 +106,7 @@ export const employees: TEmployee[] = [
     status: "active",
     birthday_display: "14.05.1993",
     city: "Казань",
-    tags: ["Продажи", "Переговоры"],
+    tags: ["fundraising", "hr-experience", "volunteer-management"],
     email_corporate: "p.ivanov@company.com",
     email_personal: "p.ivanov@bk.ru",
     phone_corporate: "+7 (843) 345-67-89",
@@ -218,13 +218,11 @@ export const shortEmployees: TShortEmployee[] = [
 
 export interface BirthdayPerson {
   name: string;
-  date: string; // формат "DD MMM"
+  date: string;
   fullDate: Date;
 }
 
-// Моковые данные дней рождений
 export const MOCK_BIRTHDAYS: BirthdayPerson[] = [
-  // Майские дни рождения
   { name: "Выборнова Яна", date: "14 мая", fullDate: new Date(2024, 4, 14) },
   { name: "Иванов Павел", date: "14 мая", fullDate: new Date(2024, 4, 14) },
   { name: "Иванова Татьяна", date: "16 мая", fullDate: new Date(2024, 4, 16) },
@@ -237,7 +235,6 @@ export const MOCK_BIRTHDAYS: BirthdayPerson[] = [
   },
 ];
 
-// Получить дни рождения текущего месяца
 export const getCurrentMonthBirthdays = (): BirthdayPerson[] => {
   const currentMonth = new Date().getMonth();
   return MOCK_BIRTHDAYS.filter(
@@ -245,7 +242,6 @@ export const getCurrentMonthBirthdays = (): BirthdayPerson[] => {
   );
 };
 
-// Получить дни рождения сегодня
 export const getTodayBirthdays = (): BirthdayPerson[] => {
   const today = new Date();
   const todayMonth = today.getMonth();
@@ -260,7 +256,6 @@ export const getTodayBirthdays = (): BirthdayPerson[] => {
   });
 };
 
-// Получить ближайшие дни рождения (следующие 7 дней)
 export const getUpcomingBirthdays = (days: number = 7): BirthdayPerson[] => {
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -272,7 +267,6 @@ export const getUpcomingBirthdays = (days: number = 7): BirthdayPerson[] => {
       birthday.fullDate.getDate(),
     );
 
-    // Если ДР уже был в этом году, берем следующий год
     if (birthdayThisYear < today) {
       birthdayThisYear.setFullYear(currentYear + 1);
     }

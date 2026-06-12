@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@ui/button";
 import {
   Dialog,
@@ -52,6 +52,13 @@ export const AddTagDialog = ({
   onSave,
 }: AddTagDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      console.log("AddTagDialog opened, employees count:", employees.length);
+      console.log("Employees sample:", employees.slice(0, 2));
+    }
+  }, [open, employees]);
 
   const groupOptions = groups.map((group) => ({
     value: group.key,
@@ -114,7 +121,6 @@ export const AddTagDialog = ({
             </div>
           </div>
 
-          {/* Блок с сотрудниками - показываем только если есть сотрудники */}
           {employees.length > 0 && (
             <div className="border border-[#D6D6D6] rounded-[8px] p-4 shadow-[3px_3px_10px_rgba(0,0,0,0.05)]">
               <div className="mb-0">
@@ -132,42 +138,43 @@ export const AddTagDialog = ({
               </div>
 
               <div className="flex flex-col gap-1 max-h-[164px] overflow-y-auto mt-2">
-                {filteredEmployees.map((employee) => (
-                  <div
-                    key={employee.id}
-                    className="flex items-center gap-3 p-1 border border-[#D6D6D6] rounded-[8px]"
-                  >
-                    <Checkbox
-                      checked={selectedEmployees.includes(employee.id)}
-                      onCheckedChange={() => onEmployeeToggle?.(employee.id)}
-                      className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
-                    />
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="w-6 h-6 rounded-full bg-gray-200 overflow-hidden">
-                        {employee.photo ? (
-                          <img
-                            src={employee.photo}
-                            alt={employee.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">
-                            Нет фото
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <div className="text-[14px] font-semibold leading-5 tracking-[0.1px] text-[#2C2A29]">
-                          {employee.name}
+                {filteredEmployees.length > 0 ? (
+                  filteredEmployees.map((employee) => (
+                    <div
+                      key={employee.id}
+                      className="flex items-center gap-3 p-1 border border-[#D6D6D6] rounded-[8px]"
+                    >
+                      <Checkbox
+                        checked={selectedEmployees.includes(employee.id)}
+                        onCheckedChange={() => onEmployeeToggle?.(employee.id)}
+                        className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+                      />
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-6 h-6 rounded-full bg-gray-200 overflow-hidden">
+                          {employee.photo ? (
+                            <img
+                              src={employee.photo}
+                              alt={employee.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-500 text-xs">
+                              Нет фото
+                            </div>
+                          )}
                         </div>
-                        <div className="text-[12px] font-normal leading-[14px] text-gray-500">
-                          {employee.position}
+                        <div>
+                          <div className="text-[14px] font-semibold leading-5 tracking-[0.1px] text-[#2C2A29]">
+                            {employee.name}
+                          </div>
+                          <div className="text-[12px] font-normal leading-[14px] text-gray-500">
+                            {employee.position}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-                {filteredEmployees.length === 0 && (
+                  ))
+                ) : (
                   <div className="text-center text-gray-500 py-4">
                     Сотрудники не найдены
                   </div>
@@ -191,6 +198,12 @@ export const AddTagDialog = ({
                   Добавить
                 </Button>
               </div>
+            </div>
+          )}
+
+          {employees.length === 0 && (
+            <div className="text-center text-gray-500 py-4 border border-dashed border-gray-300 rounded-lg">
+              Нет данных о сотрудниках
             </div>
           )}
 
