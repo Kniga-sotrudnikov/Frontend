@@ -7,13 +7,16 @@ interface CreateEmployeeButtonProps {
   className?: string;
 }
 
-export const CreateEmployeeButton = ({ onClick, className }: CreateEmployeeButtonProps) => {
+export const CreateEmployeeButton = ({
+  onClick,
+  className,
+}: CreateEmployeeButtonProps) => {
   return (
-    <Button 
-      onClick={onClick} 
+    <Button
+      onClick={onClick}
       className={cn(
         "gap-2 w-[197px] h-[40px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)]",
-        className
+        className,
       )}
     >
       <PlusIcon className="size-3" />

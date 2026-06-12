@@ -19,12 +19,15 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         wrapperClassName={cn(
           "h-[44px] !px-3 mt-1",
           error && "border-red-600",
-          wrapperClassName
+          wrapperClassName,
         )}
-        className={cn("!py-0 text-base placeholder:text-black/50 h-full tracking-[0.75px]", className)}
+        className={cn(
+          "!py-0 text-base placeholder:text-black/50 h-full tracking-[0.75px]",
+          className,
+        )}
       />
     );
-  }
+  },
 );
 
 FormInput.displayName = "FormInput";

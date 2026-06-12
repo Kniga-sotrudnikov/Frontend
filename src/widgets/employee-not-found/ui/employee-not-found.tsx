@@ -37,7 +37,6 @@ export const EmployeeNotFound = ({
           size="default"
           onClick={onClearSearch || handleNotification}
           className="h-7 w-[150px] rounded-[8px] bg-purple-500 px-4 text-xs text-white hover:bg-purple-400"
-          
         >
           Очистить поиск
         </Button>

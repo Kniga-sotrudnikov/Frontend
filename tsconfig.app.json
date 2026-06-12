@@ -16,7 +16,7 @@
     "paths": {
       "@/*": ["./src/*"],
       "@ui/*": ["./src/shared/ui/*"],
-      "@icons/*": ["./src/shared/assets/icons/*"],
+      "@icons/*": ["./src/shared/assets/icons/*"]
     },
     /* Linting */
     "noUnusedLocals": true,

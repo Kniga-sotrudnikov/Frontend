@@ -32,8 +32,10 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
 
   const handleMouseMove = (e: React.MouseEvent<HTMLImageElement>) => {
     if (!dragStart.current) return;
-    const dx = (dragStart.current.mouseX - e.clientX) / e.currentTarget.clientWidth;
-    const dy = (dragStart.current.mouseY - e.clientY) / e.currentTarget.clientHeight;
+    const dx =
+      (dragStart.current.mouseX - e.clientX) / e.currentTarget.clientWidth;
+    const dy =
+      (dragStart.current.mouseY - e.clientY) / e.currentTarget.clientHeight;
     setOffset({
       x: Math.min(1, Math.max(0, dragStart.current.offsetX + dx / (1 - size))),
       y: Math.min(1, Math.max(0, dragStart.current.offsetY + dy / (1 - size))),

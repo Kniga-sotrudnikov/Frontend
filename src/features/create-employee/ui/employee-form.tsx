@@ -41,7 +41,7 @@ interface EmployeeFormProps {
   calendarOpen: boolean;
   onCalendarOpenChange: (open: boolean) => void;
   touchedFields: Set<keyof CreateEmployeeFormValues>;
-  firstInputRef?: RefObject<HTMLInputElement >;
+  firstInputRef?: RefObject<HTMLInputElement>;
 }
 
 export const EmployeeForm = memo(function EmployeeForm({
@@ -129,7 +129,9 @@ export const EmployeeForm = memo(function EmployeeForm({
               error={!!showError("emailCorporate")}
             />
             {showError("emailCorporate") && (
-              <p className="text-xs text-red-600 mt-1">{errors.emailCorporate}</p>
+              <p className="text-xs text-red-600 mt-1">
+                {errors.emailCorporate}
+              </p>
             )}
           </div>
 
@@ -149,7 +151,9 @@ export const EmployeeForm = memo(function EmployeeForm({
               error={!!showError("phoneCorporate")}
             />
             {showError("phoneCorporate") && (
-              <p className="text-xs text-red-600 mt-1">{errors.phoneCorporate}</p>
+              <p className="text-xs text-red-600 mt-1">
+                {errors.phoneCorporate}
+              </p>
             )}
           </div>
 
@@ -204,7 +208,9 @@ export const EmployeeForm = memo(function EmployeeForm({
             </Label.Root>
             <FormSelect
               value={values.status}
-              onValueChange={(value) => onUpdate("status", value as TEmployeeStatus)}
+              onValueChange={(value) =>
+                onUpdate("status", value as TEmployeeStatus)
+              }
               options={statusOptions}
               placeholder="Выберите статус"
             />
@@ -264,7 +270,9 @@ export const EmployeeForm = memo(function EmployeeForm({
               error={!!showError("emailPersonal")}
             />
             {showError("emailPersonal") && (
-              <p className="text-xs text-red-600 mt-1">{errors.emailPersonal}</p>
+              <p className="text-xs text-red-600 mt-1">
+                {errors.emailPersonal}
+              </p>
             )}
           </div>
 
@@ -284,7 +292,9 @@ export const EmployeeForm = memo(function EmployeeForm({
               error={!!showError("phonePersonal")}
             />
             {showError("phonePersonal") && (
-              <p className="text-xs text-red-600 mt-1">{errors.phonePersonal}</p>
+              <p className="text-xs text-red-600 mt-1">
+                {errors.phonePersonal}
+              </p>
             )}
           </div>
 
@@ -295,9 +305,9 @@ export const EmployeeForm = memo(function EmployeeForm({
             <FormSelect
               value={values.city}
               onValueChange={(value) => onUpdate("city", value)}
-              options={CITY_OPTIONS.map((city) => ({ 
-                value: city.value, 
-                label: city.value 
+              options={CITY_OPTIONS.map((city) => ({
+                value: city.value,
+                label: city.value,
               }))}
               placeholder="Выберите город"
               error={!!showError("city")}
@@ -314,7 +324,9 @@ export const EmployeeForm = memo(function EmployeeForm({
             <CompetenciesSelect
               value={values.competencies}
               onChange={(value) => onUpdate("competencies", value)}
-              error={showError("competencies") ? errors.competencies : undefined}
+              error={
+                showError("competencies") ? errors.competencies : undefined
+              }
             />
           </div>
         </div>

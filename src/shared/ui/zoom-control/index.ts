@@ -1,1 +1,1 @@
-export { ZoomControl } from "./zoom-control"
+export { ZoomControl } from "./zoom-control";
