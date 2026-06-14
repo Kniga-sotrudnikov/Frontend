@@ -25,7 +25,8 @@ import type { ReactElement, ReactNode } from "react";
 interface EmployeeProfileDialogProps {
   children?: ReactNode;
   open?: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
+  editButton?: ReactNode;
   /**
    * Блок основной информации сотрудника.
    * Используется EmployeePrimaryInfo.
@@ -61,6 +62,7 @@ export const EmployeeProfileDialog = ({
   children,
   open,
   onOpenChange,
+  editButton,
   primaryInfo,
   roles,
   emailInfo,
@@ -192,14 +194,18 @@ export const EmployeeProfileDialog = ({
           <h3 className="mb-1 body-overline-semibold text-black">Обо мне</h3>
           <p className="text-xs">{aboutMe}</p>
         </div>
-        <Button
-          variant="ghost"
-          className="px-4 py-2 justify-start w-fit"
-          onClick={onExportPDF}
-        >
-          <ExportIcon className="h-4 w-4" />
-          Экспортировать в PDF
-        </Button>
+        <div className="flex justify-between items-center">
+          <Button
+            variant="ghost"
+            className="px-4 py-2 justify-start w-fit"
+            onClick={onExportPDF}
+          >
+            <ExportIcon className="h-4 w-4" />
+            Экспортировать в PDF
+          </Button>
+
+          {editButton}
+        </div>
       </DialogContent>
     </Dialog>
   );

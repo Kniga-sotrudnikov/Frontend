@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
+import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import { Button } from "@/shared/ui/button";
 import type { EmployeeData } from "@/entities/employee";
 import type { VacancyData } from "@/entities/vacancy";
@@ -10,11 +11,12 @@ import { RenderCards } from "./render-cards";
 import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
 import { useNotificationStore } from "@/shared/model/stores";
-import { useEmployeesPageStore } from "@/features/employee";
+import { EditEmployeeButton, useEmployeesPageStore } from "@/features/employee";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
 import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
+import { useAuthStore } from "@/entities/user";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -69,12 +71,20 @@ export const EmployeesList = ({
 
   const itemsByTab = tabContentMap[activeTab];
   const emptyText = emptyTextMap[activeTab];
+
+  const isAdmin = useAuthStore((state) => state.user?.role === "hr_admin");
+
   const handleToggleFavorite = () => {
     addNotification({
       iconType: "success",
       title: "В разработке",
       message: "Требуется реализовать добавление в Избранное",
     });
+  };
+
+  const handleEmployeeUpdate = (updatedEmployee: EmployeeData) => {
+    setSelectedEmployee(updatedEmployee);
+    onUpdateEmployee?.(updatedEmployee);
   };
 
   return (
@@ -237,6 +247,19 @@ export const EmployeesList = ({
           linkProfile=""
           aboutMe=""
           onExportPDF={() => {}}
+          editButton={
+            isAdmin ? (
+              <EditEmployeeButton
+                employee={selectedEmployee}
+                onSuccess={handleEmployeeUpdate}
+              >
+                <Button className="w-42">
+                  <EditIcon />
+                  Редактировать
+                </Button>
+              </EditEmployeeButton>
+            ) : undefined
+          }
         />
       )}
     </div>
