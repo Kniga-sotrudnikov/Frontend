@@ -43,7 +43,10 @@ export const getEmployeeColumns = (
       const isFavorite = favoritesIds.includes(row.original.id);
       return (
         <StarIcon
-          onClick={() => onToggleFavorite(row.original.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(row.original.id);
+          }}
           className={isFavorite ? "text-accent" : "text-gray-300"}
         />
       );
@@ -81,7 +84,13 @@ export const getEmployeeColumns = (
     cell: ({ getValue }) => {
       const status = getValue() as EmployeeData["status"];
       const config = statusConfig[status];
-      return <Badge className={config.className}>{config.label}</Badge>;
+      return (
+        <div className="w-full overflow-hidden text-clip mask-[linear-gradient(to_right,black_calc(100%-20px),transparent)]">
+          <Badge className={`${config.className} whitespace-nowrap`}>
+            {config.label}
+          </Badge>
+        </div>
+      );
     },
   },
   {

@@ -3,7 +3,7 @@ import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-inf
 import { ProfessionCard } from "@/widgets/profession-card";
 import { EmptyPlaceholder } from "@ui/empty-placeholder";
 import type { EmployeesListType } from "./types";
-import type { EmployeeData } from "@/entities/employee";
+import { type EmployeeData } from "@/entities/employee";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 
 interface RenderCardsProps {
@@ -13,6 +13,7 @@ interface RenderCardsProps {
   favoritesIds?: (number | string)[];
   onToggleFavorite?: (id: number | string) => void;
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
+  onEmployeeClick: (employee: EmployeeData) => void;
 }
 
 export const RenderCards = ({
@@ -21,6 +22,7 @@ export const RenderCards = ({
   favoritesIds = [],
   onToggleFavorite,
   onUpdateEmployee,
+  onEmployeeClick,
 }: RenderCardsProps) => {
   const openModal = useVacancyModalStore((state) => state.openModal);
 
@@ -35,6 +37,7 @@ export const RenderCards = ({
           const employee = item as EmployeeData;
           return (
             <EmployeeCard
+              onClick={() => onEmployeeClick(employee)}
               key={item.id}
               city={item.city}
               linearManager={item.linearManager}

@@ -11,6 +11,10 @@ import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
 import { useNotificationStore } from "@/shared/model/stores";
 import { useEmployeesPageStore } from "@/features/employee";
+import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
+import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
+import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
+import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -28,6 +32,9 @@ export const EmployeesList = ({
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
   >("employees");
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
+    null,
+  );
   const viewType = useEmployeesPageStore((state) => state.viewType);
   const setViewType = useEmployeesPageStore((state) => state.setViewType);
   const addNotification = useNotificationStore((state) => state.add);
@@ -163,6 +170,7 @@ export const EmployeesList = ({
         <DataTable
           columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
           data={tabContentMap.employees}
+          onRowClick={setSelectedEmployee}
         />
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
@@ -171,11 +179,64 @@ export const EmployeesList = ({
         />
       ) : (
         <RenderCards
+          onEmployeeClick={setSelectedEmployee}
           items={itemsByTab}
           emptyText={emptyText}
           favoritesIds={favoritesIds}
           onToggleFavorite={handleToggleFavorite}
           onUpdateEmployee={onUpdateEmployee}
+        />
+      )}
+
+      {selectedEmployee && (
+        <EmployeeProfileDialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedEmployee(null);
+            }
+          }}
+          primaryInfo={
+            <EmployeePrimaryInfo
+              name={selectedEmployee.name}
+              position={selectedEmployee.position}
+              franchise={selectedEmployee.franchise}
+              department={selectedEmployee.department}
+              status={selectedEmployee.status}
+              photo={selectedEmployee.photo}
+              isArchived={selectedEmployee.isArchived}
+            />
+          }
+          emailInfo={
+            <EmployeeContacts
+              type="email"
+              corpContact={selectedEmployee.emailCorporate ?? ""}
+              persContact={selectedEmployee.emailPersonal ?? ""}
+            />
+          }
+          phoneInfo={
+            <EmployeeContacts
+              type="phone"
+              corpContact={selectedEmployee.phoneCorporate ?? ""}
+              persContact={selectedEmployee.phonePersonal ?? ""}
+            />
+          }
+          leader={
+            <LeaderPrimaryInfo
+              leaderName={selectedEmployee.linearManager}
+              leaderPosition=""
+              leaderPhoto=""
+            />
+          }
+          roles={[]}
+          tags={selectedEmployee.competencies ?? []}
+          city={selectedEmployee.city}
+          birthday={String(selectedEmployee.birthday)}
+          linkSocialNetwork=""
+          linkCV=""
+          linkProfile=""
+          aboutMe=""
+          onExportPDF={() => {}}
         />
       )}
     </div>

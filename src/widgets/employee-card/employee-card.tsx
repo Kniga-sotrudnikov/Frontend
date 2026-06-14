@@ -14,6 +14,7 @@ interface EmployeeCardProps {
    * Блок основной информации сотрудника.
    * Используется EmployeePrimaryInfo.
    */
+  onClick?: () => void;
   primaryInfo: ReactElement;
   city: string;
   linearManager: string;
@@ -26,6 +27,7 @@ interface EmployeeCardProps {
 }
 
 export const EmployeeCard = ({
+  onClick,
   city,
   linearManager,
   primaryInfo,
@@ -70,12 +72,20 @@ export const EmployeeCard = ({
   };
 
   return (
-    <div className="flex flex-col p-5.75 border border-gray-200 rounded-8 bg-white">
+    <div
+      onClick={onClick}
+      className="flex flex-col p-5.75 border border-gray-200 rounded-8 bg-white cursor-pointer"
+    >
       <div className="flex items-center justify-between mb-4">
         <span className="body-overline text-gray-600 wrap-break-word">
           {city}
         </span>
-        <div className="flex items-center gap-2 shrink-0">
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className="flex items-center gap-2 shrink-0"
+        >
           <button
             onClick={onFavoriteClick}
             className="p-0 text-gray-500 cursor-pointer"
