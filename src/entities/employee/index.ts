@@ -4,6 +4,13 @@ export type {
   EmployeeStatus,
   TEmployeeStatus,
   EmployeeData,
+  EmployeesListResponse,
+  CreateEmployeeRequest,
+  CreateEmployeeResponse,
+  EmployeeDetailAdminResponse,
+  PatchEmployeeRequest,
+  PatchEmployeeResponse,
+  EmployeeDetailPublicResponse,
 } from "./model/types";
 export type { BirthdayPerson } from "./model/mock";
 export { employees } from "./model/mock";
@@ -18,3 +25,24 @@ export {
   getTodayBirthdays,
   getUpcomingBirthdays,
 } from "./model/mock";
+export {
+  getEmployeesListAdmin,
+  createEmployee,
+  getEmployeeDetailAdmin,
+  patchEmployee,
+  deleteEmployee,
+  getEmployeesListPublic,
+  getEmployeeDetailPublic,
+} from "./api/employee-api";
+
+export {
+  useCreateEmployee,
+  usePatchEmployee,
+  useDeleteEmployee,
+} from "./model/employee-mutations";
+export {
+  useEmployeesListAdmin,
+  useEmployeeDetailAdmin,
+  useEmployeesListPublic,
+  useEmployeeDetailPublic,
+} from "./model/employee-queries";

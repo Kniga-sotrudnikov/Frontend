@@ -13,80 +13,14 @@ import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
 import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info";
+import { useEmployeeDetailAdmin } from "@/entities/employee";
+import { useAuthStore } from "@/entities/user";
 
 interface HeaderUserCardProps {
   name: string;
   position: string;
   avatar?: string;
 }
-
-const mockEmployeeProfile = {
-  primaryInfo: (
-    <EmployeePrimaryInfo
-      status="working"
-      name="Алексеева Виктория"
-      position="Менеджер по карьерному развитию"
-      franchise="Фандрайзинг и продажи"
-      department="Бизнес"
-    />
-  ),
-
-  roles: [
-    "Подбор персонала",
-    "Онбординг сотрудников",
-    "HR-аналитика",
-    "Ведение корпоративной культуры",
-  ],
-
-  emailInfo: (
-    <EmployeeContacts
-      type="email"
-      corpContact="victoria.alekseeva@company.com"
-      persContact="victoria.alekseeva2@company.com"
-    />
-  ),
-
-  phoneInfo: (
-    <EmployeeContacts
-      type="phone"
-      corpContact="+420777123456"
-      persContact="+420777123457"
-    />
-  ),
-
-  leader: (
-    <LeaderPrimaryInfo
-      leaderName="Иванов Игорь Сергеевич"
-      leaderPosition="HR"
-    />
-  ),
-
-  city: "Прага",
-
-  birthday: "1994-06-18",
-
-  linkSocialNetwork: "https://linkedin.com/in/viktoria-alekseeva",
-
-  linkCV: "https://example.com/cv/alekseeva.pdf",
-
-  linkProfile: "https://crm.company.com/profile/12345",
-
-  aboutMe:
-    "HR-специалист с 6+ годами опыта в подборе и развитии команд. Люблю системный подход, автоматизацию процессов и работу с аналитикой.",
-
-  tags: [
-    "HR",
-    "Recruitment",
-    "Onboarding",
-    "People Analytics",
-    "Culture",
-    "Communication",
-    "Leadership",
-  ],
-  onExportPDF: () => {
-    console.log("Export PDF");
-  },
-};
 
 export function HeaderUserCard({
   name,
@@ -96,6 +30,11 @@ export function HeaderUserCard({
   // Получаем первую букву имени для аватара-заглушки
   const firstLetter = name.charAt(0);
   const navigate = useNavigate();
+
+  const employeeId = useAuthStore((s) => s.user?.employee_id ?? undefined);
+
+  //TODO: Разобраться что показывать в карточке если у пользователя нет карточки
+  const { data } = useEmployeeDetailAdmin(employeeId);
 
   const handleLogout = () => {
     navigate(ROUTES.LOGIN);
@@ -128,7 +67,64 @@ export function HeaderUserCard({
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={8}>
-        <EmployeeProfileDialog {...mockEmployeeProfile}>
+        <EmployeeProfileDialog
+          primaryInfo={
+            /**
+             * @todo Ошибка: не соответствие API status принимаемый с сервера не тоже самое что статус здесь! На беке статус обозначает архивированных сотрудников
+             */
+            <EmployeePrimaryInfo
+              status="working"
+              name={data?.full_name || "Ошибка: проверить данные"}
+              position={data?.job_title || "Ошибка: проверить данные"}
+              /**
+               * @todo Что такое franchise? Это direction? Разобраться и вписать правильные данные
+               */
+              franchise={data?.direction_name || "Ошибка: проверить данные"}
+              department={data?.department_name || "Ошибка: проверить данные"}
+            />
+          }
+          /**
+           * roles должен быть массивом, а приходит строка.
+           */
+          roles={
+            data?.role_description
+              ? [data.role_description]
+              : ["Ошибка: проверить данные"]
+          }
+          emailInfo={
+            <EmployeeContacts
+              type="email"
+              corpContact={data?.email || "example.example@example.example"}
+              persContact="example.example@example.example"
+            />
+          }
+          phoneInfo={
+            <EmployeeContacts
+              type="phone"
+              corpContact={data?.phone || "+000000000000"}
+              persContact="+000000000000"
+            />
+          }
+          leader={
+            <LeaderPrimaryInfo
+              leaderName="Example Example"
+              leaderPosition="Example"
+            />
+          }
+          city="Example"
+          birthday={data?.birthday || "1111-11-11"}
+          linkSocialNetwork="https://example.com/example-example"
+          linkCV="https://example.com/cv/example-example"
+          linkProfile="https://example.com/crm/example-example"
+          aboutMe={data?.interests || "Ошибка: проверить данные"}
+          tags={
+            data?.tags
+              ? data.tags.map((tag) => tag.name)
+              : ["Ошибка: проверить данные"]
+          }
+          //TODO: Доделать Экспорт PDF
+          onExportPDF={() => console.log("Export PDF")}
+        >
           <DropdownMenuItem
             onSelect={(event) => {
               event.preventDefault();
