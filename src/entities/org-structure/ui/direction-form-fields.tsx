@@ -9,7 +9,6 @@ interface DirectionFormFieldsProps {
   onNameChange: (value: string) => void;
   namePlaceholder?: string;
   headLabel: string;
-  /** Селектор руководителя — подставляется фичей (EmployeeSelect живёт в соседнем entity) */
   headSlot: React.ReactNode;
   description: string;
   onDescriptionChange: (value: string) => void;
@@ -17,10 +16,6 @@ interface DirectionFormFieldsProps {
   descriptionMaxLength?: number;
 }
 
-/**
- * Общий блок полей формы направления/СИС: название, руководитель, описание.
- * Используется и в создании, и в редактировании.
- */
 export function DirectionFormFields({
   nameLabel,
   name,
@@ -37,7 +32,7 @@ export function DirectionFormFields({
     <>
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label className="body-s-semibold text-gray-700">{nameLabel}</label>
+          <label className="body-s-semibold text-muted-foreground">{nameLabel}</label>
           <Input
             value={name}
             onChange={(e) => onNameChange(e.target.value)}
@@ -45,13 +40,13 @@ export function DirectionFormFields({
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <label className="body-s-semibold text-gray-700">{headLabel}</label>
+          <label className="body-s-semibold text-muted-foreground">{headLabel}</label>
           {headSlot}
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label className="body-s-semibold text-gray-700">Описание</label>
+        <label className="body-s-semibold text-muted-foreground">Описание</label>
         <Textarea
           value={description}
           onChange={(e) =>
