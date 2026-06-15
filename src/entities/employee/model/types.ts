@@ -29,6 +29,12 @@ export type TShortEmployee = {
 
 export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
 
+export interface EmployeeSupervisor {
+  name: string;
+  position: string;
+  photo?: string;
+}
+
 export interface EmployeeData {
   id: number | string;
   city: string;
@@ -46,4 +52,10 @@ export interface EmployeeData {
   phonePersonal?: string;
   birthday?: string | Date;
   competencies?: string[];
+  roles?: string[];
+  supervisor?: EmployeeSupervisor;
+  socialNetwork?: string;
+  resumeLink?: string;
+  crmProfile?: string;
+  aboutMe?: string;
 }

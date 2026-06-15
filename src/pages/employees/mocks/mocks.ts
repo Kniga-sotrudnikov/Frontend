@@ -16,6 +16,21 @@ export const mockEmployees = [
     phonePersonal: "+7 (916) 123-45-67",
     birthday: "1985-03-15",
     competencies: ["english_b1", "presentation", "public_speaking"],
+    roles: [
+      "Разработка пользовательских интерфейсов",
+      "Проведение код-ревью",
+      "Обучение разработчиков",
+    ],
+    supervisor: {
+      name: "Ольга Смирнова",
+      position: "Руководитель отдела разработки",
+      photo: "https://randomuser.me/api/portraits/women/10.jpg",
+    },
+    socialNetwork: "https://example.com/social/ivanov",
+    resumeLink: "https://example.com/resume/ivanov.pdf",
+    crmProfile: "https://example.com/crm/ivanov",
+    aboutMe:
+      "Люблю создавать удобные интерфейсы, развивать команду и делиться опытом.",
   },
   {
     id: 2,
@@ -34,6 +49,21 @@ export const mockEmployees = [
     phonePersonal: "+7 (921) 234-56-78",
     birthday: "1990-07-22",
     competencies: ["coach", "adult_education", "psychology"],
+    roles: [
+      "Подбор и адаптация сотрудников",
+      "Организация обучения",
+      "Развитие корпоративной культуры",
+    ],
+    supervisor: {
+      name: "Анна Ковалева",
+      position: "Руководитель HR-направления",
+      photo: "https://randomuser.me/api/portraits/women/11.jpg",
+    },
+    socialNetwork: "https://example.com/social/petrova",
+    resumeLink: "https://example.com/resume/petrova.pdf",
+    crmProfile: "https://example.com/crm/petrova",
+    aboutMe:
+      "Помогаю сотрудникам развиваться и выстраиваю понятные HR-процессы.",
   },
   {
     id: 3,
@@ -52,6 +82,20 @@ export const mockEmployees = [
     phonePersonal: "+7 (987) 345-67-89",
     birthday: "1988-11-10",
     competencies: ["business", "grant", "fundraising"],
+    roles: [
+      "Ведение бухгалтерского учёта",
+      "Подготовка финансовой отчётности",
+      "Контроль платежей",
+    ],
+    supervisor: {
+      name: "Дмитрий Петров",
+      position: "Финансовый директор",
+      photo: "https://randomuser.me/api/portraits/men/10.jpg",
+    },
+    socialNetwork: "https://example.com/social/sidorov",
+    resumeLink: "https://example.com/resume/sidorov.pdf",
+    crmProfile: "https://example.com/crm/sidorov",
+    aboutMe: "Люблю порядок в цифрах и автоматизацию финансовых процессов.",
   },
   {
     id: 4,
@@ -70,6 +114,21 @@ export const mockEmployees = [
     phonePersonal: "+7 (913) 456-78-90",
     birthday: "1992-02-28",
     competencies: ["methodology", "research_work", "digital_tools"],
+    roles: [
+      "Разработка маркетинговых кампаний",
+      "Анализ эффективности продвижения",
+      "Проведение исследований аудитории",
+    ],
+    supervisor: {
+      name: "Екатерина Михайлова",
+      position: "Руководитель отдела маркетинга",
+      photo: "https://randomuser.me/api/portraits/women/12.jpg",
+    },
+    socialNetwork: "https://example.com/social/kozlova",
+    resumeLink: "https://example.com/resume/kozlova.pdf",
+    crmProfile: "https://example.com/crm/kozlova",
+    aboutMe:
+      "Исследую аудиторию и превращаю полученные данные в полезные решения.",
   },
   {
     id: 5,
@@ -88,6 +147,21 @@ export const mockEmployees = [
     phonePersonal: "+7 (922) 567-89-01",
     birthday: "1995-09-05",
     competencies: ["research", "digital_tools", "scaling"],
+    roles: [
+      "Сбор и анализ данных",
+      "Подготовка аналитических отчётов",
+      "Разработка метрик",
+    ],
+    supervisor: {
+      name: "Сергей Иванов",
+      position: "Руководитель отдела аналитики",
+      photo: "https://randomuser.me/api/portraits/men/11.jpg",
+    },
+    socialNetwork: "https://example.com/social/sokolov",
+    resumeLink: "https://example.com/resume/sokolov.pdf",
+    crmProfile: "https://example.com/crm/sokolov",
+    aboutMe:
+      "Помогаю командам принимать решения на основе данных и понятных метрик.",
   },
   {
     id: 6,
@@ -106,6 +180,21 @@ export const mockEmployees = [
     phonePersonal: "+7 (930) 678-90-12",
     birthday: "1993-12-18",
     competencies: ["presentation", "public_speaking", "flexible"],
+    roles: [
+      "Проектирование пользовательских интерфейсов",
+      "Развитие дизайн-системы",
+      "Проведение пользовательских исследований",
+    ],
+    supervisor: {
+      name: "Ольга Смирнова",
+      position: "Креативный директор",
+      photo: "https://randomuser.me/api/portraits/women/10.jpg",
+    },
+    socialNetwork: "https://example.com/social/volkova",
+    resumeLink: "https://example.com/resume/volkova.pdf",
+    crmProfile: "https://example.com/crm/volkova",
+    aboutMe:
+      "Создаю понятные интерфейсы и поддерживаю единый визуальный язык продуктов.",
   },
 ];
 

@@ -339,19 +339,22 @@ export const EmployeesList = ({
           }
           leader={
             <LeaderPrimaryInfo
-              leaderName={selectedEmployee.linearManager}
-              leaderPosition=""
-              leaderPhoto=""
+              leaderName={
+                selectedEmployee.supervisor?.name ??
+                selectedEmployee.linearManager
+              }
+              leaderPosition={selectedEmployee.supervisor?.position ?? ""}
+              leaderPhoto={selectedEmployee.supervisor?.photo}
             />
           }
-          roles={[]}
+          roles={selectedEmployee.roles ?? []}
           tags={selectedEmployee.competencies ?? []}
           city={selectedEmployee.city}
           birthday={String(selectedEmployee.birthday)}
-          linkSocialNetwork=""
-          linkCV=""
-          linkProfile=""
-          aboutMe=""
+          linkSocialNetwork={selectedEmployee.socialNetwork ?? ""}
+          linkCV={selectedEmployee.resumeLink ?? ""}
+          linkProfile={selectedEmployee.crmProfile ?? ""}
+          aboutMe={selectedEmployee.aboutMe ?? ""}
           onExportPDF={() => {}}
           editButton={
             isAdmin ? (
