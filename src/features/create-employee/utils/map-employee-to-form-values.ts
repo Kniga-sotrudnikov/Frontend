@@ -1,7 +1,9 @@
 import type { EmployeeData } from "@/entities/employee";
 import type { CreateEmployeeFormValues } from "../model/types";
 
-const mapStatus = (status: EmployeeData["status"]): CreateEmployeeFormValues["status"] => {
+const mapStatus = (
+  status: EmployeeData["status"],
+): CreateEmployeeFormValues["status"] => {
   switch (status) {
     case "working":
       return "active";
@@ -23,7 +25,9 @@ const parseDate = (date?: string | Date): Date | undefined => {
   return isNaN(parsed.getTime()) ? undefined : parsed;
 };
 
-export const mapEmployeeToFormValues = (employee: EmployeeData): CreateEmployeeFormValues => ({
+export const mapEmployeeToFormValues = (
+  employee: EmployeeData,
+): CreateEmployeeFormValues => ({
   photo: employee.photo,
   fullName: employee.name,
   position: employee.position,

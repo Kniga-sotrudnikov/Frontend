@@ -1,66 +1,75 @@
-const boundaries = require('./eslint.boundaries.config.cjs')
+const boundaries = require("./eslint.boundaries.config.cjs");
 
 module.exports = {
   root: true,
   env: {
     browser: true,
-    es2020: true
+    es2020: true,
   },
   extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:import/recommended',
-    'prettier',
-    'plugin:react-hooks/recommended'
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:import/recommended",
+    "prettier",
+    "plugin:react-hooks/recommended",
   ],
-  ignorePatterns: ['dist', 'node_modules', '.eslintrc.cjs', 'package-lock.json', '*.config.js', '*.config.ts', '*.config.cjs'],
-  parser: '@typescript-eslint/parser',
+  ignorePatterns: [
+    "dist",
+    "node_modules",
+    ".eslintrc.cjs",
+    "package-lock.json",
+    "*.config.js",
+    "*.config.ts",
+    "*.config.cjs",
+  ],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module'
+    ecmaVersion: "latest",
+    sourceType: "module",
   },
   plugins: [
-    '@typescript-eslint',
-    'import',
-    'boundaries',
-    'react-hooks',
-    'react-refresh',
-    'check-file'
+    "@typescript-eslint",
+    "import",
+    "boundaries",
+    "react-hooks",
+    "react-refresh",
+    "check-file",
   ],
   settings: {
     ...boundaries.settings,
-    'import/resolver': {
-      ...boundaries.settings['import/resolver'],
+    "import/resolver": {
+      ...boundaries.settings["import/resolver"],
       typescript: {
-        ...boundaries.settings['import/resolver'].typescript,
-        project: './tsconfig.app.json'
-      }
-    }
+        ...boundaries.settings["import/resolver"].typescript,
+        project: "./tsconfig.app.json",
+      },
+    },
   },
   rules: {
     // 'import/no-unresolved': 'off',
-    'react-refresh/only-export-components': [
-      'warn',
+    "react-refresh/only-export-components": [
+      "warn",
       {
-        allowConstantExport: true
-      }
+        allowConstantExport: true,
+      },
     ],
-    'jsx-quotes': ['error', 'prefer-double'],
-    'react-hooks/exhaustive-deps': 'error',
-    'react-hooks/set-state-in-effect': 'off',
-    ...boundaries.rules
+    "jsx-quotes": ["error", "prefer-double"],
+    "react-hooks/exhaustive-deps": "error",
+    "react-hooks/set-state-in-effect": "off",
+    ...boundaries.rules,
   },
   overrides: [
     {
-      files: ['**/*.d.ts'],
+      files: ["**/*.d.ts"],
       rules: {
-        'check-file/filename-naming-convention': 'off'
-      }
-    }, {
-      files: ['src/shared/ui/table/**/*.tsx'],
-      rules: {
-        'react-hooks/incompatible-library': 'off',
+        "check-file/filename-naming-convention": "off",
       },
-    }
-  ]
-}
+    },
+    {
+      files: ["src/shared/ui/table/**/*.tsx"],
+      rules: {
+        "react-hooks/incompatible-library": "off",
+      },
+    },
+  ],
+};

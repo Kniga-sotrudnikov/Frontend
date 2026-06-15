@@ -64,7 +64,7 @@ export const PhotoUpload = ({ value, onChange, error }: PhotoUploadProps) => {
           "flex flex-row items-center gap-2 p-3 rounded-md border border-dashed transition-colors",
           dragActive && "border-purple-500 bg-purple-50",
           error && "border-red-600",
-          !dragActive && !error && "border-gray-200"
+          !dragActive && !error && "border-gray-200",
         )}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}

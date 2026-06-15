@@ -1,7 +1,7 @@
-import { type ComponentProps } from "react"
-import { Dialog as DialogPrimitive } from "radix-ui"
+import { type ComponentProps } from "react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 
-import { cn } from "@/shared/lib"
+import { cn } from "@/shared/lib";
 
 function DialogTitle({
   className,
@@ -12,11 +12,11 @@ function DialogTitle({
       data-slot="dialog-title"
       className={cn(
         "font-heading text-base leading-none font-medium",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { DialogTitle }
+export { DialogTitle };

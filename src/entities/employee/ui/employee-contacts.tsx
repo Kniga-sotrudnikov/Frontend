@@ -11,7 +11,11 @@ const CONTACT_PREFIXES: Record<ContactType, string> = {
   phone: "tel:",
 };
 
-export function EmployeeContacts({ type, corpContact, persContact }: EmployeeContactsProps) {
+export function EmployeeContacts({
+  type,
+  corpContact,
+  persContact,
+}: EmployeeContactsProps) {
   return (
     <div className="flex flex-col gap-1">
       <div className="inline-flex gap-1 items-center">

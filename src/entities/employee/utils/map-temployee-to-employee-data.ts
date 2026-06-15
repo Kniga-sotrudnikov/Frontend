@@ -13,7 +13,9 @@ const mapStatus = (status: TEmployee["status"]): EmployeeStatus => {
   }
 };
 
-export const mapTEmployeeToEmployeeData = (employee: TEmployee): EmployeeData => ({
+export const mapTEmployeeToEmployeeData = (
+  employee: TEmployee,
+): EmployeeData => ({
   id: employee.id,
   city: employee.city,
   linearManager: employee.linear_manager || "",

@@ -1,12 +1,12 @@
 # Frontend
 
-React + Vite + TypeScript. 
-Архитектура — [Feature-Sliced Design](https://feature-sliced.design/) 
+React + Vite + TypeScript.
+Архитектура — [Feature-Sliced Design](https://feature-sliced.design/)
 (слои и правила импортов зафиксированы в ESLint).
 
 ## Запуск
 
-Требования: **Node.js**  и **npm**.
+Требования: **Node.js** и **npm**.
 
 ```bash
 npm install

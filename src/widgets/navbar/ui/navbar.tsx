@@ -1,20 +1,15 @@
 import { useState } from "react";
-import type { OrgUnit } from "./navbar-types";
+import { useOrgStructureStore } from "@/entities/org-structure";
 import RenderUnits from "./render-unit";
 import { EditOrgStructureModal } from "@/widgets/edit-org-structure-modal";
 import { Button } from "@/shared/ui/button";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
-import {
-  mockDirections,
-  mockSisList,
-} from "@/widgets/edit-org-structure-modal/mocks/mocks";
-
-type NavbarProps = { unitsList: OrgUnit[] };
 
 // TODO: Заменить на реальную проверку роли
 const isHrForTest = true;
 
-function Navbar({ unitsList }: NavbarProps) {
+function Navbar() {
+  const tree = useOrgStructureStore((state) => state.tree);
   const [selectedName, setSelectedName] = useState<string | null>(null);
 
   return (
@@ -24,10 +19,7 @@ function Navbar({ unitsList }: NavbarProps) {
           Навигация
         </h4>
         {isHrForTest && (
-          <EditOrgStructureModal
-            directions={mockDirections}
-            sisList={mockSisList}
-          >
+          <EditOrgStructureModal>
             <Button
               variant="ghost"
               size="plain"
@@ -39,11 +31,12 @@ function Navbar({ unitsList }: NavbarProps) {
           </EditOrgStructureModal>
         )}
       </div>
-      {unitsList.map((unit) => (
+      {tree.map((unit) => (
         <RenderUnits
           unit={unit}
           selectedName={selectedName}
           onSelect={setSelectedName}
+          // TODO Если в структуре, которая придет с сервера будет id, то лучше key={unit.id}
           key={unit.name}
         />
       ))}

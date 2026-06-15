@@ -10,9 +10,15 @@ import { Button } from "@ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
 import type { EmployeeData } from "@/entities/employee";
 import type { CreateEmployeeFormValues } from "@/features/create-employee/model/types";
-import { validateForm, type ValidationErrors } from "@/features/create-employee/model/validation";
+import {
+  validateForm,
+  type ValidationErrors,
+} from "@/features/create-employee/model/validation";
 import { EmployeeForm } from "@/features/create-employee/ui/employee-form";
-import { mapEmployeeToFormValues, mapStatusBack } from "@/features/create-employee/utils";
+import {
+  mapEmployeeToFormValues,
+  mapStatusBack,
+} from "@/features/create-employee/utils";
 
 interface EditEmployeeDialogProps {
   open: boolean;
@@ -27,13 +33,15 @@ export const EditEmployeeDialog = ({
   employee,
   onSuccess,
 }: EditEmployeeDialogProps) => {
-  const [values, setValues] = useState<CreateEmployeeFormValues>(() => 
-    mapEmployeeToFormValues(employee)
+  const [values, setValues] = useState<CreateEmployeeFormValues>(() =>
+    mapEmployeeToFormValues(employee),
   );
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [touchedFields, setTouchedFields] = useState<Set<keyof CreateEmployeeFormValues>>(new Set());
+  const [touchedFields, setTouchedFields] = useState<
+    Set<keyof CreateEmployeeFormValues>
+  >(new Set());
 
   const firstInputRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
@@ -74,9 +82,12 @@ export const EditEmployeeDialog = ({
     [errors],
   );
 
-  const handleFieldBlur = useCallback((field: keyof CreateEmployeeFormValues) => {
-    setTouchedFields((prev) => new Set(prev).add(field));
-  }, []);
+  const handleFieldBlur = useCallback(
+    (field: keyof CreateEmployeeFormValues) => {
+      setTouchedFields((prev) => new Set(prev).add(field));
+    },
+    [],
+  );
 
   const validate = useCallback((): boolean => {
     const newErrors = validateForm(values);
@@ -88,7 +99,9 @@ export const EditEmployeeDialog = ({
     async (e: React.FormEvent) => {
       e.preventDefault();
 
-      const allFields = Object.keys(values) as (keyof CreateEmployeeFormValues)[];
+      const allFields = Object.keys(
+        values,
+      ) as (keyof CreateEmployeeFormValues)[];
       setTouchedFields(new Set(allFields));
 
       if (!validate()) {
@@ -100,7 +113,9 @@ export const EditEmployeeDialog = ({
             .querySelector("[data-photo-upload]")
             ?.scrollIntoView({ behavior: "smooth" });
         } else {
-          const errorElement = document.getElementById(`field-${firstErrorField}`);
+          const errorElement = document.getElementById(
+            `field-${firstErrorField}`,
+          );
           errorElement?.focus();
           errorElement?.scrollIntoView({ behavior: "smooth", block: "center" });
         }
@@ -117,16 +132,17 @@ export const EditEmployeeDialog = ({
           linearManager: values.leader,
           city: values.city,
           status: mapStatusBack(values.status),
-          photo: typeof values.photo === "string" ? values.photo : employee.photo,
+          photo:
+            typeof values.photo === "string" ? values.photo : employee.photo,
         };
-        
+
         addNotification({
           type: "success",
           iconType: "success",
           title: "Успешно",
           message: "Карточка сотрудника успешно обновлена",
         });
-        
+
         onOpenChange(false);
         onSuccess?.(updatedEmployee);
       } catch (error) {
@@ -134,17 +150,31 @@ export const EditEmployeeDialog = ({
         addNotification({
           type: "error",
           title: "Ошибка",
-          message: error instanceof Error ? error.message : "Не удалось обновить карточку сотрудника",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Не удалось обновить карточку сотрудника",
         });
         setErrors((prev) => ({
           ...prev,
-          general: error instanceof Error ? error.message : "Ошибка при обновлении сотрудника",
+          general:
+            error instanceof Error
+              ? error.message
+              : "Ошибка при обновлении сотрудника",
         }));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [validate, values, employee, onOpenChange, errors, addNotification, onSuccess],
+    [
+      validate,
+      values,
+      employee,
+      onOpenChange,
+      errors,
+      addNotification,
+      onSuccess,
+    ],
   );
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -227,8 +257,19 @@ export const EditEmployeeDialog = ({
                       fill="none"
                       viewBox="0 0 24 24"
                     >
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Сохранение...
                   </span>

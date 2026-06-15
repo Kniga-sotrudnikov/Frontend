@@ -68,7 +68,7 @@ export const EmployeesList = ({
       title: "В разработке",
       message: "Требуется реализовать добавление в Избранное",
     });
-  }
+  };
 
   return (
     <div>
@@ -76,7 +76,11 @@ export const EmployeesList = ({
         <Tabs
           value={activeTab}
           onValueChange={(value) => {
-            const tab = value as "employees" | "vacancies" | "favorites" | "archive";
+            const tab = value as
+              | "employees"
+              | "vacancies"
+              | "favorites"
+              | "archive";
             setActiveTab(tab);
             if (tab === "favorites" || tab === "archive") setViewType("grid");
           }}
@@ -156,14 +160,20 @@ export const EmployeesList = ({
       </div>
 
       {viewType === "list" && activeTab === "employees" ? (
-        <DataTable columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)} data={tabContentMap.employees} />
+        <DataTable
+          columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
+          data={tabContentMap.employees}
+        />
       ) : viewType === "list" && activeTab === "vacancies" ? (
-        <DataTable columns={getVacancyColumns(favoritesIds, handleToggleFavorite)} data={tabContentMap.vacancies} />
+        <DataTable
+          columns={getVacancyColumns(favoritesIds, handleToggleFavorite)}
+          data={tabContentMap.vacancies}
+        />
       ) : (
-        <RenderCards 
-          items={itemsByTab} 
-          emptyText={emptyText} 
-          favoritesIds={favoritesIds} 
+        <RenderCards
+          items={itemsByTab}
+          emptyText={emptyText}
+          favoritesIds={favoritesIds}
           onToggleFavorite={handleToggleFavorite}
           onUpdateEmployee={onUpdateEmployee}
         />

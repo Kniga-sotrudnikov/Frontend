@@ -1,7 +1,6 @@
-import { type ComponentProps } from "react"
+import { type ComponentProps } from "react";
 
-import { cn } from "@/shared/lib"
-
+import { cn } from "@/shared/lib";
 
 function DialogFooter({
   className,
@@ -9,22 +8,18 @@ function DialogFooter({
   children,
   ...props
 }: ComponentProps<"div"> & {
-  showCloseButton?: boolean
-  divided?: boolean
+  showCloseButton?: boolean;
+  divided?: boolean;
 }) {
   return (
     <div
       data-slot="dialog-footer"
-      className={cn(
-        "flex flex-row",
-        divided && "border-t pt-3",
-        className
-      )}
+      className={cn("flex flex-row", divided && "border-t pt-3", className)}
       {...props}
     >
       {children}
     </div>
-  )
+  );
 }
 
-export { DialogFooter }
+export { DialogFooter };

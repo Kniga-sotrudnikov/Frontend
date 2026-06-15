@@ -1,23 +1,18 @@
 import { useDraggableList } from "@/shared/lib/hooks/use-draggable-list";
 import { DraggableList } from "@/shared/ui/draggable-list";
 import { Button } from "@/shared/ui/button";
-import { OrgItem } from "./org-item";
-import { EmptyPlaceholder } from "@/shared/ui/empty-placeholder";
+import { OrgItem, type OrgItemType } from "./org-item";
 
-interface OrgItem {
-  id: string;
-  name: string;
-  headName: string;
-}
+import { EmptyPlaceholder } from "@/shared/ui/empty-placeholder";
 
 interface OrgSectionProps {
   title: string;
-  items: OrgItem[];
+  items: OrgItemType[];
   addButtonText: string;
   onAdd: () => void;
-  onEdit: (item: OrgItem) => void;
-  onDelete: (item: OrgItem) => void;
-  onReorder?: (items: OrgItem[]) => void;
+  onEdit: (item: OrgItemType) => void;
+  onDelete: (item: OrgItemType) => void;
+  onReorder?: (items: OrgItemType[]) => void;
 }
 
 export const OrgSection = ({

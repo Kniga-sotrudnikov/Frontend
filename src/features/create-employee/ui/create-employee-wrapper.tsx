@@ -8,7 +8,9 @@ interface CreateEmployeeWrapperProps {
   onSuccess?: (data: CreateEmployeeFormValues) => void;
 }
 
-export const CreateEmployeeWrapper = ({ onSuccess }: CreateEmployeeWrapperProps) => {
+export const CreateEmployeeWrapper = ({
+  onSuccess,
+}: CreateEmployeeWrapperProps) => {
   const [open, setOpen] = useState(false);
 
   const handleSubmit = async (data: CreateEmployeeFormValues) => {
