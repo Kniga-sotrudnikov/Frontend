@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Button } from "@ui/button";
 import { Input } from "@ui/input";
 import { Checkbox } from "@ui/checkbox";
+import { AddTagModal } from "@ui/add-tag-modal";
 import SearchIcon from "@/shared/assets/icons/search.svg?react";
 import PlusIcon from "@/shared/assets/icons/plus.svg?react";
 import type { CompetencyOption } from "../model/types";
@@ -19,6 +21,7 @@ interface CompetenciesContentProps {
   showAll?: boolean;
   filteredCount?: number;
   variant?: "popover" | "dialog";
+  onAddTag: (tagName: string, color?: string) => void;
 }
 
 export const CompetenciesContent = ({
@@ -30,11 +33,14 @@ export const CompetenciesContent = ({
   onClear,
   onApply,
   onShowAll,
+  onAddTag,
   hasMore,
   showAll,
   filteredCount,
   variant = "popover",
 }: CompetenciesContentProps) => {
+  const [isAddTagModalOpen, setIsAddTagModalOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row items-start gap-2">
@@ -52,7 +58,7 @@ export const CompetenciesContent = ({
           type="button"
           variant="outline"
           className="w-9 h-9 p-0 flex items-center justify-center border-gray-200 rounded-md shrink-0"
-          onClick={() => console.log("Add new tag")}
+          onClick={() => setIsAddTagModalOpen(true)}
         >
           <PlusIcon className="size-5" />
         </Button>
@@ -117,6 +123,12 @@ export const CompetenciesContent = ({
           Применить
         </Button>
       </div>
+
+      <AddTagModal
+        open={isAddTagModalOpen}
+        onOpenChange={setIsAddTagModalOpen}
+        onAddTag={onAddTag}
+      />
     </div>
   );
 };
