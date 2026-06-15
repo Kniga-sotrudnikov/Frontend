@@ -21,6 +21,7 @@ import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-inf
 import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
 import { useAuthStore } from "@/entities/user";
+import { useVacancyModalStore } from "@/features/vacancy-respond";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -47,6 +48,8 @@ export const EmployeesList = ({
   const viewType = useEmployeesPageStore((state) => state.viewType);
   const setViewType = useEmployeesPageStore((state) => state.setViewType);
   const addNotification = useNotificationStore((state) => state.add);
+
+  const openVacancyModal = useVacancyModalStore((state) => state.openModal);
 
   const favoriteEmployees = employees.filter(
     (emp) => favoritesIds.includes(emp.id) && !emp.isArchived,
@@ -191,7 +194,11 @@ export const EmployeesList = ({
         />
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
-          columns={getVacancyColumns(favoritesIds, handleToggleFavorite)}
+          columns={getVacancyColumns(
+            favoritesIds,
+            handleToggleFavorite,
+            openVacancyModal,
+          )}
           data={tabContentMap.vacancies}
         />
       ) : (
