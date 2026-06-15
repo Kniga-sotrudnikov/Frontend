@@ -5,6 +5,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { EmployeeData } from "@/entities/employee";
 import type { VacancyData } from "@/entities/vacancy";
 
+type VacancyAction = "respond" | "restore";
+
 const statusConfig: Record<
   EmployeeData["status"],
   { label: string; className: string }
@@ -105,52 +107,55 @@ export const getEmployeeColumns = (
 export const getVacancyColumns = (
   favoritesIds: (number | string)[],
   onToggleFavorite: (id: number | string) => void,
-  onRespond: (vacancy: VacancyData) => void,
-): ColumnDef<VacancyData>[] => [
-  {
-    id: "favorite",
-    header: "",
-    size: 40,
-    enableSorting: false,
-    cell: ({ row }) => {
-      const isFavorite = favoritesIds.includes(row.original.id);
-      return (
-        <StarIcon
-          onClick={(event) => {
-            event.stopPropagation();
-            onToggleFavorite(row.original.id);
-          }}
-          className={isFavorite ? "text-accent" : "text-gray-300"}
-        />
-      );
+  onAction: (vacancy: VacancyData) => void,
+  action: VacancyAction = "respond",
+): ColumnDef<VacancyData>[] => {
+  const columns: ColumnDef<VacancyData>[] = [
+    {
+      id: "favorite",
+      header: "",
+      size: 40,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const isFavorite = favoritesIds.includes(row.original.id);
+        return (
+          <StarIcon
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleFavorite(row.original.id);
+            }}
+            className={isFavorite ? "text-accent" : "text-gray-300"}
+          />
+        );
+      },
     },
-  },
-  {
-    accessorKey: "profession",
-    header: "Название должности",
-    size: 220,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "franchise",
-    header: "Направление",
-    size: 144,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "department",
-    header: "Отдел",
-    size: 144,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "city",
-    header: "Город",
-    size: 132,
-    enableSorting: true,
-  },
-  {
-    id: "respond",
+    {
+      accessorKey: "profession",
+      header: "Название должности",
+      size: 220,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "franchise",
+      header: "Направление",
+      size: 144,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "department",
+      header: "Отдел",
+      size: 144,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "city",
+      header: "Город",
+      size: 132,
+      enableSorting: true,
+    },
+  ];
+  columns.push({
+    id: "action",
     header: "",
     size: 230,
     enableSorting: false,
@@ -159,11 +164,13 @@ export const getVacancyColumns = (
         className="w-full"
         onClick={(event) => {
           event.stopPropagation();
-          onRespond(row.original);
+          onAction(row.original);
         }}
       >
-        Откликнуться
+        {action === "restore" ? "Разархивировать" : "Откликнуться"}
       </Button>
     ),
-  },
-];
+  });
+
+  return columns;
+};

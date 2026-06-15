@@ -39,6 +39,9 @@ export const EmployeesList = ({
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
   >("employees");
+  const [activeEntityTab, setActiveEntityTab] = useState<
+    "employees" | "vacancies"
+  >("employees");
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
   );
@@ -72,15 +75,41 @@ export const EmployeesList = ({
     archive: allArchived,
   };
 
+  const nestedTabContentMap = {
+    favorites: {
+      employees: favoriteEmployees,
+      vacancies: favoriteVacancies,
+    },
+    archive: {
+      employees: archivedEmployees,
+      vacancies: archivedVacancies,
+    },
+  };
+
   const emptyTextMap = {
     employees: "Нет активных сотрудников",
     vacancies: "Нет активных вакансий",
-    favorites: "Нет избранных сотрудников или вакансий",
-    archive: "В архиве ничего нет",
+
+    favorites: {
+      all: "Нет избранных сотрудников или вакансий",
+      employees: "Нет избранных сотрудников",
+      vacancies: "Нет избранных вакансий",
+    },
+
+    archive: {
+      all: "В архиве ничего нет",
+      employees: "Нет архивных сотрудников",
+      vacancies: "Нет архивных вакансий",
+    },
   };
 
+  const hasNestedTabs = activeTab === "favorites" || activeTab === "archive";
+
   const itemsByTab = tabContentMap[activeTab];
-  const emptyText = emptyTextMap[activeTab];
+
+  const emptyText = hasNestedTabs
+    ? emptyTextMap[activeTab].all
+    : emptyTextMap[activeTab];
 
   const isAdmin = useAuthStore((state) => state.user?.role === "hr_admin");
 
@@ -97,6 +126,14 @@ export const EmployeesList = ({
     onUpdateEmployee?.(updatedEmployee);
   };
 
+  const handleRestoreVacancy = (vacancy: VacancyData) => {
+    addNotification({
+      iconType: "success",
+      title: "В разработке",
+      message: `Восстановление вакансии «${vacancy.profession}» будет доступно позже`,
+    });
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
@@ -109,7 +146,6 @@ export const EmployeesList = ({
               | "favorites"
               | "archive";
             setActiveTab(tab);
-            if (tab === "favorites" || tab === "archive") setViewType("grid");
           }}
         >
           <TabsList variant="line" className="gap-0 p-0 h-auto">
@@ -157,7 +193,6 @@ export const EmployeesList = ({
             variant="plain"
             size="plain"
             onClick={() => setViewType("grid")}
-            disabled={activeTab === "favorites" || activeTab === "archive"}
             className={cn(
               "py-1.5 px-2 rounded-none rounded-l-8 h-full transition-none",
               viewType === "grid"
@@ -172,7 +207,6 @@ export const EmployeesList = ({
             variant="plain"
             size="plain"
             onClick={() => setViewType("list")}
-            disabled={activeTab === "favorites" || activeTab === "archive"}
             className={cn(
               "py-1.5 px-2 rounded-none rounded-r-8 h-full transition-none",
               viewType === "list"
@@ -185,6 +219,42 @@ export const EmployeesList = ({
           </Button>
         </div>
       </div>
+
+      {viewType === "list" &&
+        (activeTab === "favorites" || activeTab === "archive") && (
+          <Tabs
+            value={activeEntityTab}
+            onValueChange={(value) => {
+              setActiveEntityTab(value as "employees" | "vacancies");
+            }}
+          >
+            <TabsList className="gap-1 p-0 bg-transparent">
+              <TabsTrigger
+                value="employees"
+                className="px-3 py-2 button-small cursor-pointer border-0 rounded-b-none group-data-[variant=default]/tabs-list:data-active:shadow-none"
+              >
+                Сотрудники
+                <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
+                  {activeTab === "favorites"
+                    ? favoriteEmployees.length
+                    : archivedEmployees.length}
+                </span>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="vacancies"
+                className="px-3 py-2 button-small cursor-pointer border-0 rounded-b-none group-data-[variant=default]/tabs-list:data-active:shadow-none"
+              >
+                Вакансии
+                <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
+                  {activeTab === "favorites"
+                    ? favoriteVacancies.length
+                    : archivedVacancies.length}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
 
       {viewType === "list" && activeTab === "employees" ? (
         <DataTable
@@ -200,6 +270,27 @@ export const EmployeesList = ({
             openVacancyModal,
           )}
           data={tabContentMap.vacancies}
+        />
+      ) : viewType === "list" &&
+        hasNestedTabs &&
+        activeEntityTab === "employees" ? (
+        <DataTable
+          columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
+          data={nestedTabContentMap[activeTab].employees}
+          onRowClick={setSelectedEmployee}
+          containerClassName="rounded-tl-none"
+        />
+      ) : viewType === "list" &&
+        hasNestedTabs &&
+        activeEntityTab === "vacancies" ? (
+        <DataTable
+          columns={getVacancyColumns(
+            favoritesIds,
+            handleToggleFavorite,
+            activeTab === "archive" ? handleRestoreVacancy : openVacancyModal,
+            activeTab === "archive" ? "restore" : "respond",
+          )}
+          data={nestedTabContentMap[activeTab].vacancies}
         />
       ) : (
         <RenderCards
