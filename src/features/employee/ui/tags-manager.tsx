@@ -14,6 +14,7 @@ import EyevisibleIcon from "@icons/eye-visible.svg?react";
 import EditIcon from "@icons/edit.svg?react";
 import GridIcon from "@icons/grid.svg?react";
 import { AddTagDialog } from "./add-tag-dialog";
+import { AddEmployeesToTagDialog } from "./add-employees-to-tag-dialog";
 import { EmployeesListDialog } from "./employees-list-dialog";
 import type {
   TExpertiseFilterGroup,
@@ -104,6 +105,18 @@ export const TagsManager = ({
     string[]
   >([]);
 
+  const [addEmployeesDialog, setAddEmployeesDialog] = useState<{
+    open: boolean;
+    groupKey: string;
+    tagValue: string;
+    tagLabel: string;
+  }>({
+    open: false,
+    groupKey: "",
+    tagValue: "",
+    tagLabel: "",
+  });
+
   const addNotification = useNotificationStore((state) => state.add);
 
   const handleSave = () => {
@@ -152,9 +165,15 @@ export const TagsManager = ({
           : group,
       ),
     );
+    
     setNewTagName("");
-    setSelectedGroupForNewTag("");
-    setIsAddDialogOpen(false);
+    
+    addNotification({
+      type: "success",
+      iconType: "success",
+      title: "Успешно",
+      message: `Тег «${trimmedLabel}» добавлен`,
+    });
   };
 
   const deleteTag = (groupKey: string, optionValue: string) => {
@@ -239,6 +258,7 @@ export const TagsManager = ({
       setEmployeesListForTag([]);
     }
     setSelectedEmployeesForTag([]);
+    setNewTagName("");
     setIsAddDialogOpen(true);
     if (localGroups.length > 0 && !selectedGroupForNewTag) {
       setSelectedGroupForNewTag(localGroups[0].key);
@@ -254,7 +274,28 @@ export const TagsManager = ({
   };
 
   const handleAddTag = () => {
-    addTag(selectedGroupForNewTag, newTagName);
+    if (selectedGroupForNewTag && newTagName.trim()) {
+      addTag(selectedGroupForNewTag, newTagName);
+
+      if (selectedEmployeesForTag.length > 0) {
+        addNotification({
+          type: "success",
+          title: "Успешно",
+          message: `Сотрудники добавлены к тегу «${newTagName}»`,
+        });
+        setSelectedEmployeesForTag([]);
+      }
+    }
+  };
+
+  const handleSaveDialog = () => {
+    setIsAddDialogOpen(false);
+    addNotification({
+      type: "success",
+      iconType: "success",
+      title: "Успешно",
+      message: "Тег успешно сохранён",
+    });
   };
 
   const handleEmployeeToggle = (employeeId: string) => {
@@ -267,6 +308,41 @@ export const TagsManager = ({
 
   const handleClearEmployees = () => {
     setSelectedEmployeesForTag([]);
+  };
+
+  const handleOpenAddEmployees = (groupKey: string, tagValue: string, tagLabel: string) => {
+    if (getAllEmployees) {
+      const employeesList = getAllEmployees();
+      setEmployeesListForTag(employeesList || []);
+    } else {
+      setEmployeesListForTag([]);
+    }
+    setSelectedEmployeesForTag([]);
+    setAddEmployeesDialog({
+      open: true,
+      groupKey,
+      tagValue,
+      tagLabel,
+    });
+  };
+
+  const handleAddEmployeesToTag = () => {
+    addNotification({
+      type: "success",
+      title: "Успешно",
+      message: `Сотрудники добавлены к тегу «${addEmployeesDialog.tagLabel}»`,
+    });
+    
+    setAddEmployeesDialog({ open: false, groupKey: "", tagValue: "", tagLabel: "" });
+    setSelectedEmployeesForTag([]);
+  };
+
+  const handleRemoveEmployeeFromTag = (employeeName: string) => {
+    addNotification({
+      type: "success",
+      title: "Успешно",
+      message: `Сотрудник «${employeeName}» удалён из тега`,
+    });
   };
 
   const employeesList = selectedTagForEmployees
@@ -371,14 +447,11 @@ export const TagsManager = ({
                                 variant="ghost"
                                 size="xs"
                                 className="text-purple-500 mb-1 ml-1"
-                                onClick={() => {
-                                  addNotification({
-                                    type: "info",
-                                    title: "В разработке",
-                                    message:
-                                      "Функция добавления сотрудников к тегу будет реализована в ближайшее время",
-                                  });
-                                }}
+                                onClick={() => handleOpenAddEmployees(
+                                  editingTag.groupKey,
+                                  editingTag.optionValue,
+                                  editingTag.newLabel
+                                )}
                               >
                                 <PlusIcon className="size-2 mr-1" />
                                 Добавить сотрудников
@@ -422,6 +495,7 @@ export const TagsManager = ({
                                     <Button
                                       variant="ghost"
                                       className="text-[#FF383C] hover:text-red-700"
+                                      onClick={() => handleRemoveEmployeeFromTag(emp.name)}
                                     >
                                       <TrashIcon className="size-4" />
                                     </Button>
@@ -565,7 +639,18 @@ export const TagsManager = ({
         onEmployeeToggle={handleEmployeeToggle}
         onClearEmployees={handleClearEmployees}
         onAdd={handleAddTag}
-        onSave={handleAddTag}
+        onSave={handleSaveDialog}
+      />
+
+      <AddEmployeesToTagDialog
+        open={addEmployeesDialog.open}
+        onOpenChange={(open) => setAddEmployeesDialog(prev => ({ ...prev, open }))}
+        tagLabel={addEmployeesDialog.tagLabel}
+        employees={employeesListForTag}
+        selectedEmployees={selectedEmployeesForTag}
+        onEmployeeToggle={handleEmployeeToggle}
+        onClearEmployees={handleClearEmployees}
+        onAdd={handleAddEmployeesToTag}
       />
 
       <EmployeesListDialog

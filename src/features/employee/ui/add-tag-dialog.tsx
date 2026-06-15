@@ -83,6 +83,10 @@ export const AddTagDialog = ({
   const isAddDisabled = !selectedGroup || !tagName.trim();
   const isSaveDisabled = !selectedGroup || !tagName.trim();
 
+  const handleAdd = () => {
+    onAdd();
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="!w-[753px] !max-w-none !h-auto !p-5 !rounded-12 !border !border-gray-200 !bg-white overflow-hidden">
@@ -191,7 +195,7 @@ export const AddTagDialog = ({
                   Очистить
                 </Button>
                 <Button
-                  onClick={onAdd}
+                  onClick={handleAdd}
                   disabled={isAddDisabled}
                   className="w-[118px] h-6 text-[14px] font-medium bg-purple-500 hover:bg-purple-600 text-white rounded-[8px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
