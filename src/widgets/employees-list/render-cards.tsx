@@ -14,6 +14,7 @@ interface RenderCardsProps {
   onToggleFavorite?: (id: number | string) => void;
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
   onEmployeeClick: (employee: EmployeeData) => void;
+  onArchiveEmployee: (employee: EmployeeData) => void;
 }
 
 export const RenderCards = ({
@@ -23,6 +24,7 @@ export const RenderCards = ({
   onToggleFavorite,
   onUpdateEmployee,
   onEmployeeClick,
+  onArchiveEmployee,
 }: RenderCardsProps) => {
   const openModal = useVacancyModalStore((state) => state.openModal);
 
@@ -45,6 +47,7 @@ export const RenderCards = ({
               isFavorite={favoritesIds.includes(item.id)}
               onFavorite={() => onToggleFavorite?.(item.id)}
               onUpdateEmployee={onUpdateEmployee}
+              onArchive={() => onArchiveEmployee(employee)}
               primaryInfo={
                 <EmployeePrimaryInfo
                   name={item.name}

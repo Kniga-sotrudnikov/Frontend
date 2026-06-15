@@ -11,7 +11,11 @@ import { RenderCards } from "./render-cards";
 import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
 import { useNotificationStore } from "@/shared/model/stores";
-import { EditEmployeeButton, useEmployeesPageStore } from "@/features/employee";
+import {
+  ArchiveEmployeeDialog,
+  EditEmployeeButton,
+  useEmployeesPageStore,
+} from "@/features/employee";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
 import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
@@ -37,6 +41,9 @@ export const EmployeesList = ({
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
   );
+  const [employeeToArchive, setEmployeeToArchive] =
+    useState<EmployeeData | null>(null);
+
   const viewType = useEmployeesPageStore((state) => state.viewType);
   const setViewType = useEmployeesPageStore((state) => state.setViewType);
   const addNotification = useNotificationStore((state) => state.add);
@@ -195,6 +202,7 @@ export const EmployeesList = ({
           favoritesIds={favoritesIds}
           onToggleFavorite={handleToggleFavorite}
           onUpdateEmployee={onUpdateEmployee}
+          onArchiveEmployee={setEmployeeToArchive}
         />
       )}
 
@@ -260,6 +268,20 @@ export const EmployeesList = ({
               </EditEmployeeButton>
             ) : undefined
           }
+        />
+      )}
+
+      {employeeToArchive && (
+        <ArchiveEmployeeDialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEmployeeToArchive(null);
+            }
+          }}
+          onConfirm={() => {
+            setEmployeeToArchive(null);
+          }}
         />
       )}
     </div>
