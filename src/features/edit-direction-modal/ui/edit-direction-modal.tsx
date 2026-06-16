@@ -1,17 +1,13 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
-import { Textarea } from "@/shared/ui/textarea";
 import { useNotificationStore } from "@/shared/model/stores";
 import {
   EmployeeSelect,
   shortEmployees as mockEmployees,
 } from "@/entities/employee";
-import { OrgSection } from "@/entities/org-structure";
+import { OrgSection, DirectionFormFields } from "@/entities/org-structure";
 import type { EditDirectionModalProps, Department } from "../model/types";
-
-const DESCRIPTION_MAX_LENGTH = 300;
 
 export function EditDirectionModal({
   children,
@@ -109,50 +105,32 @@ export function EditDirectionModal({
         </div>
 
         <div className="flex flex-col flex-1 gap-6 overflow-y-auto">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="body-s-semibold text-gray-700">
-                {entityType === "direction"
-                  ? "Название направления"
-                  : "Название службы"}
-              </label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Введите название"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="body-s-semibold text-gray-700">
-                {entityType === "direction"
-                  ? "Руководитель направления"
-                  : "Руководитель службы"}
-              </label>
+          <DirectionFormFields
+            nameLabel={
+              entityType === "direction"
+                ? "Название направления"
+                : "Название службы"
+            }
+            name={name}
+            onNameChange={setName}
+            headLabel={
+              entityType === "direction"
+                ? "Руководитель направления"
+                : "Руководитель службы"
+            }
+            headSlot={
               <EmployeeSelect
                 value={headId}
                 employees={shortEmployees}
-                onSelect={(id, name) => {
+                onSelect={(id, selectedName) => {
                   setHeadId(id);
-                  setHeadName(name);
+                  setHeadName(selectedName);
                 }}
               />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <label className="body-s-semibold text-gray-700">Описание</label>
-            <Textarea
-              value={description}
-              onChange={(e) =>
-                setDescription(e.target.value.slice(0, DESCRIPTION_MAX_LENGTH))
-              }
-              placeholder="Введите описание"
-              className="min-h-24 resize-none"
-            />
-            <span className="body-s text-gray-500 self-end">
-              {description.length}/{DESCRIPTION_MAX_LENGTH}
-            </span>
-          </div>
+            }
+            description={description}
+            onDescriptionChange={setDescription}
+          />
 
           <OrgSection
             title="Отделы"

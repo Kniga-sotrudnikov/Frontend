@@ -12,6 +12,10 @@ import {
   type Department,
   type DirectionFormValues,
 } from "@/features/edit-direction-modal";
+import {
+  CreateDirectionModal,
+  type CreateDirectionFormValues,
+} from "@/features/create-direction-modal";
 
 interface EditOrgStructureModalProps {
   children: React.ReactNode;
@@ -41,6 +45,9 @@ export function EditOrgStructureModal({
     headName: string;
     entityType: "direction" | "sis";
   } | null>(null);
+  const [creatingEntityType, setCreatingEntityType] = useState<
+    "direction" | "sis" | null
+  >(null);
 
   const [localDirections, setLocalDirections] = useState(directions);
   const [localSisList, setLocalSisList] = useState(sisList);
@@ -64,7 +71,7 @@ export function EditOrgStructureModal({
     if (onAddDirection) {
       onAddDirection();
     } else {
-      showDevNotification();
+      setCreatingEntityType("direction");
     }
   };
 
@@ -72,8 +79,31 @@ export function EditOrgStructureModal({
     if (onAddSis) {
       onAddSis();
     } else {
-      showDevNotification();
+      setCreatingEntityType("sis");
     }
+  };
+
+  const handleCreate = (values: CreateDirectionFormValues) => {
+    if (!creatingEntityType) return;
+
+    const created: OrgItemType = {
+      id: crypto.randomUUID(),
+      name: values.name,
+      headName: values.headName,
+    };
+
+    if (creatingEntityType === "direction") {
+      setLocalDirections((items) => [...items, created]);
+    } else {
+      setLocalSisList((items) => [...items, created]);
+    }
+
+    setCreatingEntityType(null);
+    addNotification({
+      iconType: "success",
+      title: "Создано",
+      message: `«${values.name}» добавлено`,
+    });
   };
 
   const handleEditDirection = (item: OrgItemType) => {
@@ -207,6 +237,13 @@ export function EditOrgStructureModal({
         initialHeadName={editingDirection?.headName ?? ""}
         departments={mockDepartments}
         onSave={handleDirectionSave}
+      />
+      <CreateDirectionModal
+        key={creatingEntityType ?? "none-create"}
+        open={creatingEntityType !== null}
+        onOpenChange={(isOpen) => !isOpen && setCreatingEntityType(null)}
+        entityType={creatingEntityType ?? "direction"}
+        onCreate={handleCreate}
       />
     </>
   );
