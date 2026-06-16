@@ -1,4 +1,5 @@
 export { EditEmployeeDialog } from "./ui/edit-employee-dialog";
+export { ArchiveEmployeeDialog } from "./ui/archive-employee-dialog";
 export { EditEmployeeButton } from "./ui/edit-employee-button";
 export { StatusFilter } from "./ui/status-filter";
 export { FilterCities } from "./ui/filter-cities";

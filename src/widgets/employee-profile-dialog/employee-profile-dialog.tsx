@@ -23,7 +23,10 @@ import { Button } from "@/shared/ui/button";
 import type { ReactElement, ReactNode } from "react";
 
 interface EmployeeProfileDialogProps {
-  children: ReactNode;
+  children?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  editButton?: ReactNode;
   /**
    * Блок основной информации сотрудника.
    * Используется EmployeePrimaryInfo.
@@ -57,6 +60,9 @@ interface EmployeeProfileDialogProps {
 
 export const EmployeeProfileDialog = ({
   children,
+  open,
+  onOpenChange,
+  editButton,
   primaryInfo,
   roles,
   emailInfo,
@@ -76,8 +82,8 @@ export const EmployeeProfileDialog = ({
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild children={children} />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md">
         <DialogHeader className="justify-between">
           <DialogTitle className="body-l-semibold text-black sr-only">
@@ -188,14 +194,18 @@ export const EmployeeProfileDialog = ({
           <h3 className="mb-1 body-overline-semibold text-black">Обо мне</h3>
           <p className="text-xs">{aboutMe}</p>
         </div>
-        <Button
-          variant="ghost"
-          className="px-4 py-2 justify-start w-fit"
-          onClick={onExportPDF}
-        >
-          <ExportIcon className="h-4 w-4" />
-          Экспортировать в PDF
-        </Button>
+        <div className="flex justify-between items-center">
+          <Button
+            variant="ghost"
+            className="px-4 py-2 justify-start w-fit"
+            onClick={onExportPDF}
+          >
+            <ExportIcon className="h-4 w-4" />
+            Экспортировать в PDF
+          </Button>
+
+          {editButton}
+        </div>
       </DialogContent>
     </Dialog>
   );

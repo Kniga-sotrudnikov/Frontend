@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
+import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import { Button } from "@/shared/ui/button";
 import type { EmployeeData } from "@/entities/employee";
 import type { VacancyData } from "@/entities/vacancy";
@@ -10,7 +11,17 @@ import { RenderCards } from "./render-cards";
 import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
 import { useNotificationStore } from "@/shared/model/stores";
-import { useEmployeesPageStore } from "@/features/employee";
+import {
+  ArchiveEmployeeDialog,
+  EditEmployeeButton,
+  useEmployeesPageStore,
+} from "@/features/employee";
+import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
+import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
+import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
+import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
+import { useAuthStore } from "@/entities/user";
+import { useVacancyModalStore } from "@/features/vacancy-respond";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -28,9 +39,20 @@ export const EmployeesList = ({
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
   >("employees");
+  const [activeEntityTab, setActiveEntityTab] = useState<
+    "employees" | "vacancies"
+  >("employees");
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
+    null,
+  );
+  const [employeeToArchive, setEmployeeToArchive] =
+    useState<EmployeeData | null>(null);
+
   const viewType = useEmployeesPageStore((state) => state.viewType);
   const setViewType = useEmployeesPageStore((state) => state.setViewType);
   const addNotification = useNotificationStore((state) => state.add);
+
+  const openVacancyModal = useVacancyModalStore((state) => state.openModal);
 
   const favoriteEmployees = employees.filter(
     (emp) => favoritesIds.includes(emp.id) && !emp.isArchived,
@@ -53,20 +75,62 @@ export const EmployeesList = ({
     archive: allArchived,
   };
 
+  const nestedTabContentMap = {
+    favorites: {
+      employees: favoriteEmployees,
+      vacancies: favoriteVacancies,
+    },
+    archive: {
+      employees: archivedEmployees,
+      vacancies: archivedVacancies,
+    },
+  };
+
   const emptyTextMap = {
     employees: "Нет активных сотрудников",
     vacancies: "Нет активных вакансий",
-    favorites: "Нет избранных сотрудников или вакансий",
-    archive: "В архиве ничего нет",
+
+    favorites: {
+      all: "Нет избранных сотрудников или вакансий",
+      employees: "Нет избранных сотрудников",
+      vacancies: "Нет избранных вакансий",
+    },
+
+    archive: {
+      all: "В архиве ничего нет",
+      employees: "Нет архивных сотрудников",
+      vacancies: "Нет архивных вакансий",
+    },
   };
 
+  const hasNestedTabs = activeTab === "favorites" || activeTab === "archive";
+
   const itemsByTab = tabContentMap[activeTab];
-  const emptyText = emptyTextMap[activeTab];
+
+  const emptyText = hasNestedTabs
+    ? emptyTextMap[activeTab].all
+    : emptyTextMap[activeTab];
+
+  const isAdmin = useAuthStore((state) => state.user?.role === "hr_admin");
+
   const handleToggleFavorite = () => {
     addNotification({
       iconType: "success",
       title: "В разработке",
       message: "Требуется реализовать добавление в Избранное",
+    });
+  };
+
+  const handleEmployeeUpdate = (updatedEmployee: EmployeeData) => {
+    setSelectedEmployee(updatedEmployee);
+    onUpdateEmployee?.(updatedEmployee);
+  };
+
+  const handleRestoreVacancy = (vacancy: VacancyData) => {
+    addNotification({
+      iconType: "success",
+      title: "В разработке",
+      message: `Восстановление вакансии «${vacancy.profession}» будет доступно позже`,
     });
   };
 
@@ -82,7 +146,6 @@ export const EmployeesList = ({
               | "favorites"
               | "archive";
             setActiveTab(tab);
-            if (tab === "favorites" || tab === "archive") setViewType("grid");
           }}
         >
           <TabsList variant="line" className="gap-0 p-0 h-auto">
@@ -130,7 +193,6 @@ export const EmployeesList = ({
             variant="plain"
             size="plain"
             onClick={() => setViewType("grid")}
-            disabled={activeTab === "favorites" || activeTab === "archive"}
             className={cn(
               "py-1.5 px-2 rounded-none rounded-l-8 h-full transition-none",
               viewType === "grid"
@@ -145,7 +207,6 @@ export const EmployeesList = ({
             variant="plain"
             size="plain"
             onClick={() => setViewType("list")}
-            disabled={activeTab === "favorites" || activeTab === "archive"}
             className={cn(
               "py-1.5 px-2 rounded-none rounded-r-8 h-full transition-none",
               viewType === "list"
@@ -159,23 +220,169 @@ export const EmployeesList = ({
         </div>
       </div>
 
+      {viewType === "list" &&
+        (activeTab === "favorites" || activeTab === "archive") && (
+          <Tabs
+            value={activeEntityTab}
+            onValueChange={(value) => {
+              setActiveEntityTab(value as "employees" | "vacancies");
+            }}
+          >
+            <TabsList className="gap-1 p-0 bg-transparent">
+              <TabsTrigger
+                value="employees"
+                className="px-3 py-2 button-small cursor-pointer border-0 rounded-b-none group-data-[variant=default]/tabs-list:data-active:shadow-none"
+              >
+                Сотрудники
+                <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
+                  {activeTab === "favorites"
+                    ? favoriteEmployees.length
+                    : archivedEmployees.length}
+                </span>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="vacancies"
+                className="px-3 py-2 button-small cursor-pointer border-0 rounded-b-none group-data-[variant=default]/tabs-list:data-active:shadow-none"
+              >
+                Вакансии
+                <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
+                  {activeTab === "favorites"
+                    ? favoriteVacancies.length
+                    : archivedVacancies.length}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
+
       {viewType === "list" && activeTab === "employees" ? (
         <DataTable
           columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
           data={tabContentMap.employees}
+          onRowClick={setSelectedEmployee}
         />
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
-          columns={getVacancyColumns(favoritesIds, handleToggleFavorite)}
+          columns={getVacancyColumns(
+            favoritesIds,
+            handleToggleFavorite,
+            openVacancyModal,
+          )}
           data={tabContentMap.vacancies}
+        />
+      ) : viewType === "list" &&
+        hasNestedTabs &&
+        activeEntityTab === "employees" ? (
+        <DataTable
+          columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
+          data={nestedTabContentMap[activeTab].employees}
+          onRowClick={setSelectedEmployee}
+          containerClassName="rounded-tl-none"
+        />
+      ) : viewType === "list" &&
+        hasNestedTabs &&
+        activeEntityTab === "vacancies" ? (
+        <DataTable
+          columns={getVacancyColumns(
+            favoritesIds,
+            handleToggleFavorite,
+            activeTab === "archive" ? handleRestoreVacancy : openVacancyModal,
+            activeTab === "archive" ? "restore" : "respond",
+          )}
+          data={nestedTabContentMap[activeTab].vacancies}
         />
       ) : (
         <RenderCards
+          onEmployeeClick={setSelectedEmployee}
           items={itemsByTab}
           emptyText={emptyText}
           favoritesIds={favoritesIds}
           onToggleFavorite={handleToggleFavorite}
           onUpdateEmployee={onUpdateEmployee}
+          onArchiveEmployee={setEmployeeToArchive}
+        />
+      )}
+
+      {selectedEmployee && (
+        <EmployeeProfileDialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedEmployee(null);
+            }
+          }}
+          primaryInfo={
+            <EmployeePrimaryInfo
+              name={selectedEmployee.name}
+              position={selectedEmployee.position}
+              franchise={selectedEmployee.franchise}
+              department={selectedEmployee.department}
+              status={selectedEmployee.status}
+              photo={selectedEmployee.photo}
+              isArchived={selectedEmployee.isArchived}
+            />
+          }
+          emailInfo={
+            <EmployeeContacts
+              type="email"
+              corpContact={selectedEmployee.emailCorporate ?? ""}
+              persContact={selectedEmployee.emailPersonal ?? ""}
+            />
+          }
+          phoneInfo={
+            <EmployeeContacts
+              type="phone"
+              corpContact={selectedEmployee.phoneCorporate ?? ""}
+              persContact={selectedEmployee.phonePersonal ?? ""}
+            />
+          }
+          leader={
+            <LeaderPrimaryInfo
+              leaderName={
+                selectedEmployee.supervisor?.name ??
+                selectedEmployee.linearManager
+              }
+              leaderPosition={selectedEmployee.supervisor?.position ?? ""}
+              leaderPhoto={selectedEmployee.supervisor?.photo}
+            />
+          }
+          roles={selectedEmployee.roles ?? []}
+          tags={selectedEmployee.competencies ?? []}
+          city={selectedEmployee.city}
+          birthday={String(selectedEmployee.birthday)}
+          linkSocialNetwork={selectedEmployee.socialNetwork ?? ""}
+          linkCV={selectedEmployee.resumeLink ?? ""}
+          linkProfile={selectedEmployee.crmProfile ?? ""}
+          aboutMe={selectedEmployee.aboutMe ?? ""}
+          onExportPDF={() => {}}
+          editButton={
+            isAdmin ? (
+              <EditEmployeeButton
+                employee={selectedEmployee}
+                onSuccess={handleEmployeeUpdate}
+              >
+                <Button className="w-42">
+                  <EditIcon />
+                  Редактировать
+                </Button>
+              </EditEmployeeButton>
+            ) : undefined
+          }
+        />
+      )}
+
+      {employeeToArchive && (
+        <ArchiveEmployeeDialog
+          open={true}
+          onOpenChange={(open) => {
+            if (!open) {
+              setEmployeeToArchive(null);
+            }
+          }}
+          onConfirm={() => {
+            setEmployeeToArchive(null);
+          }}
         />
       )}
     </div>
