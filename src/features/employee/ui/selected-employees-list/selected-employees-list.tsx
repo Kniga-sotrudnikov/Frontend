@@ -14,16 +14,18 @@ type SelectedEmployeesListProps = {
     job: string;
     photo: string;
   }>;
-  selectedIds: number[];
-  onToggle: (employeeId: string) => void;
+  selectedIds?: number[];
+  onToggle?: (employeeId: string) => void;
   maxVisible?: number;
+  readonly?: boolean;
 };
 
 export const SelectedEmployeesList = ({
   employees,
-  selectedIds,
+  selectedIds = [],
   onToggle,
   maxVisible = 4,
+  readonly = false,
 }: SelectedEmployeesListProps) => {
   const [expanded, setExpanded] = useState(false);
   
@@ -46,24 +48,26 @@ export const SelectedEmployeesList = ({
       <div
         key={employee.id}
         className={`flex items-center justify-between p-2 rounded-lg border transition-colors ${
-          isSelected 
+          !readonly && isSelected 
             ? "border-purple-500 bg-purple-50" 
             : "border-gray-200 hover:border-gray-300"
         }`}
       >
         <div className="flex items-center gap-3 flex-1">
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={() => onToggle(String(employee.id))}
-            className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
-          />
+          {!readonly && (
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={() => onToggle?.(String(employee.id))}
+              className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
+            />
+          )}
           <img
             src={employee.photo}
             alt={employee.name}
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-gray-900 truncate">
+            <div className="text-xs font-medium text-gray-900 truncate">
               {employee.name}
             </div>
             <div className="text-xs text-gray-500 truncate">
@@ -77,9 +81,11 @@ export const SelectedEmployeesList = ({
 
   return (
     <div className="space-y-2">
-      <div className="text-sm text-gray-600 mb-3">
-        Выбрано: {selectedIds.length} из {employees.length}
-      </div>
+      {!readonly && (
+        <div className="text-sm text-gray-600 mb-3">
+          Выбрано: {selectedIds.length} из {employees.length}
+        </div>
+      )}
       
       <div className="flex flex-col gap-2 max-h-[400px] overflow-y-auto pr-2">
         {visibleEmployees.map(renderEmployee)}
