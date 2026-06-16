@@ -19,8 +19,8 @@ export const LeaderPrimaryInfo = ({
         className={"object-cover rounded-full size-9"}
       />
       <div className="flex flex-col gap-1">
-        <p className="text-[12px]">{leaderName}</p>
-        <p className="text-[12px] text-gray-700">{leaderPosition}</p>
+        <p className="text-[12px] whitespace-nowrap">{leaderName}</p>
+        <p className="text-[12px] text-gray-700 whitespace-nowrap">{leaderPosition}</p>
       </div>
     </div>
   );
