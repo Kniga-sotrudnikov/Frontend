@@ -14,6 +14,11 @@ export type CreateEmployeeFormValues = {
   city: string;
   status: TEmployeeStatus;
   competencies: string[];
+  resumeLink: string;
+  crmProfileLink: string;
+  socialNetworkLink: string;
+  aboutMe: string;
+  role: string;
 };
 
 export type CompetencyOption = {

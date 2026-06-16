@@ -167,7 +167,7 @@ export const EmployeeForm = memo(function EmployeeForm({
                   type="button"
                   variant="outline"
                   className={cn(
-                    "w-full justify-between text-left font-normal h-8 text-xs mt-2",
+                    "w-full justify-between text-left font-normal h-8 text-xs mt-1",
                     !values.birthday && "text-muted-foreground",
                     showError("birthday") && "border-red-600",
                   )}
@@ -214,6 +214,50 @@ export const EmployeeForm = memo(function EmployeeForm({
               options={statusOptions}
               placeholder="Выберите статус"
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label.Root
+              htmlFor="resumeLink"
+              className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
+            >
+              Ссылка на резюме
+            </Label.Root>
+            <FormInput
+              id="resumeLink"
+              type="url"
+              value={values.resumeLink}
+              onChange={(e) => onUpdate("resumeLink", e.target.value)}
+              onBlur={() => onBlur("resumeLink")}
+              placeholder="https://example.com/resume"
+              error={!!showError("resumeLink")}
+            />
+            {showError("resumeLink") && (
+              <p className="text-xs text-red-600 mt-1">{errors.resumeLink}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label.Root
+              htmlFor="socialNetworkLink"
+              className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
+            >
+              Ссылка на социальную сеть
+            </Label.Root>
+            <FormInput
+              id="socialNetworkLink"
+              type="url"
+              value={values.socialNetworkLink}
+              onChange={(e) => onUpdate("socialNetworkLink", e.target.value)}
+              onBlur={() => onBlur("socialNetworkLink")}
+              placeholder="https://t.me/username"
+              error={!!showError("socialNetworkLink")}
+            />
+            {showError("socialNetworkLink") && (
+              <p className="text-xs text-red-600 mt-1">
+                {errors.socialNetworkLink}
+              </p>
+            )}
           </div>
         </div>
 
@@ -298,7 +342,7 @@ export const EmployeeForm = memo(function EmployeeForm({
             )}
           </div>
 
-          <div className="space-y-2 -mb-2">
+          <div className="space-y-2 -mb-3">
             <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
               Город
             </Label.Root>
@@ -317,7 +361,7 @@ export const EmployeeForm = memo(function EmployeeForm({
             )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 mb-2">
             <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
               Компетенции
             </Label.Root>
@@ -329,6 +373,78 @@ export const EmployeeForm = memo(function EmployeeForm({
               }
             />
           </div>
+
+          <div className="space-y-2">
+            <Label.Root
+              htmlFor="crmProfileLink"
+              className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
+            >
+              Ссылка на профиль CRM
+            </Label.Root>
+            <FormInput
+              id="crmProfileLink"
+              type="url"
+              value={values.crmProfileLink}
+              onChange={(e) => onUpdate("crmProfileLink", e.target.value)}
+              onBlur={() => onBlur("crmProfileLink")}
+              placeholder="https://crm.example.com/profile"
+              error={!!showError("crmProfileLink")}
+            />
+            {showError("crmProfileLink") && (
+              <p className="text-xs text-red-600 mt-1">
+                {errors.crmProfileLink}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label.Root
+          htmlFor="role"
+          className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
+        >
+          Роль
+        </Label.Root>
+        <FormInput
+          id="role"
+          value={values.role}
+          onChange={(e) => onUpdate("role", e.target.value)}
+          onBlur={() => onBlur("role")}
+          placeholder="Например: Руководитель отдела, Менеджер проекта"
+          error={!!showError("role")}
+        />
+        {showError("role") && (
+          <p className="text-xs text-red-600 mt-1">{errors.role}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label.Root
+          htmlFor="aboutMe"
+          className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
+        >
+          Обо мне
+        </Label.Root>
+        <textarea
+          id="aboutMe"
+          value={values.aboutMe}
+          onChange={(e) => onUpdate("aboutMe", e.target.value)}
+          onBlur={() => onBlur("aboutMe")}
+          placeholder="Расскажите о себе..."
+          className={cn(
+            "w-full h-24 px-3 py-2 mt-1 text-xs rounded-md border border-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent",
+            showError("aboutMe") && "border-red-600",
+          )}
+          maxLength={500}
+        />
+        <div className="flex justify-between items-center mt-1">
+          {showError("aboutMe") && (
+            <p className="text-xs text-red-600">{errors.aboutMe}</p>
+          )}
+          <span className="text-xs text-gray-400 ml-auto">
+            {values.aboutMe.length}/500
+          </span>
         </div>
       </div>
     </>

@@ -7,4 +7,5 @@ export {
   requiredStringSchema,
   birthdaySchema,
   competenciesSchema,
+  urlSchema,
 } from "./schemas";

@@ -32,6 +32,11 @@ const initialValues: CreateEmployeeFormValues = {
   city: "",
   status: "active",
   competencies: [],
+  resumeLink: "",
+  crmProfileLink: "",
+  socialNetworkLink: "",
+  aboutMe: "",
+  role: "",
 };
 
 export const CreateEmployeeDialog = ({
@@ -129,12 +134,14 @@ export const CreateEmployeeDialog = ({
 
       setIsSubmitting(true);
       try {
+        // TODO: Уточнить у бэкенда структуру API для создания сотрудника
+        // и передавать новые поля: resumeLink, crmProfileLink, socialNetworkLink, aboutMe
         await onSubmit?.(values);
         addNotification({
           type: "success",
           iconType: "success",
           title: "В разработке",
-          message: "Создание карточик будет доступно в ближайшее время",
+          message: "Создание карточек будет доступно в ближайшее время",
         });
         onOpenChange(false);
       } catch (error) {
