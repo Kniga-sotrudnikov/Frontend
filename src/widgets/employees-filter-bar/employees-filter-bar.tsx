@@ -10,6 +10,7 @@ import {
 } from "@/features/employee";
 import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useNotificationStore } from "@/shared/model/stores";
+import { employees } from "@/entities/employee/model/mock";
 
 export const EmployeesFilterBar = () => {
   const viewType = useEmployeesPageStore((state) => state.viewType);
@@ -38,8 +39,44 @@ export const EmployeesFilterBar = () => {
     });
   };
 
+  const getTagUsageCount = (_groupKey: string, tagValue: string) => {
+    const count = employees.filter(emp => {
+      const hasInTags = emp.tags?.includes(tagValue) || false;
+      const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
+      return hasInTags || hasInCompetencies;
+    }).length;
+    
+    return count;
+  };
+
+  const getEmployeesByTag = (
+    _groupKey: string,
+    tagValue: string,
+  ) => {
+    const filtered = employees.filter(emp => {
+      const hasInTags = emp.tags?.includes(tagValue) || false;
+      const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
+      return hasInTags || hasInCompetencies;
+    });
+    
+    return filtered.map(emp => ({
+      name: emp.full_name,
+      position: emp.job_title,
+      photo: emp.photo_url,
+    }));
+  };
+
+  const getAllEmployees = () => {
+    return employees.map(emp => ({
+      id: String(emp.id),
+      name: emp.full_name,
+      position: emp.job_title,
+      photo: emp.photo_url,
+    }));
+  };
+
   return (
-    <div className="flex items-center gap-3 flex-wrap">
+    <div className="flex items-center gap-3 flex-nowrap">
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
       <FilterCities
         options={citiesFilterOptions}
@@ -50,7 +87,14 @@ export const EmployeesFilterBar = () => {
         groups={expertiseFilterGroups}
         value={expertiseFilter}
         onApply={setExpertiseFilter}
+        isAdmin={true}
+        getTagUsageCount={getTagUsageCount}
+        getEmployeesByTag={getEmployeesByTag}
+        getAllEmployees={getAllEmployees}
       />
+
+      <div className="ml-auto" />
+      
       <div className="flex items-center gap-3">
         {viewType === "list" && (
           <Button
