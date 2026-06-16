@@ -194,7 +194,7 @@ export const EmployeeProfileDialog = ({
         </div>
 
         <div className="p-3 bg-gray-50 rounded-lg my-0">
-          <h3 className="text-[12px] font-semibold text-black">Обо мне</h3>
+          <h3 className="text-[12px] body-overline-semibold text-black">Обо мне</h3>
           <p className="text-[12px] text-black leading-relaxed">{aboutMe}</p>
         </div>
 
