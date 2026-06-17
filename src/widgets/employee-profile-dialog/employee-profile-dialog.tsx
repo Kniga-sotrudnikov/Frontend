@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   Dialog,
   DialogClose,
@@ -20,6 +21,8 @@ import { CollapsibleBadgeList } from "@/shared/ui/collapsible-badge-list";
 import { InfoSection } from "@/shared/ui/info-section";
 import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/report-inaccuracy-modal";
 import { Button } from "@/shared/ui/button";
+import { useExportPdf } from "@/shared/lib/hooks";
+import { EmployeePdfContent } from "./employee-pdf-content";
 import type { ReactElement, ReactNode } from "react";
 
 interface EmployeeProfileDialogProps {
@@ -27,25 +30,9 @@ interface EmployeeProfileDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   editButton?: ReactNode;
-  /**
-   * Блок основной информации сотрудника.
-   * Используется EmployeePrimaryInfo.
-   */
   primaryInfo: ReactElement;
-  /**
-   * Блок контактов сотрудника.
-   * Используется EmployeeContacts.
-   */
   emailInfo: ReactElement;
-  /**
-   * Блок контактов сотрудника.
-   * Используется EmployeeContacts.
-   */
   phoneInfo: ReactElement;
-  /**
-   * Блок информации о руководителе.
-   * Используется LeaderPrimaryInfo.
-   */
   leader: ReactElement;
   roles: string[];
   city: string;
@@ -77,6 +64,9 @@ export const EmployeeProfileDialog = ({
   tags,
   onExportPDF,
 }: EmployeeProfileDialogProps) => {
+  const { exportToPdf } = useExportPdf();
+  const contentRef = useRef<HTMLDivElement>(null);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
   };
@@ -86,10 +76,37 @@ export const EmployeeProfileDialog = ({
     month: "long",
   });
 
+  const handleExportPDF = async () => {
+    if (contentRef.current) {
+      await exportToPdf(contentRef.current, "Карточка_сотрудника.pdf");
+      onExportPDF();
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md p-4 gap-4">
+        {/* Скрытый блок для PDF */}
+        <div className="fixed top-0 left-[-9999px] w-[552px] bg-white">
+          <EmployeePdfContent
+            ref={contentRef}
+            primaryInfo={primaryInfo}
+            roles={roles}
+            emailInfo={emailInfo}
+            phoneInfo={phoneInfo}
+            leader={leader}
+            city={city}
+            birthday={birthday}
+            linkSocialNetwork={linkSocialNetwork}
+            linkCV={linkCV}
+            linkProfile={linkProfile}
+            aboutMe={aboutMe}
+            tags={tags}
+          />
+        </div>
+
+        {/* Видимый контент модалки */}
         <DialogHeader className="flex flex-row justify-between items-center p-0">
           <DialogTitle className="sr-only">Карточка сотрудника</DialogTitle>
 
@@ -202,7 +219,7 @@ export const EmployeeProfileDialog = ({
           <Button
             variant="ghost"
             className="px-3 py-2 justify-start w-fit text-xs text-gray-900 hover:bg-gray-50"
-            onClick={onExportPDF}
+            onClick={handleExportPDF}
           >
             <ExportIcon className="h-3 w-3" />
             Экспортировать в PDF
