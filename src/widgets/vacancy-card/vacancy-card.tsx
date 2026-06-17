@@ -2,6 +2,7 @@ import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal";
+import { useNotificationStore } from "@/shared/model/stores";
 import InfoIcon from "@/shared/assets/icons/warning.svg?react";
 import LinkIcon from "@/shared/assets/icons/link.svg?react";
 import ExportIcon from "@/shared/assets/icons/export.svg?react";
@@ -47,8 +48,15 @@ function VacancyCard({
     competencies,
   } = vacancy;
 
+  const addNotification = useNotificationStore((state) => state.add);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
+    addNotification({
+      iconType: "success",
+      title: "Ссылка на вакансию скопирована",
+      message: "Ссылка скопирована в буфер обмена",
+    });
   };
 
   const hasTitle = !!title;

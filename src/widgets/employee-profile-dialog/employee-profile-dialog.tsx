@@ -20,6 +20,7 @@ import { CollapsibleBadgeList } from "@/shared/ui/collapsible-badge-list";
 import { InfoSection } from "@/shared/ui/info-section";
 import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/report-inaccuracy-modal";
 import { Button } from "@/shared/ui/button";
+import { useNotificationStore } from "@/shared/model/stores";
 import type { ReactElement, ReactNode } from "react";
 
 interface EmployeeProfileDialogProps {
@@ -77,8 +78,16 @@ export const EmployeeProfileDialog = ({
   tags,
   onExportPDF,
 }: EmployeeProfileDialogProps) => {
+  const addNotification = useNotificationStore((state) => state.add);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
+
+    addNotification({
+      iconType: "success",
+      title: "Ссылка на сотрудника скопирована",
+      message: "Ссылка скопирована в буфер обмена",
+    });
   };
 
   return (

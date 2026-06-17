@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
@@ -22,6 +22,7 @@ import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
 import { useAuthStore } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
+import { useEmployeeModalStore } from "@/features/employee/model/use-employee-modal-store";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -48,11 +49,39 @@ export const EmployeesList = ({
   const [employeeToArchive, setEmployeeToArchive] =
     useState<EmployeeData | null>(null);
 
+  const selectedEmployeeFromStore = useEmployeeModalStore(
+    (state) => state.selectedEmployee,
+  );
+  const openEmployeeModal = useEmployeeModalStore(
+    (state) => state.openEmployeeModal,
+  );
+  const closeEmployeeModal = useEmployeeModalStore(
+    (state) => state.closeEmployeeModal,
+  );
+
+  useEffect(() => {
+    if (selectedEmployeeFromStore) {
+      setSelectedEmployee(selectedEmployeeFromStore);
+    }
+  }, [selectedEmployeeFromStore]);
+
+  const handleEmployeeClick = (employee: EmployeeData) => {
+    setSelectedEmployee(employee);
+    openEmployeeModal(employee);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedEmployee(null);
+    closeEmployeeModal();
+  };
+
   const viewType = useEmployeesPageStore((state) => state.viewType);
   const setViewType = useEmployeesPageStore((state) => state.setViewType);
   const addNotification = useNotificationStore((state) => state.add);
 
-  const openVacancyModal = useVacancyModalStore((state) => state.openModal);
+  const openVacancyModal = useVacancyModalStore(
+    (state) => state.openVacancyModal,
+  );
 
   const favoriteEmployees = employees.filter(
     (emp) => favoritesIds.includes(emp.id) && !emp.isArchived,
@@ -260,7 +289,7 @@ export const EmployeesList = ({
         <DataTable
           columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
           data={tabContentMap.employees}
-          onRowClick={setSelectedEmployee}
+          onRowClick={handleEmployeeClick}
         />
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
@@ -277,7 +306,7 @@ export const EmployeesList = ({
         <DataTable
           columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
           data={nestedTabContentMap[activeTab].employees}
-          onRowClick={setSelectedEmployee}
+          onRowClick={handleEmployeeClick}
           containerClassName="rounded-tl-none"
         />
       ) : viewType === "list" &&
@@ -294,7 +323,7 @@ export const EmployeesList = ({
         />
       ) : (
         <RenderCards
-          onEmployeeClick={setSelectedEmployee}
+          onEmployeeClick={handleEmployeeClick}
           items={itemsByTab}
           emptyText={emptyText}
           favoritesIds={favoritesIds}
@@ -309,7 +338,7 @@ export const EmployeesList = ({
           open={true}
           onOpenChange={(open) => {
             if (!open) {
-              setSelectedEmployee(null);
+              handleCloseModal();
             }
           }}
           primaryInfo={
