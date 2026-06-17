@@ -59,10 +59,8 @@ export const EmployeePdfContent = forwardRef<
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
-        {/* Основная информация - оборачиваем чтобы убрать лишние отступы */}
         <div className="mt-0">{primaryInfo}</div>
 
-        {/* Роли */}
         {roles.length > 0 && (
           <div className="bg-gray-50 rounded-lg px-3 py-2 mt-4">
             <h3 className="text-[12px] font-semibold text-black mb-1">Роль</h3>
@@ -76,7 +74,6 @@ export const EmployeePdfContent = forwardRef<
           </div>
         )}
 
-        {/* Компетенции */}
         <div className="mt-4">
           <InfoSection icon={TagIcon} title="Компетенции">
             <CollapsibleBadgeList
@@ -87,7 +84,6 @@ export const EmployeePdfContent = forwardRef<
           </InfoSection>
         </div>
 
-        {/* Контакты и информация */}
         <div className="grid grid-cols-2 gap-x-26 gap-y-3 mt-4">
           <InfoSection icon={MailIcon} title="Электронная почта">
             {emailInfo}
@@ -131,7 +127,6 @@ export const EmployeePdfContent = forwardRef<
           </InfoSection>
         </div>
 
-        {/* Обо мне */}
         {aboutMe && (
           <div className="p-3 bg-gray-50 rounded-lg mt-4">
             <h3 className="text-[12px] body-overline-semibold text-black">

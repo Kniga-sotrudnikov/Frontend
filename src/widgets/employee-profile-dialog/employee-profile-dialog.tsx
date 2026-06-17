@@ -87,7 +87,6 @@ export const EmployeeProfileDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md p-4 gap-4">
-        {/* Скрытый блок для PDF */}
         <div className="fixed top-0 left-[-9999px] w-[552px] bg-white">
           <EmployeePdfContent
             ref={contentRef}
@@ -106,7 +105,6 @@ export const EmployeeProfileDialog = ({
           />
         </div>
 
-        {/* Видимый контент модалки */}
         <DialogHeader className="flex flex-row justify-between items-center p-0">
           <DialogTitle className="sr-only">Карточка сотрудника</DialogTitle>
 
