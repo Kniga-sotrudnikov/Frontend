@@ -49,4 +49,17 @@ export const birthdaySchema = z
     message: "Обязательное поле",
   });
 
+export const urlSchema = z.string().refine(
+  (val) => {
+    if (!val) return true;
+    try {
+      new URL(val);
+      return true;
+    } catch {
+      return false;
+    }
+  },
+  { message: "Некорректная ссылка" },
+);
+
 export const competenciesSchema = z.array(z.string()).optional();

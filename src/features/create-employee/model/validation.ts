@@ -6,6 +6,7 @@ import {
   positionSchema,
   requiredStringSchema,
   birthdaySchema,
+  urlSchema,
 } from "@/shared/lib/validation";
 
 export type ValidationErrors = Partial<
@@ -80,6 +81,31 @@ export const validateForm = (
     if (!phonePersonalResult.success) {
       errors.phonePersonal = "Некорректный телефон";
     }
+  }
+
+  if (values.resumeLink) {
+    const resumeLinkResult = urlSchema.safeParse(values.resumeLink);
+    if (!resumeLinkResult.success) {
+      errors.resumeLink = "Некорректная ссылка";
+    }
+  }
+
+  if (values.crmProfileLink) {
+    const crmProfileLinkResult = urlSchema.safeParse(values.crmProfileLink);
+    if (!crmProfileLinkResult.success) {
+      errors.crmProfileLink = "Некорректная ссылка";
+    }
+  }
+
+  if (values.socialNetworkLink) {
+    const socialNetworkLinkResult = urlSchema.safeParse(values.socialNetworkLink);
+    if (!socialNetworkLinkResult.success) {
+      errors.socialNetworkLink = "Некорректная ссылка";
+    }
+  }
+
+  if (values.aboutMe && values.aboutMe.length > 500) {
+    errors.aboutMe = "Максимум 500 символов";
   }
 
   return errors;
