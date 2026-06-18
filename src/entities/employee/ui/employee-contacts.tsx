@@ -21,23 +21,23 @@ export function EmployeeContacts({
       <div className="inline-flex gap-1 items-center">
         <a
           href={`${CONTACT_PREFIXES[type]}${corpContact}`}
-          className="text-link hover:underline text-xs"
+          className="text-link hover:underline text-[12px]"
         >
           {corpContact}
         </a>
 
-        <span className="text-xs whitespace-nowrap">(корп.)</span>
+        <span className="text-[12px] whitespace-nowrap">(корп.)</span>
       </div>
 
       <div className="inline-flex gap-1 items-center">
         <a
           href={`${CONTACT_PREFIXES[type]}${persContact}`}
-          className="text-link hover:underline text-xs"
+          className="text-link hover:underline text-[12px]"
         >
           {persContact}
         </a>
 
-        <span className="text-xs whitespace-nowrap">(личн.)</span>
+        <span className="text-[12px] whitespace-nowrap">(личн.)</span>
       </div>
     </div>
   );

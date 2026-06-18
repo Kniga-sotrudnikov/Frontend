@@ -26,8 +26,8 @@ export const EmployeePrimaryInfo = ({
   department,
 }: EmployeePrimaryInfoProps) => {
   return (
-    <div className="flex gap-4">
-      <div className="relative shrink-0 w-26.5 h-23.5 bg-gray-100 rounded-8 overflow-hidden">
+    <div className="flex gap-3">
+      <div className="relative shrink-0 w-22 h-19 bg-gray-100 rounded-8 overflow-hidden">
         <img
           src={photo}
           alt="Фото сотрудника"
@@ -39,7 +39,7 @@ export const EmployeePrimaryInfo = ({
             <img
               src={statusIconMap[status]}
               alt={statusLabelMap[status]}
-              className="size-6"
+              className="size-5"
               title={statusLabelMap[status]}
             />
           </div>
@@ -49,8 +49,8 @@ export const EmployeePrimaryInfo = ({
         <h3 className="body-s-semibold text-black mb-2 wrap-break-word">
           {name}
         </h3>
-        <p className="body-s mb-3 wrap-break-word text-gray-600">{position}</p>
-        <p className="body-overline mb-2 wrap-break-word text-gray-600">
+        <p className="body-s mb-2 wrap-break-word text-gray-600">{position}</p>
+        <p className="body-overline mb-1 wrap-break-word text-gray-600">
           {franchise}
         </p>
         <p className="body-overline wrap-break-word text-gray-600">

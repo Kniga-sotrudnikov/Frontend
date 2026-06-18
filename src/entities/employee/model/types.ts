@@ -58,4 +58,5 @@ export interface EmployeeData {
   resumeLink?: string;
   crmProfile?: string;
   aboutMe?: string;
+  role?: string;
 }
