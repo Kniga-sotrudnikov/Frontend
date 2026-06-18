@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { PageHeader } from "@/widgets/page-header";
 import { SearchInput } from "@/shared/ui/input";
 import { HeaderUserCard } from "@/widgets/header-user-card";
@@ -8,19 +9,18 @@ import { EmployeesList } from "@/widgets/employees-list";
 import { EmployeesFilterBar } from "@/widgets/employees-filter-bar";
 import { VacancyCard } from "@/widgets/vacancy-card";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
-import { useEmployeeModalStore } from "@/features/employee/model/use-employee-modal-store";
+import { useEmployeeModalStore } from "@/features/employee";
 import { mockEmployees, mockFavorites, mockVacancies } from "./mocks/mocks";
 
 const EmployeesPage = () => {
-  const selectedVacancy = useVacancyModalStore(
-    (state) => state.selectedVacancy,
-  );
-  const openVacancyModal = useVacancyModalStore(
-    (state) => state.openVacancyModal,
-  );
-  const closeVacancyModal = useVacancyModalStore(
-    (state) => state.closeVacancyModal,
-  );
+  const { selectedVacancy, openVacancyModal, closeVacancyModal } =
+    useVacancyModalStore(
+      useShallow((state) => ({
+        selectedVacancy: state.selectedVacancy,
+        openVacancyModal: state.openVacancyModal,
+        closeVacancyModal: state.closeVacancyModal,
+      })),
+    );
   const openEmployeeModal = useEmployeeModalStore(
     (state) => state.openEmployeeModal,
   );

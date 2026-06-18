@@ -7,6 +7,7 @@ export { ExpertiseFilter } from "./ui/expertise-filter";
 export { AddTagDialog } from "./ui/add-tag-dialog";
 export { EmployeesListDialog } from "./ui/employees-list-dialog";
 export { useEmployeesPageStore } from "./model/use-employees-page-store";
+export { useEmployeeModalStore } from "./model/use-employee-modal-store";
 export {
   expertiseFilterGroups,
   statusFilterOptions,

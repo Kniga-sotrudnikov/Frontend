@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
+import { useShallow } from "zustand/react/shallow";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
@@ -15,6 +16,7 @@ import {
   ArchiveEmployeeDialog,
   EditEmployeeButton,
   useEmployeesPageStore,
+  useEmployeeModalStore,
 } from "@/features/employee";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
@@ -22,7 +24,6 @@ import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
 import { useAuthStore } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
-import { useEmployeeModalStore } from "@/features/employee/model/use-employee-modal-store";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
@@ -49,15 +50,14 @@ export const EmployeesList = ({
   const [employeeToArchive, setEmployeeToArchive] =
     useState<EmployeeData | null>(null);
 
-  const selectedEmployeeFromStore = useEmployeeModalStore(
-    (state) => state.selectedEmployee,
-  );
-  const openEmployeeModal = useEmployeeModalStore(
-    (state) => state.openEmployeeModal,
-  );
-  const closeEmployeeModal = useEmployeeModalStore(
-    (state) => state.closeEmployeeModal,
-  );
+  const { selectedEmployeeFromStore, openEmployeeModal, closeEmployeeModal } =
+    useEmployeeModalStore(
+      useShallow((state) => ({
+        selectedEmployeeFromStore: state.selectedEmployee,
+        openEmployeeModal: state.openEmployeeModal,
+        closeEmployeeModal: state.closeEmployeeModal,
+      })),
+    );
 
   useEffect(() => {
     if (selectedEmployeeFromStore) {
@@ -75,8 +75,12 @@ export const EmployeesList = ({
     closeEmployeeModal();
   };
 
-  const viewType = useEmployeesPageStore((state) => state.viewType);
-  const setViewType = useEmployeesPageStore((state) => state.setViewType);
+  const { viewType, setViewType } = useEmployeesPageStore(
+    useShallow((state) => ({
+      viewType: state.viewType,
+      setViewType: state.setViewType,
+    })),
+  );
   const addNotification = useNotificationStore((state) => state.add);
 
   const openVacancyModal = useVacancyModalStore(
