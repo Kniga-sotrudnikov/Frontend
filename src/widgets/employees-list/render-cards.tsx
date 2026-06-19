@@ -26,7 +26,9 @@ export const RenderCards = ({
   onEmployeeClick,
   onArchiveEmployee,
 }: RenderCardsProps) => {
-  const openModal = useVacancyModalStore((state) => state.openModal);
+  const openVacancyModal = useVacancyModalStore(
+    (state) => state.openVacancyModal,
+  );
 
   if (items.length === 0) {
     return <EmptyPlaceholder text={emptyText} />;
@@ -70,7 +72,7 @@ export const RenderCards = ({
             {...vacancyProps}
             isFavorite={favoritesIds.includes(id)}
             onFavorite={() => onToggleFavorite?.(id)}
-            onRespond={() => openModal(item)}
+            onRespond={() => openVacancyModal(item)}
           />
         );
       })}

@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { PageHeader } from "@/widgets/page-header";
 import { SearchInput } from "@/shared/ui/input";
 import { HeaderUserCard } from "@/widgets/header-user-card";
@@ -7,13 +9,39 @@ import { EmployeesList } from "@/widgets/employees-list";
 import { EmployeesFilterBar } from "@/widgets/employees-filter-bar";
 import { VacancyCard } from "@/widgets/vacancy-card";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
+import { useEmployeeModalStore } from "@/features/employee";
 import { mockEmployees, mockFavorites, mockVacancies } from "./mocks/mocks";
 
 const EmployeesPage = () => {
-  const selectedVacancy = useVacancyModalStore(
-    (state) => state.selectedVacancy,
+  const { selectedVacancy, openVacancyModal, closeVacancyModal } =
+    useVacancyModalStore(
+      useShallow((state) => ({
+        selectedVacancy: state.selectedVacancy,
+        openVacancyModal: state.openVacancyModal,
+        closeVacancyModal: state.closeVacancyModal,
+      })),
+    );
+  const openEmployeeModal = useEmployeeModalStore(
+    (state) => state.openEmployeeModal,
   );
-  const closeModal = useVacancyModalStore((state) => state.closeModal);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const vacancyId = params.get("vacancy");
+
+    if (vacancyId) {
+      const vacancy = mockVacancies.find((v) => String(v.id) === vacancyId);
+      if (vacancy) {
+        openVacancyModal(vacancy);
+      }
+    }
+
+    const employeeId = params.get("employee");
+    if (employeeId) {
+      const employee = mockEmployees.find((e) => String(e.id) === employeeId);
+      if (employee) openEmployeeModal(employee);
+    }
+  }, [openVacancyModal, openEmployeeModal]);
 
   return (
     <>
@@ -51,7 +79,7 @@ const EmployeesPage = () => {
         <VacancyCard
           open={true}
           onOpenChange={(open) => {
-            if (!open) closeModal();
+            if (!open) closeVacancyModal();
           }}
           vacancy={{
             id: selectedVacancy.id,
