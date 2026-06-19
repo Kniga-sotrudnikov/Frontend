@@ -21,7 +21,9 @@ import { CollapsibleBadgeList } from "@/shared/ui/collapsible-badge-list";
 import { InfoSection } from "@/shared/ui/info-section";
 import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/report-inaccuracy-modal";
 import { Button } from "@/shared/ui/button";
-import { useNotificationStore } from "@/shared/model/stores"
+import { useNotificationStore } from "@/shared/model/stores";
+import { useExportPdf } from "@/shared/lib/hooks";
+import { EmployeePdfContent } from "./employee-pdf-content";
 import type { ReactElement, ReactNode } from "react";
 
 interface EmployeeProfileDialogProps {
@@ -67,7 +69,6 @@ export const EmployeeProfileDialog = ({
 
   const { exportToPdf } = useExportPdf();
   const contentRef = useRef<HTMLDivElement>(null);
-  const addNotification = useNotificationStore((state) => state.add);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -223,7 +224,9 @@ export const EmployeeProfileDialog = ({
         </div>
 
         <div className="p-3 bg-gray-50 rounded-lg my-0">
-          <h3 className="text-[12px] body-overline-semibold text-black">Обо мне</h3>
+          <h3 className="text-[12px] body-overline-semibold text-black">
+            Обо мне
+          </h3>
           <p className="text-[12px] text-black leading-relaxed">{aboutMe}</p>
         </div>
 
