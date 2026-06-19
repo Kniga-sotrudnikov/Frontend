@@ -1,7 +1,6 @@
 import { forwardRef } from "react";
 import type { ReactElement } from "react";
 import { InfoSection } from "@/shared/ui/info-section";
-import { CollapsibleBadgeList } from "@/shared/ui/collapsible-badge-list";
 import TagIcon from "@/shared/assets/icons/tag.svg";
 import MailIcon from "@/shared/assets/icons/mail.svg";
 import PhoneIcon from "@/shared/assets/icons/phone.svg";
@@ -54,15 +53,16 @@ export const EmployeePdfContent = forwardRef<
     return (
       <div
         ref={ref}
-        className="bg-white px-4 pb-4 max-w-[552px]"
+        className="bg-white px-4 pb-16 max-w-[552px]"
         style={{
           fontFamily: "Inter, system-ui, sans-serif",
         }}
       >
         <div className="mt-0">{primaryInfo}</div>
 
+        {/* РОЛИ */}
         {roles.length > 0 && (
-          <div className="bg-gray-50 rounded-lg px-3 py-2 mt-4">
+          <div className="bg-gray-50 rounded-lg px-3 pb-3 mt-4">
             <h3 className="text-[12px] font-semibold text-black mb-1">Роль</h3>
             <ul className="list-disc pl-4 space-y-0">
               {roles.map((item, idx) => (
@@ -74,16 +74,23 @@ export const EmployeePdfContent = forwardRef<
           </div>
         )}
 
+        {/* КОМПЕТЕНЦИИ */}
         <div className="mt-4">
           <InfoSection icon={TagIcon} title="Компетенции">
-            <CollapsibleBadgeList
-              visibleCount={10}
-              items={tags}
-              badgeClassName="bg-purple-50 text-purple-500 border-purple-500"
-            />
+            <div className="flex flex-wrap gap-1">
+              {tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-0.5 text-(length:--font-size-overline) rounded-(--radius-4) bg-purple-50 text-purple-500 border border-purple-500"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
           </InfoSection>
         </div>
 
+        {/* КОНТАКТЫ */}
         <div className="grid grid-cols-2 gap-x-26 gap-y-3 mt-4">
           <InfoSection icon={MailIcon} title="Электронная почта">
             {emailInfo}
@@ -103,14 +110,8 @@ export const EmployeePdfContent = forwardRef<
 
           <InfoSection icon={DocumentIcon} title="Документы">
             <div className="flex flex-col gap-1">
-              {linkCV && (
-                <span className="w-fit text-[12px] text-link">Резюме</span>
-              )}
-              {linkProfile && (
-                <span className="w-fit text-[12px] text-link">
-                  Профиль в CRM
-                </span>
-              )}
+              {linkCV && <span className="text-[12px] text-link">Резюме</span>}
+              {linkProfile && <span className="text-[12px] text-link">Профиль в CRM</span>}
             </div>
           </InfoSection>
 
@@ -127,11 +128,10 @@ export const EmployeePdfContent = forwardRef<
           </InfoSection>
         </div>
 
+        {/* ОБО МНЕ */}
         {aboutMe && (
           <div className="p-3 bg-gray-50 rounded-lg mt-4">
-            <h3 className="text-[12px] body-overline-semibold text-black">
-              Обо мне
-            </h3>
+            <h3 className="text-[12px] body-overline-semibold text-black">Обо мне</h3>
             <p className="text-[12px] text-black leading-relaxed">{aboutMe}</p>
           </div>
         )}

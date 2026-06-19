@@ -150,9 +150,9 @@ export const EmployeeProfileDialog = ({
 
         <div className="mt-0">{primaryInfo}</div>
 
-        <div className="px-3 bg-gray-50 rounded-lg mb-1">
+        <div className="px-3 bg-gray-50 rounded-lg mb-0">
           <h3 className="text-[12px] font-semibold text-black mb-0">Роль</h3>
-          <ul className="list-disc pl-4 space-y-0 -mt-1">
+          <ul className="list-disc pl-4 space-y-0 mt-1">
             {roles.map((item, idx) => (
               <li key={idx} className="text-[12px] text-black leading-tight">
                 {item}
