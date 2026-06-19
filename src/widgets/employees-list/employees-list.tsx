@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
+import { useShallow } from "zustand/react/shallow";
 import GridIcon from "@/shared/assets/icons/grid.svg?react";
 import ListIcon from "@/shared/assets/icons/list.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
@@ -15,6 +16,7 @@ import {
   ArchiveEmployeeDialog,
   EditEmployeeButton,
   useEmployeesPageStore,
+  useEmployeeModalStore,
 } from "@/features/employee";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
@@ -48,11 +50,42 @@ export const EmployeesList = ({
   const [employeeToArchive, setEmployeeToArchive] =
     useState<EmployeeData | null>(null);
 
-  const viewType = useEmployeesPageStore((state) => state.viewType);
-  const setViewType = useEmployeesPageStore((state) => state.setViewType);
+  const { selectedEmployeeFromStore, openEmployeeModal, closeEmployeeModal } =
+    useEmployeeModalStore(
+      useShallow((state) => ({
+        selectedEmployeeFromStore: state.selectedEmployee,
+        openEmployeeModal: state.openEmployeeModal,
+        closeEmployeeModal: state.closeEmployeeModal,
+      })),
+    );
+
+  useEffect(() => {
+    if (selectedEmployeeFromStore) {
+      setSelectedEmployee(selectedEmployeeFromStore);
+    }
+  }, [selectedEmployeeFromStore]);
+
+  const handleEmployeeClick = (employee: EmployeeData) => {
+    setSelectedEmployee(employee);
+    openEmployeeModal(employee);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedEmployee(null);
+    closeEmployeeModal();
+  };
+
+  const { viewType, setViewType } = useEmployeesPageStore(
+    useShallow((state) => ({
+      viewType: state.viewType,
+      setViewType: state.setViewType,
+    })),
+  );
   const addNotification = useNotificationStore((state) => state.add);
 
-  const openVacancyModal = useVacancyModalStore((state) => state.openModal);
+  const openVacancyModal = useVacancyModalStore(
+    (state) => state.openVacancyModal,
+  );
 
   const favoriteEmployees = employees.filter(
     (emp) => favoritesIds.includes(emp.id) && !emp.isArchived,
@@ -260,7 +293,7 @@ export const EmployeesList = ({
         <DataTable
           columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
           data={tabContentMap.employees}
-          onRowClick={setSelectedEmployee}
+          onRowClick={handleEmployeeClick}
         />
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
@@ -277,7 +310,7 @@ export const EmployeesList = ({
         <DataTable
           columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
           data={nestedTabContentMap[activeTab].employees}
-          onRowClick={setSelectedEmployee}
+          onRowClick={handleEmployeeClick}
           containerClassName="rounded-tl-none"
         />
       ) : viewType === "list" &&
@@ -294,7 +327,7 @@ export const EmployeesList = ({
         />
       ) : (
         <RenderCards
-          onEmployeeClick={setSelectedEmployee}
+          onEmployeeClick={handleEmployeeClick}
           items={itemsByTab}
           emptyText={emptyText}
           favoritesIds={favoritesIds}
@@ -309,7 +342,7 @@ export const EmployeesList = ({
           open={true}
           onOpenChange={(open) => {
             if (!open) {
-              setSelectedEmployee(null);
+              handleCloseModal();
             }
           }}
           primaryInfo={
