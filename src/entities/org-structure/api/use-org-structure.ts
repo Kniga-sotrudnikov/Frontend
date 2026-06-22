@@ -6,6 +6,7 @@ export interface OrgUnitResponse {
   id: number;
   name: string;
   // TODO В ответе пока только Направления и отделы, добавить СИС/УК, когда появятся
+  // Возможно СИС/УК будут самостоятельные api
   type: "direction" | "department";
   employee_count: number;
   children: OrgUnitResponse[];
@@ -15,7 +16,6 @@ function mapOrgUnit(data: OrgUnitResponse): OrgUnit {
   return {
     id: data.id,
     name: data.name,
-    head: data.type === "direction",
     employeeCount: data.employee_count,
     items: data.children.map(mapOrgUnit),
   };
