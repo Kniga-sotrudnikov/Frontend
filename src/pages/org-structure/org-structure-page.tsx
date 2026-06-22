@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
 import { ZoomableImage } from "@/shared/ui/zoomable-image";
 import { ZoomablePDF } from "@/shared/ui/zoomable-pdf";
-import { mockCurrentUser } from "@/entities/user";
+import { useIsAdmin } from "@/entities/user";
 import Chart from "@/shared/assets/images/Chart.png";
 import ChartPdf from "@/shared/assets/images/Chart.pdf";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
@@ -16,7 +16,7 @@ import { ClarifyingModal } from "@/features/upload-org-structure";
 const OrgStructurePage = () => {
   const [zoom, setZoom] = useState(100);
   const [isClarifyingOpen, setIsClarifyingOpen] = useState(false);
-  const isAdmin = mockCurrentUser.role === "hr_admin";
+  const isAdmin = useIsAdmin();
   // TODO: значение isImage будут определятся форматом файла загружаемого с сервера
   const isImage = true;
   const isZoomabled = zoom > 100;

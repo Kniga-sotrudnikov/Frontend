@@ -3,7 +3,7 @@ import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-inf
 import { ProfessionCard } from "@/widgets/profession-card";
 import { EmptyPlaceholder } from "@ui/empty-placeholder";
 import type { EmployeesListType } from "./types";
-import type { EmployeeData } from "@/entities/employee";
+import { type EmployeeData } from "@/entities/employee";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 
 interface RenderCardsProps {
@@ -11,8 +11,11 @@ interface RenderCardsProps {
   emptyText: string;
   // TODO: убрать favoritesIds после подключения TanStack Query — получать из useFavoritesQuery()
   favoritesIds?: (number | string)[];
+  canEditEmployee?: boolean;
   onToggleFavorite?: (id: number | string) => void;
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
+  onEmployeeClick: (employee: EmployeeData) => void;
+  onArchiveEmployee: (employee: EmployeeData) => void;
 }
 
 export const RenderCards = ({
@@ -20,9 +23,14 @@ export const RenderCards = ({
   emptyText,
   favoritesIds = [],
   onToggleFavorite,
+  canEditEmployee = false,
   onUpdateEmployee,
+  onEmployeeClick,
+  onArchiveEmployee,
 }: RenderCardsProps) => {
-  const openModal = useVacancyModalStore((state) => state.openModal);
+  const openVacancyModal = useVacancyModalStore(
+    (state) => state.openVacancyModal,
+  );
 
   if (items.length === 0) {
     return <EmptyPlaceholder text={emptyText} />;
@@ -35,13 +43,16 @@ export const RenderCards = ({
           const employee = item as EmployeeData;
           return (
             <EmployeeCard
+              onClick={() => onEmployeeClick(employee)}
               key={item.id}
               city={item.city}
               linearManager={item.linearManager}
               employeeData={employee}
               isFavorite={favoritesIds.includes(item.id)}
+              canEdit={canEditEmployee}
               onFavorite={() => onToggleFavorite?.(item.id)}
               onUpdateEmployee={onUpdateEmployee}
+              onArchive={() => onArchiveEmployee(employee)}
               primaryInfo={
                 <EmployeePrimaryInfo
                   name={item.name}
@@ -64,7 +75,7 @@ export const RenderCards = ({
             {...vacancyProps}
             isFavorite={favoritesIds.includes(id)}
             onFavorite={() => onToggleFavorite?.(id)}
-            onRespond={() => openModal(item)}
+            onRespond={() => openVacancyModal(item)}
           />
         );
       })}

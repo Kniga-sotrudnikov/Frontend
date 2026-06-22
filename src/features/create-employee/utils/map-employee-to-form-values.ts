@@ -41,4 +41,10 @@ export const mapEmployeeToFormValues = (
   city: employee.city,
   status: mapStatus(employee.status),
   competencies: employee.competencies || [],
+ // Новые поля - требуют уточнения у бэкенда о наличии этих полей в API
+  resumeLink: employee.resumeLink ?? "",
+  crmProfileLink: employee.crmProfile ?? "",
+  socialNetworkLink: employee.socialNetwork ?? "",
+  aboutMe: employee.aboutMe ?? "",
+  role: employee.role ?? "",
 });

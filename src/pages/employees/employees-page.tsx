@@ -1,3 +1,5 @@
+import { useEffect, useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { PageHeader } from "@/widgets/page-header";
 import { SearchInput } from "@/shared/ui/input";
 import { HeaderUserCard } from "@/widgets/header-user-card";
@@ -14,16 +16,26 @@ import {
   type EmployeeData,
 } from "@/entities/employee";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { useEmployeeModalStore } from "@/features/employee";
 
 const EmployeesPage = () => {
-  const selectedVacancy = useVacancyModalStore(
-    (state) => state.selectedVacancy,
+  const { selectedVacancy, openVacancyModal, closeVacancyModal } =
+    useVacancyModalStore(
+      useShallow((state) => ({
+        selectedVacancy: state.selectedVacancy,
+        openVacancyModal: state.openVacancyModal,
+        closeVacancyModal: state.closeVacancyModal,
+      })),
+    );
+  const openEmployeeModal = useEmployeeModalStore(
+    (state) => state.openEmployeeModal,
   );
-  const closeModal = useVacancyModalStore((state) => state.closeModal);
 
   //TODO: Добавить логику передачи роли в хук
   const { data: listData, isLoading: isListLoading } = useEmployeesList();
-  const employees = listData?.results ?? [];
+  const employees = useMemo(() => {
+    return listData?.results ?? [];
+  }, [listData?.results]);
 
   //TODO: Обработать сценарий если при редактировании происходит ошибка
   const { mutate: patchEmployee } = usePatchEmployee();
@@ -41,6 +53,24 @@ const EmployeesPage = () => {
       },
     });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const vacancyId = params.get("vacancy");
+
+    if (vacancyId) {
+      const vacancy = mockVacancies.find((v) => String(v.id) === vacancyId);
+      if (vacancy) {
+        openVacancyModal(vacancy);
+      }
+    }
+
+    const employeeId = params.get("employee");
+    if (employeeId) {
+      const employee = employees.find((e) => String(e.id) === employeeId);
+      if (employee) openEmployeeModal(employee);
+    }
+  }, [openVacancyModal, openEmployeeModal, employees]);
 
   return (
     <>
@@ -79,7 +109,7 @@ const EmployeesPage = () => {
         <VacancyCard
           open={true}
           onOpenChange={(open) => {
-            if (!open) closeModal();
+            if (!open) closeVacancyModal();
           }}
           vacancy={{
             id: selectedVacancy.id,

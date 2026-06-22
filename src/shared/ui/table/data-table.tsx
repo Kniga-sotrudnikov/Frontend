@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@ui/skeleton";
+import { cn } from "@/shared/lib";
 
 import SortDescIcon from "@/shared/assets/icons/sort-1.svg?react";
 import SortAscIcon from "@/shared/assets/icons/sort-2.svg?react";
@@ -35,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   isError?: boolean;
   errorMessage?: ReactNode;
   skeletonRows?: number;
+  containerClassName?: string;
 }
 
 export const DataTable = <TData, TValue>({
@@ -47,6 +49,7 @@ export const DataTable = <TData, TValue>({
   isError = false,
   errorMessage = "Данные не загрузились",
   skeletonRows = 6,
+  containerClassName,
 }: DataTableProps<TData, TValue>) => {
   const [localSorting, setLocalSorting] = useState<SortingState>([]);
 
@@ -62,7 +65,12 @@ export const DataTable = <TData, TValue>({
   });
 
   return (
-    <div className="overflow-hidden rounded-t-xl bg-white">
+    <div
+      className={cn(
+        "overflow-hidden rounded-t-xl bg-white",
+        containerClassName,
+      )}
+    >
       <Table className="table-fixed">
         <colgroup>
           {table.getAllLeafColumns().map((column) => (

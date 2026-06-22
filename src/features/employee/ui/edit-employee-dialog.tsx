@@ -134,7 +134,27 @@ export const EditEmployeeDialog = ({
           status: mapStatusBack(values.status),
           photo:
             typeof values.photo === "string" ? values.photo : employee.photo,
+          emailCorporate: values.emailCorporate,
+          emailPersonal: values.emailPersonal,
+          phoneCorporate: values.phoneCorporate,
+          phonePersonal: values.phonePersonal,
+          birthday: values.birthday?.toISOString(),
+          competencies: values.competencies,
+          // Новые поля - требуют уточнения у бэкенда
+          // Добавляем только если они есть (не пустые строки)
+          ...(values.resumeLink && { resumeLink: values.resumeLink }),
+          ...(values.crmProfileLink && {
+            crmProfileLink: values.crmProfileLink,
+          }),
+          ...(values.socialNetworkLink && {
+            socialNetworkLink: values.socialNetworkLink,
+          }),
+          ...(values.aboutMe && { aboutMe: values.aboutMe }),
+          ...(values.role && { role: values.role }),
         };
+
+        // Здесь вызываем API для обновления
+        // await updateEmployee(updatedEmployee);
 
         addNotification({
           type: "success",

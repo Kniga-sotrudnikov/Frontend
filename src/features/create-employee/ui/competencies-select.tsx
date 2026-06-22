@@ -84,6 +84,13 @@ export const CompetenciesSelect = ({
     setFullDialogOpen(true);
   };
 
+  // TODO Реализовать работу с апи для добавления тега.
+  // color_or_icon есть в примере запроса на сервер, но в интерфейсе
+  // возможности его добавить нет. Нужно ли предусматривать возможность его добавления не ясно.
+  const handleAddTag = (tagName: string, color?: string) => {
+    console.log("Добавление тега (заглушка):", { tagName, color });
+  };
+
   const filteredOptions = useMemo(() => {
     if (!searchQuery.trim()) return COMPETENCY_OPTIONS;
     const query = searchQuery.toLowerCase();
@@ -179,6 +186,7 @@ export const CompetenciesSelect = ({
             hasMore={hasMore}
             showAll={showAll}
             filteredCount={filteredOptions.length}
+            onAddTag={handleAddTag}
           />
         </PopoverContent>
       </Popover>
@@ -193,6 +201,7 @@ export const CompetenciesSelect = ({
         filteredOptions={fullFilteredOptions}
         onClear={handleFullClear}
         onApply={handleFullApply}
+        onAddTag={handleAddTag}
       />
 
       {error && <p className="text-xs text-red-600">{error}</p>}

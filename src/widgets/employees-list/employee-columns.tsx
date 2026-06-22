@@ -1,8 +1,11 @@
-import type { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@ui/button";
 import { Badge } from "@/shared/ui/badge";
 import StarIcon from "@/shared/assets/icons/star.svg?react";
+import type { ColumnDef } from "@tanstack/react-table";
 import type { EmployeeData } from "@/entities/employee";
 import type { VacancyData } from "@/entities/vacancy";
+
+type VacancyAction = "respond" | "restore";
 
 const statusConfig: Record<
   EmployeeData["status"],
@@ -43,7 +46,10 @@ export const getEmployeeColumns = (
       const isFavorite = favoritesIds.includes(row.original.id);
       return (
         <StarIcon
-          onClick={() => onToggleFavorite(row.original.id)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(row.original.id);
+          }}
           className={isFavorite ? "text-accent" : "text-gray-300"}
         />
       );
@@ -81,7 +87,13 @@ export const getEmployeeColumns = (
     cell: ({ getValue }) => {
       const status = getValue() as EmployeeData["status"];
       const config = statusConfig[status];
-      return <Badge className={config.className}>{config.label}</Badge>;
+      return (
+        <div className="w-full overflow-hidden text-clip mask-[linear-gradient(to_right,black_calc(100%-20px),transparent)]">
+          <Badge className={`${config.className} whitespace-nowrap`}>
+            {config.label}
+          </Badge>
+        </div>
+      );
     },
   },
   {
@@ -95,50 +107,70 @@ export const getEmployeeColumns = (
 export const getVacancyColumns = (
   favoritesIds: (number | string)[],
   onToggleFavorite: (id: number | string) => void,
-): ColumnDef<VacancyData>[] => [
-  {
-    id: "favorite",
-    header: "",
-    size: 40,
-    enableSorting: false,
-    cell: ({ row }) => {
-      const isFavorite = favoritesIds.includes(row.original.id);
-      return (
-        <StarIcon
-          onClick={() => onToggleFavorite(row.original.id)}
-          className={isFavorite ? "text-accent" : "text-gray-300"}
-        />
-      );
+  onAction: (vacancy: VacancyData) => void,
+  action: VacancyAction = "respond",
+): ColumnDef<VacancyData>[] => {
+  const columns: ColumnDef<VacancyData>[] = [
+    {
+      id: "favorite",
+      header: "",
+      size: 40,
+      enableSorting: false,
+      cell: ({ row }) => {
+        const isFavorite = favoritesIds.includes(row.original.id);
+        return (
+          <StarIcon
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleFavorite(row.original.id);
+            }}
+            className={isFavorite ? "text-accent" : "text-gray-300"}
+          />
+        );
+      },
     },
-  },
-  {
-    accessorKey: "profession",
-    header: "Профессия",
-    size: 220,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "position",
-    header: "Должность",
-    size: 144,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "franchise",
-    header: "Раздел",
-    size: 144,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "department",
-    header: "Отдел",
-    size: 144,
-    enableSorting: true,
-  },
-  {
-    accessorKey: "city",
-    header: "Город",
-    size: 132,
-    enableSorting: true,
-  },
-];
+    {
+      accessorKey: "profession",
+      header: "Название должности",
+      size: 220,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "franchise",
+      header: "Направление",
+      size: 144,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "department",
+      header: "Отдел",
+      size: 144,
+      enableSorting: true,
+    },
+    {
+      accessorKey: "city",
+      header: "Город",
+      size: 132,
+      enableSorting: true,
+    },
+  ];
+  columns.push({
+    id: "action",
+    header: "",
+    size: 230,
+    enableSorting: false,
+    cell: ({ row }) => (
+      <Button
+        className="w-full"
+        onClick={(event) => {
+          event.stopPropagation();
+          onAction(row.original);
+        }}
+      >
+        {action === "restore" ? "Разархивировать" : "Откликнуться"}
+      </Button>
+    ),
+  });
+
+  return columns;
+};

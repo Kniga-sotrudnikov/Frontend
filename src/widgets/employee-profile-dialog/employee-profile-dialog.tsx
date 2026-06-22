@@ -20,10 +20,14 @@ import { CollapsibleBadgeList } from "@/shared/ui/collapsible-badge-list";
 import { InfoSection } from "@/shared/ui/info-section";
 import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/report-inaccuracy-modal";
 import { Button } from "@/shared/ui/button";
+import { useNotificationStore } from "@/shared/model/stores";
 import type { ReactElement, ReactNode } from "react";
 
 interface EmployeeProfileDialogProps {
-  children: ReactNode;
+  children?: ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  editButton?: ReactNode;
   /**
    * Блок основной информации сотрудника.
    * Используется EmployeePrimaryInfo.
@@ -58,6 +62,9 @@ interface EmployeeProfileDialogProps {
 //TODO: Отредактировать вёрстку компонента. Убрать поля или блоки если в переменных нет данных
 export const EmployeeProfileDialog = ({
   children,
+  open,
+  onOpenChange,
+  editButton,
   primaryInfo,
   roles,
   emailInfo,
@@ -72,46 +79,62 @@ export const EmployeeProfileDialog = ({
   tags,
   onExportPDF,
 }: EmployeeProfileDialogProps) => {
+  const addNotification = useNotificationStore((state) => state.add);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
+
+    addNotification({
+      iconType: "success",
+      title: "Ссылка на сотрудника скопирована",
+      message: "Ссылка скопирована в буфер обмена",
+    });
   };
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild children={children} />
-      <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md">
-        <DialogHeader className="justify-between">
-          <DialogTitle className="body-l-semibold text-black sr-only">
-            Карточка сотрудника
-          </DialogTitle>
-          <ReportInaccuracyModal>
-            <button
-              type="button"
-              className="h-5 w-5 cursor-pointer hover:opacity-70 transition-opacity"
-              aria-label="Информация"
-            >
-              <InfoIcon className="h-5 w-5" />
-            </button>
-          </ReportInaccuracyModal>
+  const formattedBirthday = new Date(birthday).toLocaleDateString("ru-RU", {
+    day: "numeric",
+    month: "long",
+  });
 
-          <div className="flex items-center gap-2">
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
+      <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md p-4 gap-4">
+        <DialogHeader className="flex flex-row justify-between items-center p-0">
+          <DialogTitle className="sr-only">Карточка сотрудника</DialogTitle>
+
+          <div className="flex items-center gap-1">
+            <ReportInaccuracyModal>
+              <button
+                type="button"
+                className="h-4 w-4 cursor-pointer hover:opacity-70 transition-opacity"
+                aria-label="Информация"
+              >
+                <InfoIcon className="h-4 w-4 text-gray-900" />
+              </button>
+            </ReportInaccuracyModal>
+          </div>
+
+          <div className="flex items-center">
             <button
               type="button"
               onClick={handleCopyLink}
               className="h-5 w-5 cursor-pointer hover:opacity-70 transition-opacity"
               aria-label="Скопировать ссылку"
             >
-              <LinkIcon className="h-5 w-5" />
+              <LinkIcon className="h-4 w-4 text-gray-900" />
             </button>
             <DialogClose variant="icon" />
           </div>
         </DialogHeader>
-        {primaryInfo}
-        <div className="p-3 bg-gray-50 rounded-8">
-          <h3 className="mb-1 body-overline-semibold text-black">Роль</h3>
-          <ul className="list-disc pl-4 space-y-0 ">
+
+        <div className="mt-0">{primaryInfo}</div>
+
+        <div className="px-3 bg-gray-50 rounded-lg mb-1">
+          <h3 className="text-[12px] font-semibold text-black mb-0">Роль</h3>
+          <ul className="list-disc pl-4 space-y-0 -mt-1">
             {roles.map((item, idx) => (
-              <li key={idx} className="body-overline text-black leading-tight">
+              <li key={idx} className="text-[12px] text-black leading-tight">
                 {item}
               </li>
             ))}
@@ -125,7 +148,8 @@ export const EmployeeProfileDialog = ({
             badgeClassName="bg-purple-50 text-purple-500 border-purple-500"
           />
         </InfoSection>
-        <div className="w-full grid grid-cols-[max-content_max-content] justify-between gap-y-2">
+
+        <div className="grid grid-cols-2 gap-x-26 gap-y-3">
           <InfoSection icon={MailIcon} title="Электронная почта">
             {emailInfo}
           </InfoSection>
@@ -135,16 +159,11 @@ export const EmployeeProfileDialog = ({
           </InfoSection>
 
           <InfoSection icon={LocationIcon} title="Город">
-            <p className="text-xs">{city}</p>
+            <p className="text-[12px] text-black">{city}</p>
           </InfoSection>
 
           <InfoSection icon={CalendarIcon} title="День рождения">
-            <p className="text-xs">
-              {new Date(birthday).toLocaleDateString("ru-RU", {
-                day: "numeric",
-                month: "long",
-              })}
-            </p>
+            <p className="text-[12px] text-black">{formattedBirthday}</p>
           </InfoSection>
 
           <InfoSection icon={DocumentIcon} title="Документы">
@@ -153,16 +172,15 @@ export const EmployeeProfileDialog = ({
                 href={linkCV}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-fit text-xs text-link hover:underline"
+                className="w-fit text-[12px] text-link hover:underline"
               >
                 Резюме
               </a>
-
               <a
                 href={linkProfile}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-fit text-xs text-link hover:underline"
+                className="w-fit text-[12px] text-link hover:underline"
               >
                 Профиль в CRM
               </a>
@@ -174,7 +192,7 @@ export const EmployeeProfileDialog = ({
               href={linkSocialNetwork}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-link hover:underline"
+              className="text-[12px] text-link hover:underline"
             >
               Ссылка
             </a>
@@ -185,18 +203,23 @@ export const EmployeeProfileDialog = ({
           </InfoSection>
         </div>
 
-        <div className="p-3 bg-gray-50 rounded-8">
-          <h3 className="mb-1 body-overline-semibold text-black">Обо мне</h3>
-          <p className="text-xs">{aboutMe}</p>
+        <div className="p-3 bg-gray-50 rounded-lg my-0">
+          <h3 className="text-[12px] body-overline-semibold text-black">Обо мне</h3>
+          <p className="text-[12px] text-black leading-relaxed">{aboutMe}</p>
         </div>
-        <Button
-          variant="ghost"
-          className="px-4 py-2 justify-start w-fit"
-          onClick={onExportPDF}
-        >
-          <ExportIcon className="h-4 w-4" />
-          Экспортировать в PDF
-        </Button>
+
+        <div className="flex justify-between items-center">
+          <Button
+            variant="ghost"
+            className="px-3 py-2 justify-start w-fit text-xs text-gray-900 hover:bg-gray-50"
+            onClick={onExportPDF}
+          >
+            <ExportIcon className="h-3 w-3" />
+            Экспортировать в PDF
+          </Button>
+
+          {editButton}
+        </div>
       </DialogContent>
     </Dialog>
   );
