@@ -4,13 +4,12 @@ import RenderUnits from "./render-unit";
 import { EditOrgStructureModal } from "@/widgets/edit-org-structure-modal";
 import { Button } from "@/shared/ui/button";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
-
-// TODO: Заменить на реальную проверку роли
-const isHrForTest = true;
+import { useIsAdmin } from "@/entities/user";
 
 function Navbar() {
-  const tree = useOrgStructureStore((state) => state.tree);
   const [selectedName, setSelectedName] = useState<string | null>(null);
+  const tree = useOrgStructureStore((state) => state.tree);
+  const isAdmin = useIsAdmin();
 
   return (
     <div className="h-full w-full bg-white px-2.5 pt-2.5 pb-5 rounded-t-2xl border-t border-l border-r border-border">
@@ -18,7 +17,7 @@ function Navbar() {
         <h4 className="mx-2.5 mt-2.5 font-bold text-muted-foreground">
           Навигация
         </h4>
-        {isHrForTest && (
+        {isAdmin && (
           <EditOrgStructureModal>
             <Button
               variant="ghost"
