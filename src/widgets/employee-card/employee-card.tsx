@@ -22,6 +22,7 @@ interface EmployeeCardProps {
   employeeData: EmployeeData;
   // TODO: убрать после подключения TanStack Query — получать из useFavoritesQuery()
   isFavorite?: boolean;
+  canEdit?: boolean;
   onFavorite?: () => void;
   onArchive?: () => void;
   onRestore?: () => void;
@@ -35,6 +36,7 @@ export const EmployeeCard = ({
   primaryInfo,
   employeeData,
   isFavorite = false,
+  canEdit = false,
   onFavorite,
   onArchive,
   onRestore,
@@ -115,57 +117,59 @@ export const EmployeeCard = ({
             />
           </button>
 
-          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-            <PopoverTrigger asChild>
-              <button
-                className="p-0 text-gray-500 cursor-pointer"
-                aria-label="Действия"
+          {canEdit && (
+            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  className="p-0 text-gray-500 cursor-pointer"
+                  aria-label="Действия"
+                >
+                  <MoreVerticalIcon className="size-5" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-42.75 p-0 overflow-hidden"
+                align="end"
+                sideOffset={-40}
+                alignOffset={-20}
               >
-                <MoreVerticalIcon className="size-5" />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="w-42.75 p-0 overflow-hidden"
-              align="end"
-              sideOffset={-40}
-              alignOffset={-20}
-            >
-              <div className="flex flex-col">
-                {employeeData.isArchived ? (
-                  <Button
-                    variant="ghost"
-                    size="default"
-                    onClick={handleRestore}
-                    className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black font-normal hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200"
-                  >
-                    <RestoreIcon />
-                    <span>Разархивировать</span>
-                  </Button>
-                ) : (
-                  <>
-                    <EditEmployeeButton
-                      employee={employeeData}
-                      onSuccess={handleEditSuccess}
-                    >
-                      <div className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200">
-                        <EditIcon className="size-5" />
-                        <span>Редактировать</span>
-                      </div>
-                    </EditEmployeeButton>
+                <div className="flex flex-col">
+                  {employeeData.isArchived ? (
                     <Button
                       variant="ghost"
                       size="default"
-                      onClick={handleArchive}
-                      className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-red-600 font-normal hover:bg-gray-100 transition-colors border-0"
+                      onClick={handleRestore}
+                      className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black font-normal hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200"
                     >
-                      <ArchiveIcon className="size-5" />
-                      <span>Архивировать</span>
+                      <RestoreIcon />
+                      <span>Разархивировать</span>
                     </Button>
-                  </>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
+                  ) : (
+                    <>
+                      <EditEmployeeButton
+                        employee={employeeData}
+                        onSuccess={handleEditSuccess}
+                      >
+                        <div className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-black hover:bg-gray-100 transition-colors border-0 border-b border-b-gray-200">
+                          <EditIcon className="size-5" />
+                          <span>Редактировать</span>
+                        </div>
+                      </EditEmployeeButton>
+                      <Button
+                        variant="ghost"
+                        size="default"
+                        onClick={handleArchive}
+                        className="flex items-center gap-2 w-full px-4 py-3 rounded-none h-auto body-s text-red-600 font-normal hover:bg-gray-100 transition-colors border-0"
+                      >
+                        <ArchiveIcon className="size-5" />
+                        <span>Архивировать</span>
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </div>
 

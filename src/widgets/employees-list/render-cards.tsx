@@ -11,6 +11,7 @@ interface RenderCardsProps {
   emptyText: string;
   // TODO: убрать favoritesIds после подключения TanStack Query — получать из useFavoritesQuery()
   favoritesIds?: (number | string)[];
+  canEditEmployee?: boolean;
   onToggleFavorite?: (id: number | string) => void;
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
   onEmployeeClick: (employee: EmployeeData) => void;
@@ -22,6 +23,7 @@ export const RenderCards = ({
   emptyText,
   favoritesIds = [],
   onToggleFavorite,
+  canEditEmployee = false,
   onUpdateEmployee,
   onEmployeeClick,
   onArchiveEmployee,
@@ -47,6 +49,7 @@ export const RenderCards = ({
               linearManager={item.linearManager}
               employeeData={employee}
               isFavorite={favoritesIds.includes(item.id)}
+              canEdit={canEditEmployee}
               onFavorite={() => onToggleFavorite?.(item.id)}
               onUpdateEmployee={onUpdateEmployee}
               onArchive={() => onArchiveEmployee(employee)}
