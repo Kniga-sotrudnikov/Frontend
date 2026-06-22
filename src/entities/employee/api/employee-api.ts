@@ -58,8 +58,9 @@ export const createEmployee = async (
   return response.data;
 };
 
+//TODO: проверить типы id, может лучше оставить что-то одно
 export const patchEmployee = async (
-  id: number,
+  id: string | number,
   data: PatchEmployeeRequest,
 ): Promise<PatchEmployeeResponse> => {
   const response = await apiClient.patch<PatchEmployeeResponse>(
@@ -69,6 +70,7 @@ export const patchEmployee = async (
   return response.data;
 };
 
-export const deleteEmployee = async (id: number) => {
+//TODO: проверить типы id, может лучше оставить что-то одно
+export const deleteEmployee = async (id: string | number) => {
   await apiClient.delete(`/admin/employees/${id}/`);
 };

@@ -7,7 +7,7 @@ import MoreVerticalIcon from "@/shared/assets/icons/more-vertical.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import { EditEmployeeButton } from "@/features/employee";
-import type { EmployeeData } from "@/entities/employee";
+import { useDeleteEmployee, type EmployeeData } from "@/entities/employee";
 
 interface EmployeeCardProps {
   /**
@@ -32,7 +32,6 @@ export const EmployeeCard = ({
   employeeData,
   isFavorite = false,
   onFavorite,
-  onArchive,
   onUpdateEmployee,
 }: EmployeeCardProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -47,26 +46,20 @@ export const EmployeeCard = ({
     });
   };
 
-  const handleArchiveDefault = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Архивирование будет доступно в ближайшее время",
-    });
-  };
-
   // Используем переданные обработчики или дефолтные
   const onFavoriteClick = onFavorite || handleFavoriteDefault;
-  const onArchiveClick = onArchive || handleArchiveDefault;
 
   const handleEditSuccess = (updatedEmployee: EmployeeData) => {
     setPopoverOpen(false);
     onUpdateEmployee?.(updatedEmployee);
   };
 
+  //TODO: Вынести логику запроса на удаление из UI компонента
+  // Обработать сценарий если при удалении происходит ошибка
+  const { mutate } = useDeleteEmployee();
   const handleArchive = () => {
+    mutate(employeeData.id);
     setPopoverOpen(false);
-    onArchiveClick();
   };
 
   return (

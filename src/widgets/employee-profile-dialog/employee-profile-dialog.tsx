@@ -46,7 +46,7 @@ interface EmployeeProfileDialogProps {
   leader: ReactElement;
   roles: string[];
   city: string;
-  birthday: string;
+  birthday: string | Date;
   linkSocialNetwork: string;
   linkCV: string;
   linkProfile: string;
@@ -55,6 +55,7 @@ interface EmployeeProfileDialogProps {
   onExportPDF: () => void;
 }
 
+//TODO: Отредактировать вёрстку компонента. Убрать поля или блоки если в переменных нет данных
 export const EmployeeProfileDialog = ({
   children,
   primaryInfo,

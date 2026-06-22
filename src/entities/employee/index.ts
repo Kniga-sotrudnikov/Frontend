@@ -40,9 +40,8 @@ export {
   usePatchEmployee,
   useDeleteEmployee,
 } from "./model/employee-mutations";
+export { useEmployeesList, useEmployeeDetail } from "./model/employee-queries";
 export {
-  useEmployeesListAdmin,
-  useEmployeeDetailAdmin,
-  useEmployeesListPublic,
-  useEmployeeDetailPublic,
-} from "./model/employee-queries";
+  mapEmployeeListResponse,
+  mapEmployeeDetail,
+} from "./utils/map-temployee-to-employee-data";

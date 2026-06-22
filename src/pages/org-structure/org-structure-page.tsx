@@ -28,9 +28,7 @@ const OrgStructurePage = () => {
         stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
         search={<SearchInput placeholder="Поиск по ФИО, должности, тегам..." />}
         birthday={<BirthdaysPopover />}
-        user={
-          <HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />
-        }
+        user={<HeaderUserCard />}
       />
       <main className="h-screen pt-5 pb-10 px-10 flex flex-col gap-5">
         <div className="flex justify-start gap-7">

@@ -10,9 +10,7 @@ const ProjectsPage = () => {
         title="Проекты"
         search={<SearchInput placeholder="Найти проект" />}
         birthday={<BirthdaysPopover />}
-        user={
-          <HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />
-        }
+        user={<HeaderUserCard />}
       />
       <div className="p-6">Проекты. В работе...</div>
     </div>

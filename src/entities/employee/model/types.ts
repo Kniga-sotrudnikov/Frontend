@@ -59,57 +59,6 @@ export type TTag = {
 };
 
 /**
- * Тип для списка сотрудников EmployeesList получаемый с бека
- *
- * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
- *
- * @todo Синхронизировать с бекендом
- *
- * Отсутствуют поля:
- *
- * -leader Это объект где должно быть написано имя руководителя, его должность и ссылка на фотографию
- *
- * -city
- *
- * -status для обозначения рабочего статуса, а не статуса архива сотрудника
- *
- * -favorite
- *
- * Лишние поля для маленькой карточки:
- *
- * -birthday_display
- *
- * -tags
- */
-export type TEmployeeShort = {
-  id: number;
-  full_name: string;
-  job_title: string;
-  /**
-   * Это "направление и сис" или отдел? Пока неизвестно
-   */
-  department_name: string;
-  /**
-   * Это подотдел? Пока неизвестно
-   */
-  direction_name: string | null;
-  photo_url: string | null;
-  /**
-   * Это статус архивирования а не статус работы!
-   */
-  status: StatusEnum;
-  birthday_display: string;
-  tags: TTag[];
-};
-
-export type EmployeesListResponse = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: TEmployeeShort[];
-};
-
-/**
  * Тип для сотрудника Employee отправляемый на бек
  *
  * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
@@ -137,7 +86,7 @@ export type EmployeesListResponse = {
  * -socialNetwork ссылка на соцсеть
  *
  */
-export type CreateEmployeeRequest = {
+export type BaseEmployeeRequestResponse = {
   full_name: string;
   job_title: string;
   /**
@@ -165,24 +114,39 @@ export type CreateEmployeeRequest = {
 };
 
 /**
- * Тип для сотрудника Employee получаемый с бека
+ * Тип для сотрудника Employee отправляемый на бек для создания сотрудника
  *
- * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
+ * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API, смотри родительский тип
+ */
+export type CreateEmployeeRequest = BaseEmployeeRequestResponse;
+
+/**
+ * Тип для сотрудника Employee получаемый с бека после создания сотрудника
  *
- * @todo Синхронизировать с бекендом
- *
- * Все те же проблемы что и у типа CreateEmployeeRequest
+ * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API, смотри родительский тип
  *
  * Также ещё отсутствуют поля:
  *
  * -id
- *
- * Должен возвращать EmployeeDetailAdminResponse, но бек не готов
  */
-export type CreateEmployeeResponse = CreateEmployeeRequest & {};
+export type CreateEmployeeResponse = BaseEmployeeRequestResponse;
 
 /**
- * Тип для сотрудника Employee получаемый с бека
+ * Тип для сотрудника Employee отправляемый на бек для редактирования сотрудника
+ *
+ * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
+ */
+export type PatchEmployeeRequest = Partial<BaseEmployeeRequestResponse>;
+
+/**
+ * Тип для сотрудника Employee получаемый с бека после редактирования сотрудника
+ *
+ * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
+ */
+export type PatchEmployeeResponse = BaseEmployeeRequestResponse;
+
+/**
+ * Тип для сотрудника Employee получаемый с бека краткая информация
  *
  * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
  *
@@ -190,84 +154,43 @@ export type CreateEmployeeResponse = CreateEmployeeRequest & {};
  *
  * Отсутствуют поля:
  *
- * -status для обозначения рабочего статуса, а не статуса архива сотрудника
- *
  * -leader Это объект где должно быть написано имя руководителя, его должность и ссылка на фотографию
  *
  * -city
  *
- * -emailPersonal нужно чтобы было 2 почты - рабочая и личная
+ * -status для обозначения рабочего статуса, а не статуса архива сотрудника
  *
- * -phonePersonal нужно чтобы было 2 телефона - рабочий и личный
+ * -favorite
  *
- * -resume ссылка на резюме
+ * Лишние поля для маленькой карточки:
  *
- * -profileCRM ссылка на профиль в CRM
+ * -birthday_display
  *
- * -socialNetwork ссылка на соцсеть
- *
- *
- * Лишнее поле birthday_display так как есть уже birthday
+ * -tags
  */
-export type EmployeeDetailAdminResponse = {
+export type EmployeeShortResponse = {
   id: number;
   full_name: string;
   job_title: string;
+  /**
+   * Это "направление и сис" или отдел? Пока неизвестно
+   */
   department_name: string;
+  /**
+   * Это подотдел? Пока неизвестно
+   */
   direction_name: string | null;
   photo_url: string | null;
+  /**
+   * Это статус архивирования а не статус работы!
+   */
   status: StatusEnum;
   birthday_display: string | null;
   tags: TTag[];
-  email: string;
-  phone?: string;
-  /**
-   * Это блок "Обо мне"?
-   */
-  interests?: string;
-  /**
-   * В начале проекта наставник бека сказал что будет принимать и отправлять дату в формате ISO, тут пока только string
-   */
-  birthday: string;
-  /**
-   * Это блок "Роль"?
-   *
-   * По дизайну должен быть массивом строк
-   */
-  role_description?: string;
-  department: number;
-  created_at: string;
-  updated_at: string;
-  created_by?: number | null;
 };
 
 /**
- * Тип для сотрудника Employee отправляемый на бек
- *
- * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
- *
- * @todo Синхронизировать с бекендом
- *
- * Все те же проблемы что и у типа CreateEmployeeRequest
- *
- */
-export type PatchEmployeeRequest = Partial<CreateEmployeeRequest> & {};
-
-/**
- * Тип для сотрудника Employee получаемый с бека
- *
- * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
- *
- * @todo Синхронизировать с бекендом
- *
- * Все те же проблемы что и у типа CreateEmployeeRequest
- *
- * Должен возвращать EmployeeDetailAdminResponse, но бек не готов
- */
-export type PatchEmployeeResponse = CreateEmployeeRequest & {};
-
-/**
- * Тип для сотрудника Employee получаемый с бека
+ * Тип для сотрудника Employee получаемый с бека полная информация
  *
  * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API
  *
@@ -275,12 +198,6 @@ export type PatchEmployeeResponse = CreateEmployeeRequest & {};
  *
  *  Отсутствуют поля:
  *
- * -status для обозначения рабочего статуса, а не статуса архива сотрудника
- *
- * -leader Это объект где должно быть написано имя руководителя, его должность и ссылка на фотографию
- *
- * -city
- *
  * -emailPersonal нужно чтобы было 2 почты - рабочая и личная
  *
  * -phonePersonal нужно чтобы было 2 телефона - рабочий и личный
@@ -294,16 +211,7 @@ export type PatchEmployeeResponse = CreateEmployeeRequest & {};
  *
  * Лишнее поле birthday_display так как есть уже birthday
  */
-export type EmployeeDetailPublicResponse = {
-  id: number;
-  full_name: string;
-  job_title: string;
-  department_name: string;
-  direction_name: string | null;
-  photo_url: string | null;
-  status: StatusEnum;
-  birthday_display: string | null;
-  tags: TTag[];
+export type EmployeeDetailResponse = EmployeeShortResponse & {
   email: string;
   phone?: string;
   /**
@@ -321,4 +229,29 @@ export type EmployeeDetailPublicResponse = {
    */
   role_description?: string;
   department: number;
+};
+
+/**
+ * Тип для сотрудника Employee получаемый с сервера с ролью employee
+ *
+ * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API, смотри родительский тип
+ */
+export type EmployeeDetailPublicResponse = EmployeeDetailResponse;
+
+/**
+ * Тип для сотрудника Employee получаемый с сервера с ролью hr_admin
+ *
+ * ⚠️ НЕ ПОЛНОЕ СООТВЕТСТВИЕ API, смотри родительский тип
+ */
+export type EmployeeDetailAdminResponse = EmployeeDetailResponse & {
+  created_at: string;
+  updated_at: string;
+  created_by?: number | null;
+};
+
+export type EmployeesListResponse = {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: EmployeeShortResponse[];
 };

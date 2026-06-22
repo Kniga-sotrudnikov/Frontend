@@ -4,34 +4,41 @@ import {
   getEmployeeDetailPublic,
   getEmployeesListAdmin,
   getEmployeesListPublic,
-} from "../api/employee-api";
+  mapEmployeeDetail,
+  mapEmployeeListResponse,
+} from "@/entities/employee";
+import type { UserRole } from "@/entities/user";
 
-export const useEmployeesListAdmin = (limit = 20, offset = 0) => {
+export const useEmployeesList = (
+  limit = 20,
+  offset = 0,
+  role: UserRole = "employee",
+) => {
   return useQuery({
-    queryKey: ["employees", "admin", "list", { limit, offset }],
-    queryFn: () => getEmployeesListAdmin({ limit, offset }),
+    queryKey: ["employees-list", limit, offset, role],
+    queryFn: () => {
+      if (role === "hr_admin") {
+        return getEmployeesListAdmin({ limit, offset });
+      }
+      return getEmployeesListPublic({ limit, offset });
+    },
+    select: (data) => ({
+      ...data,
+      results: data.results.map(mapEmployeeListResponse),
+    }),
   });
 };
 
-export const useEmployeeDetailAdmin = (id?: number) => {
+export const useEmployeeDetail = (id?: number, role: UserRole = "employee") => {
   return useQuery({
-    queryKey: ["employees", "admin", "detail", id],
-    queryFn: () => getEmployeeDetailAdmin(id!),
+    queryKey: ["employee-detail", id, role],
+    queryFn: () => {
+      if (role === "hr_admin") {
+        return getEmployeeDetailAdmin(id!);
+      }
+      return getEmployeeDetailPublic(id!);
+    },
     enabled: !!id,
-  });
-};
-
-export const useEmployeesListPublic = (limit = 20, offset = 0) => {
-  return useQuery({
-    queryKey: ["employees", "public", "list", { limit, offset }],
-    queryFn: () => getEmployeesListPublic({ limit, offset }),
-  });
-};
-
-export const useEmployeeDetailPublic = (id: number) => {
-  return useQuery({
-    queryKey: ["employees", "public", "detail", id],
-    queryFn: () => getEmployeeDetailPublic(id),
-    enabled: !!id,
+    select: (data) => mapEmployeeDetail(data),
   });
 };

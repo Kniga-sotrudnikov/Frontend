@@ -9,12 +9,11 @@ import { VacancyCard } from "@/widgets/vacancy-card";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 import { mockFavorites, mockVacancies } from "./mocks/mocks";
 import {
-  useEmployeeDetailAdmin,
-  useEmployeesListAdmin,
+  useEmployeesList,
+  usePatchEmployee,
+  type EmployeeData,
 } from "@/entities/employee";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { useAuthStore } from "@/entities/user";
-import { useMemo } from "react";
 
 const EmployeesPage = () => {
   const selectedVacancy = useVacancyModalStore(
@@ -22,36 +21,26 @@ const EmployeesPage = () => {
   );
   const closeModal = useVacancyModalStore((state) => state.closeModal);
 
-  const employeeId = useAuthStore((s) => s.user?.employee_id ?? undefined);
+  //TODO: Добавить логику передачи роли в хук
+  const { data: listData, isLoading: isListLoading } = useEmployeesList();
+  const employees = listData?.results ?? [];
 
-  //TODO: Разобраться что показывать в карточке если у пользователя нет карточки
-  const { data: employeeDetail, isLoading: isDetailLoading } =
-    useEmployeeDetailAdmin(employeeId);
-  const { data } = useEmployeesListAdmin();
+  //TODO: Обработать сценарий если при редактировании происходит ошибка
+  const { mutate: patchEmployee } = usePatchEmployee();
 
-  //Маппинг данных с бека так как типы данных не совпадают
-  const mockEmployees = useMemo(() => {
-    if (!data?.results) return [];
-
-    return data?.results.map((data) => ({
-      id: data.id ?? "Example",
-      name: data.full_name ?? "Example",
-      position: data.job_title ?? "Example",
-      department: data.department_name ?? "Example",
-      franchise: data.direction_name ?? "Example",
-      status: "working" as const,
-      photo: data.photo_url ?? undefined,
-      city: "Example",
-      linearManager: "Example",
-      isArchived: false,
-      emailCorporate: "example@test.test",
-      emailPersonal: "example@test.test",
-      phoneCorporate: "87777777777",
-      phonePersonal: "87777777777",
-      birthday: "1111-11-11",
-      competencies: data.tags.map((t) => t.name),
-    }));
-  }, [data?.results]);
+  //TODO: разобраться с недостающими полями и с несоответствием типов!
+  // Согласовать обязательные поля с бекендом
+  const handlePatchEmployee = (employee: EmployeeData) => {
+    patchEmployee({
+      id: employee.id,
+      data: {
+        full_name: employee.name,
+        job_title: employee.position,
+        email: employee.emailCorporate,
+        phone: employee.phoneCorporate,
+      },
+    });
+  };
 
   return (
     <>
@@ -63,19 +52,7 @@ const EmployeesPage = () => {
             <SearchInput placeholder="Поиск по ФИО, должности, тегам..." />
           }
           birthday={<BirthdaysPopover />}
-          user={
-            isDetailLoading ? (
-              <Skeleton className="h-15 w-[247px]"></Skeleton>
-            ) : (
-              <HeaderUserCard
-                name={employeeDetail?.full_name || "Ошибка: проверить данные"}
-                position={
-                  employeeDetail?.job_title || "Ошибка: проверить данные"
-                }
-                avatar={employeeDetail?.photo_url ?? undefined}
-              />
-            )
-          }
+          user={<HeaderUserCard />}
         />
 
         <div className="mx-10 mt-5 grid grid-cols-[295px_1fr] gap-x-7 min-h-screen">
@@ -83,11 +60,17 @@ const EmployeesPage = () => {
 
           <div className="space-y-3">
             <EmployeesFilterBar />
-            <EmployeesList
-              employees={mockEmployees}
-              vacancies={mockVacancies}
-              favoritesIds={mockFavorites}
-            />
+            {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
+            {isListLoading ? (
+              <Skeleton className="h-10 w-10"></Skeleton>
+            ) : (
+              <EmployeesList
+                employees={employees}
+                vacancies={mockVacancies}
+                favoritesIds={mockFavorites}
+                onUpdateEmployee={handlePatchEmployee}
+              />
+            )}
           </div>
         </div>
       </div>
