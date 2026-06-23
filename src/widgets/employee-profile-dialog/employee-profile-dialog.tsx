@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   Dialog,
   DialogClose,
@@ -21,6 +22,8 @@ import { InfoSection } from "@/shared/ui/info-section";
 import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/report-inaccuracy-modal";
 import { Button } from "@/shared/ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
+import { useExportPdf } from "@/shared/lib/hooks";
+import { EmployeePdfContent } from "./employee-pdf-content";
 import type { ReactElement, ReactNode } from "react";
 
 interface EmployeeProfileDialogProps {
@@ -28,25 +31,9 @@ interface EmployeeProfileDialogProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   editButton?: ReactNode;
-  /**
-   * Блок основной информации сотрудника.
-   * Используется EmployeePrimaryInfo.
-   */
   primaryInfo: ReactElement;
-  /**
-   * Блок контактов сотрудника.
-   * Используется EmployeeContacts.
-   */
   emailInfo: ReactElement;
-  /**
-   * Блок контактов сотрудника.
-   * Используется EmployeeContacts.
-   */
   phoneInfo: ReactElement;
-  /**
-   * Блок информации о руководителе.
-   * Используется LeaderPrimaryInfo.
-   */
   leader: ReactElement;
   roles: string[];
   city: string;
@@ -80,8 +67,17 @@ export const EmployeeProfileDialog = ({
 }: EmployeeProfileDialogProps) => {
   const addNotification = useNotificationStore((state) => state.add);
 
+  const { exportToPdf } = useExportPdf();
+  const contentRef = useRef<HTMLDivElement>(null);
+
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
+
+    addNotification({
+      iconType: "success",
+      title: "Ссылка на сотрудника скопирована",
+      message: "Ссылка скопирована в буфер обмена",
+    });
 
     addNotification({
       iconType: "success",
@@ -95,10 +91,35 @@ export const EmployeeProfileDialog = ({
     month: "long",
   });
 
+  const handleExportPDF = async () => {
+    if (contentRef.current) {
+      await exportToPdf(contentRef.current, "Карточка_сотрудника.pdf");
+      onExportPDF();
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md p-4 gap-4">
+        <div className="fixed top-0 left-[-9999px] w-[552px] bg-white">
+          <EmployeePdfContent
+            ref={contentRef}
+            primaryInfo={primaryInfo}
+            roles={roles}
+            emailInfo={emailInfo}
+            phoneInfo={phoneInfo}
+            leader={leader}
+            city={city}
+            birthday={birthday}
+            linkSocialNetwork={linkSocialNetwork}
+            linkCV={linkCV}
+            linkProfile={linkProfile}
+            aboutMe={aboutMe}
+            tags={tags}
+          />
+        </div>
+
         <DialogHeader className="flex flex-row justify-between items-center p-0">
           <DialogTitle className="sr-only">Карточка сотрудника</DialogTitle>
 
@@ -129,9 +150,9 @@ export const EmployeeProfileDialog = ({
 
         <div className="mt-0">{primaryInfo}</div>
 
-        <div className="px-3 bg-gray-50 rounded-lg mb-1">
+        <div className="px-3 bg-gray-50 rounded-lg mb-0">
           <h3 className="text-[12px] font-semibold text-black mb-0">Роль</h3>
-          <ul className="list-disc pl-4 space-y-0 -mt-1">
+          <ul className="list-disc pl-4 space-y-0 mt-1">
             {roles.map((item, idx) => (
               <li key={idx} className="text-[12px] text-black leading-tight">
                 {item}
@@ -203,7 +224,9 @@ export const EmployeeProfileDialog = ({
         </div>
 
         <div className="p-3 bg-gray-50 rounded-lg my-0">
-          <h3 className="text-[12px] body-overline-semibold text-black">Обо мне</h3>
+          <h3 className="text-[12px] body-overline-semibold text-black">
+            Обо мне
+          </h3>
           <p className="text-[12px] text-black leading-relaxed">{aboutMe}</p>
         </div>
 
@@ -211,7 +234,7 @@ export const EmployeeProfileDialog = ({
           <Button
             variant="ghost"
             className="px-3 py-2 justify-start w-fit text-xs text-gray-900 hover:bg-gray-50"
-            onClick={onExportPDF}
+            onClick={handleExportPDF}
           >
             <ExportIcon className="h-3 w-3" />
             Экспортировать в PDF
