@@ -1,4 +1,11 @@
-import type { TEmployee, EmployeeData, EmployeeStatus } from "../model/types";
+import type {
+  TEmployee,
+  EmployeeData,
+  EmployeeStatus,
+  EmployeeShortResponse,
+  EmployeeDetailAdminResponse,
+  EmployeeDetailPublicResponse,
+} from "../model/types";
 
 const mapStatus = (status: TEmployee["status"]): EmployeeStatus => {
   switch (status) {
@@ -33,3 +40,49 @@ export const mapTEmployeeToEmployeeData = (
   birthday: employee.birthday,
   competencies: employee.competencies,
 });
+
+export const mapEmployeeListResponse = (
+  data: EmployeeShortResponse,
+): EmployeeData => {
+  return {
+    id: data.id,
+    name: data.full_name,
+    position: data.job_title,
+    department: data.department_name,
+    franchise: data.direction_name ?? "",
+    status: "working" as EmployeeStatus,
+    photo: data.photo_url ?? undefined,
+    city: "",
+    linearManager: "",
+    isArchived: false,
+    emailCorporate: undefined,
+    emailPersonal: undefined,
+    phoneCorporate: undefined,
+    phonePersonal: undefined,
+    birthday: undefined,
+    competencies: data.tags?.map((t) => t.name) ?? [],
+  };
+};
+
+export const mapEmployeeDetail = (
+  data: EmployeeDetailAdminResponse | EmployeeDetailPublicResponse,
+): EmployeeData => {
+  return {
+    id: data.id,
+    name: data.full_name,
+    position: data.job_title,
+    department: data.department_name,
+    franchise: data.direction_name ?? "",
+    status: "working" as EmployeeStatus,
+    photo: data.photo_url ?? undefined,
+    city: "",
+    linearManager: "",
+    isArchived: false,
+    emailCorporate: data.email,
+    emailPersonal: undefined,
+    phoneCorporate: data.phone,
+    phonePersonal: undefined,
+    birthday: data.birthday,
+    competencies: data.tags.map((t) => t.name),
+  };
+};

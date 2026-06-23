@@ -10,9 +10,7 @@ const HelpPage = () => {
         title="Помощь"
         search={<SearchInput placeholder="Поиск по ФИО, должности, тегам..." />}
         birthday={<BirthdaysPopover />}
-        user={
-          <HeaderUserCard name="Алексеева Виктория" position="HR-специалист" />
-        }
+        user={<HeaderUserCard />}
       />
       <div className="p-6">Помощь. В работе...</div>
     </div>

@@ -8,7 +8,7 @@ import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import RestoreIcon from "@/shared/assets/icons/archive.svg?react";
 import { EditEmployeeButton } from "@/features/employee";
-import type { EmployeeData } from "@/entities/employee";
+import { useDeleteEmployee, type EmployeeData } from "@/entities/employee";
 
 interface EmployeeCardProps {
   /**
@@ -38,7 +38,6 @@ export const EmployeeCard = ({
   isFavorite = false,
   canEdit = false,
   onFavorite,
-  onArchive,
   onRestore,
   onUpdateEmployee,
 }: EmployeeCardProps) => {
@@ -54,14 +53,6 @@ export const EmployeeCard = ({
     });
   };
 
-  const handleArchiveDefault = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Архивирование будет доступно в ближайшее время",
-    });
-  };
-
   const handleRestoreDefault = () => {
     addNotification({
       iconType: "success",
@@ -72,7 +63,6 @@ export const EmployeeCard = ({
 
   // Используем переданные обработчики или дефолтные
   const onFavoriteClick = onFavorite || handleFavoriteDefault;
-  const onArchiveClick = onArchive || handleArchiveDefault;
   const onRestoreClick = onRestore || handleRestoreDefault;
 
   const handleEditSuccess = (updatedEmployee: EmployeeData) => {
@@ -80,9 +70,12 @@ export const EmployeeCard = ({
     onUpdateEmployee?.(updatedEmployee);
   };
 
+  //TODO: Вынести логику запроса на удаление из UI компонента
+  // Обработать сценарий если при удалении происходит ошибка
+  const { mutate } = useDeleteEmployee();
   const handleArchive = () => {
+    mutate(employeeData.id);
     setPopoverOpen(false);
-    onArchiveClick();
   };
 
   const handleRestore = () => {

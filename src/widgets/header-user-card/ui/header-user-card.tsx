@@ -7,109 +7,52 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import ExitIcon from "@/shared/assets/icons/exit.svg?react";
 import UserIcon from "@/shared/assets/icons/user.svg?react";
-import { useNavigate } from "react-router";
-import { ROUTES } from "@/shared/model/routes/routes";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
 import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info";
+import { useEmployeeDetail } from "@/entities/employee";
+import { useAuthStore } from "@/entities/user";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { Button } from "@/shared/ui/button";
 
-interface HeaderUserCardProps {
-  name: string;
-  position: string;
-  avatar?: string;
-}
-
-const mockEmployeeProfile = {
-  primaryInfo: (
-    <EmployeePrimaryInfo
-      status="working"
-      name="Алексеева Виктория"
-      position="Менеджер по карьерному развитию"
-      franchise="Фандрайзинг и продажи"
-      department="Бизнес"
-    />
-  ),
-
-  roles: [
-    "Подбор персонала",
-    "Онбординг сотрудников",
-    "HR-аналитика",
-    "Ведение корпоративной культуры",
-  ],
-
-  emailInfo: (
-    <EmployeeContacts
-      type="email"
-      corpContact="victoria.alekseeva@company.com"
-      persContact="victoria.alekseeva2@company.com"
-    />
-  ),
-
-  phoneInfo: (
-    <EmployeeContacts
-      type="phone"
-      corpContact="+420777123456"
-      persContact="+420777123457"
-    />
-  ),
-
-  leader: (
-    <LeaderPrimaryInfo
-      leaderName="Иванов Игорь Сергеевич"
-      leaderPosition="HR"
-    />
-  ),
-
-  city: "Прага",
-
-  birthday: "1994-06-18",
-
-  linkSocialNetwork: "https://linkedin.com/in/viktoria-alekseeva",
-
-  linkCV: "https://example.com/cv/alekseeva.pdf",
-
-  linkProfile: "https://crm.company.com/profile/12345",
-
-  aboutMe:
-    "HR-специалист с 6+ годами опыта в подборе и развитии команд. Люблю системный подход, автоматизацию процессов и работу с аналитикой.",
-
-  tags: [
-    "HR",
-    "Recruitment",
-    "Onboarding",
-    "People Analytics",
-    "Culture",
-    "Communication",
-    "Leadership",
-  ],
-  onExportPDF: () => {
-    console.log("Export PDF");
-  },
-};
-
-export function HeaderUserCard({
-  name,
-  position,
-  avatar,
-}: HeaderUserCardProps) {
-  // Получаем первую букву имени для аватара-заглушки
-  const firstLetter = name.charAt(0);
-  const navigate = useNavigate();
+export function HeaderUserCard() {
+  const employeeId = useAuthStore((s) => s.user?.employee_id ?? undefined);
+  const { data: employee, isLoading } = useEmployeeDetail(employeeId);
 
   const handleLogout = () => {
-    navigate(ROUTES.LOGIN);
+    useAuthStore.getState().logout();
   };
+
+  if (isLoading) {
+    return <Skeleton className="h-15 w-[247px]" />;
+  }
+
+  if (!employee) {
+    return (
+      <Button
+        onClick={handleLogout}
+        variant="destructive"
+        className="flex h-[60px] w-[247px] items-center gap-3 rounded-lg  px-2 py-2"
+      >
+        <ExitIcon />
+        Выйти
+      </Button>
+    );
+  }
+
+  // Получаем первую букву имени для аватара-заглушки
+  const firstLetter = employee.name.charAt(0);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger hasArrow>
         <div className="flex h-[60px] w-[247px] items-center gap-3 rounded-lg  px-2 py-2">
           {/* Аватар */}
-          {avatar ? (
+          {employee.photo ? (
             <img
-              src={avatar}
-              alt={name}
+              src={employee.photo}
+              alt={employee.name}
               className="h-11 w-11 rounded-full object-cover"
             />
           ) : (
@@ -121,15 +64,65 @@ export function HeaderUserCard({
           {/* Имя и должность */}
           <div className="flex flex-col gap-1 items-start">
             <span className="body-m-semibold whitespace-nowrap text-black">
-              {name}
+              {employee.name}
             </span>
-            <span className="body-m text-black">{position}</span>
+            <span className="body-m text-black">{employee.position}</span>
           </div>
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={8}>
-        <EmployeeProfileDialog {...mockEmployeeProfile}>
+        <EmployeeProfileDialog
+          primaryInfo={
+            /**
+             * @todo Ошибка: не соответствие API status принимаемый с сервера не тоже самое что статус здесь! На беке статус обозначает архивированных сотрудников
+             */
+            <EmployeePrimaryInfo
+              status="working"
+              name={employee.name}
+              position={employee.position}
+              /**
+               * @todo Что такое franchise? Это direction? Разобраться и вписать правильные данные
+               */
+              franchise={employee.franchise}
+              department={employee.department}
+            />
+          }
+          /**
+           * roles должен быть массивом, а приходит строка.
+           */
+          roles={[]}
+          emailInfo={
+            <EmployeeContacts
+              type="email"
+              corpContact={employee.emailCorporate || ""}
+              persContact={employee.emailPersonal || ""}
+            />
+          }
+          phoneInfo={
+            <EmployeeContacts
+              type="phone"
+              corpContact={employee.phoneCorporate || ""}
+              persContact={employee.phonePersonal || ""}
+            />
+          }
+          leader={
+            <LeaderPrimaryInfo
+              leaderName={employee.linearManager}
+              leaderPosition=""
+            />
+          }
+          city={employee.city}
+          birthday={employee.birthday || ""}
+          linkSocialNetwork=""
+          linkCV=""
+          linkProfile=""
+          aboutMe=""
+          tags={employee.competencies || []}
+          //TODO: Доделать Экспорт PDF
+          onExportPDF={() => console.log("Export PDF")}
+        >
           <DropdownMenuItem
+            disabled={!employee}
             onSelect={(event) => {
               event.preventDefault();
             }}
