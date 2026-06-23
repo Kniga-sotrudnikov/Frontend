@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useOrgStructureStore } from "@/entities/org-structure";
+import { useOrgStructure } from "@/entities/org-structure";
 import RenderUnits from "./render-unit";
 import { EditOrgStructureModal } from "@/widgets/edit-org-structure-modal";
 import { Button } from "@/shared/ui/button";
@@ -7,8 +7,14 @@ import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import { useIsAdmin } from "@/entities/user";
 
 function Navbar() {
+  const { data, isPending, isError } = useOrgStructure();
+  const tree = [{
+    id: -1,
+    name: "Направления",
+    head: true,
+    items: data ?? []
+  }]
   const [selectedName, setSelectedName] = useState<string | null>(null);
-  const tree = useOrgStructureStore((state) => state.tree);
   const isAdmin = useIsAdmin();
 
   return (
@@ -30,13 +36,13 @@ function Navbar() {
           </EditOrgStructureModal>
         )}
       </div>
-      {tree.map((unit) => (
+      
+      {!isPending && !isError && tree?.map((unit) => (
         <RenderUnits
           unit={unit}
           selectedName={selectedName}
           onSelect={setSelectedName}
-          // TODO Если в структуре, которая придет с сервера будет id, то лучше key={unit.id}
-          key={unit.name}
+          key={unit.id}
         />
       ))}
     </div>

@@ -10,7 +10,6 @@ interface OrgStructureStore {
   directions: OrgItemType[];
   sisList: OrgItemType[];
   isLoading: boolean;
-  fetch: () => Promise<void>;
   updateItem: (entityType: OrgEntityType, item: OrgItemType) => void;
   setDirections: (items: OrgItemType[]) => void;
   setSisList: (items: OrgItemType[]) => void;
@@ -21,9 +20,6 @@ export const useOrgStructureStore = create<OrgStructureStore>()((set) => ({
   directions: mockDirections,
   sisList: mockSisList,
   isLoading: false,
-  fetch: async () => {
-    // Нужно добавить реальные запросы к бэку
-  },
   updateItem: (entityType, item) => {
     set((state) => {
       const key = entityType === "direction" ? "directions" : "sisList";
