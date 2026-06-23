@@ -54,7 +54,6 @@ export const EmployeePdfContent = forwardRef<
       <div
         ref={ref}
         className="bg-white px-4 pb-8 max-w-[552px]"
-        style={{ fontFamily: "Inter, system-ui, sans-serif" }}
       >
         <div className="mt-0">{primaryInfo}</div>
 
