@@ -53,44 +53,17 @@ export const EmployeePdfContent = forwardRef<
     return (
       <div
         ref={ref}
-        style={{
-          backgroundColor: "#ffffff",
-          padding: "16px 16px 64px 16px",
-          maxWidth: "552px",
-          fontFamily: "Inter, system-ui, sans-serif",
-        }}
+        className="bg-white px-4 pb-8 max-w-[552px]"
+        style={{ fontFamily: "Inter, system-ui, sans-serif" }}
       >
-        <div style={{ marginTop: 0 }}>{primaryInfo}</div>
+        <div className="mt-0">{primaryInfo}</div>
 
         {roles.length > 0 && (
-          <div
-            style={{
-              backgroundColor: "#F9FAFB",
-              borderRadius: "8px",
-              padding: "8px 12px",
-              marginTop: "16px",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                color: "#141615",
-                margin: "0",
-              }}
-            >
-              Роль
-            </h3>
-            <ul style={{ margin: 0, paddingLeft: "16px" }}>
+          <div className="bg-gray-50 rounded-lg px-3 py-2 mt-4">
+            <h3 className="text-[12px] font-semibold text-black m-0">Роль</h3>
+            <ul className="list-disc pl-4 space-y-0 mt-0">
               {roles.map((item, idx) => (
-                <li
-                  key={idx}
-                  style={{
-                    fontSize: "12px",
-                    color: "#141615",
-                    lineHeight: "1.5",
-                  }}
-                >
+                <li key={idx} className="text-[12px] text-black leading-tight">
                   {item}
                 </li>
               ))}
@@ -98,24 +71,13 @@ export const EmployeePdfContent = forwardRef<
           </div>
         )}
 
-        <div style={{ marginTop: "16px" }}>
+        <div className="mt-4">
           <PdfInfoSection icon={TagIcon} title="Компетенции">
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
+            <div className="flex flex-wrap gap-1">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  style={{
-                    fontSize: "12px",
-                    padding: "2px 4px",
-                    borderRadius: "4px",
-                    backgroundColor: "#F3ECFF",
-                    color: "#5100D2",
-                    border: "1px solid #5100D2",
-                    display: "inline-flex",
-                    height: "24px",
-                    boxSizing: "border-box",
-                    lineHeight: "4px",
-                  }}
+                  className="text-[12px] p-[2px_4px] rounded-[4px] bg-purple-50 text-purple-500 border border-purple-500 inline-flex h-[24px] box-border leading-[4px]"
                 >
                   {tag}
                 </span>
@@ -124,14 +86,7 @@ export const EmployeePdfContent = forwardRef<
           </PdfInfoSection>
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            gap: "12px 24px",
-            marginTop: "16px",
-          }}
-        >
+        <div className="grid grid-cols-2 gap-x-26 gap-y-3 mt-4">
           <PdfInfoSection icon={MailIcon} title="Электронная почта">
             {emailInfo}
           </PdfInfoSection>
@@ -141,41 +96,29 @@ export const EmployeePdfContent = forwardRef<
           </PdfInfoSection>
 
           <PdfInfoSection icon={LocationIcon} title="Город">
-            <p style={{ fontSize: "12px", color: "#141615", margin: 0 }}>
-              {city}
-            </p>
+            <p className="text-[12px] text-black">{city}</p>
           </PdfInfoSection>
 
           <PdfInfoSection icon={CalendarIcon} title="День рождения">
-            <p style={{ fontSize: "12px", color: "#141615", margin: 0 }}>
-              {formattedBirthday}
-            </p>
+            <p className="text-[12px] text-black">{formattedBirthday}</p>
           </PdfInfoSection>
 
           <PdfInfoSection icon={DocumentIcon} title="Документы">
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: "4px" }}
-            >
+            <div className="flex flex-col gap-1">
               {linkCV && (
-                <span style={{ fontSize: "12px", color: "#2B55FF" }}>
-                  Резюме
-                </span>
+                <span className="text-[12px] text-link">Резюме</span>
               )}
               {linkProfile && (
-                <span style={{ fontSize: "12px", color: "#2B55FF" }}>
-                  Профиль в CRM
-                </span>
+                <span className="text-[12px] text-link">Профиль в CRM</span>
               )}
             </div>
           </PdfInfoSection>
 
           <PdfInfoSection icon={DocumentIcon} title="Социальная сеть">
             {linkSocialNetwork ? (
-              <span style={{ fontSize: "12px", color: "#2B55FF" }}>Ссылка</span>
+              <span className="text-[12px] text-link">Ссылка</span>
             ) : (
-              <span style={{ fontSize: "12px", color: "#9CA3AF" }}>
-                Не указана
-              </span>
+              <span className="text-[12px] text-gray-400">Не указана</span>
             )}
           </PdfInfoSection>
 
@@ -185,34 +128,9 @@ export const EmployeePdfContent = forwardRef<
         </div>
 
         {aboutMe && (
-          <div
-            style={{
-              backgroundColor: "#F9FAFB",
-              borderRadius: "8px",
-              padding: "12px",
-              marginTop: "16px",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: "12px",
-                fontWeight: 600,
-                color: "#141615",
-                margin: "0 0 4px 0",
-              }}
-            >
-              Обо мне
-            </h3>
-            <p
-              style={{
-                fontSize: "12px",
-                color: "#141615",
-                lineHeight: "1.5",
-                margin: 0,
-              }}
-            >
-              {aboutMe}
-            </p>
+          <div className="p-3 bg-gray-50 rounded-lg mt-4">
+            <h3 className="text-[12px] body-overline-semibold text-black">Обо мне</h3>
+            <p className="text-[12px] text-black leading-relaxed">{aboutMe}</p>
           </div>
         )}
       </div>

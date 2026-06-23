@@ -8,26 +8,14 @@ interface PdfInfoSectionProps {
 
 export const PdfInfoSection = ({ icon, title, children }: PdfInfoSectionProps) => {
   return (
-    <div style={{ display: "flex", gap: "4px", alignItems: "flex-start" }}>
+    <div className="flex gap-1 items-start">
       <img
         src={icon}
         alt=""
-        style={{
-          width: "12px",
-          height: "12px",
-          flexShrink: 0,
-          marginTop: "8px",
-        }}
+        className="size-3 shrink-0 mt-[8px]"
       />
-      <div style={{ display: "flex", flexDirection: "column", gap: "4px", minWidth: 0 }}>
-        <h3 style={{ 
-          fontSize: "12px", 
-          fontWeight: 600, 
-          lineHeight: "15px",
-          margin: 0,
-          color: "#141615",
-          marginBottom: "8px",
-        }}>
+      <div className="flex flex-col gap-[4px] min-w-0">
+        <h3 className="text-[12px] font-semibold leading-[15px] text-[#141615] m-0 mb-[8px]">
           {title}
         </h3>
         {children}
