@@ -11,6 +11,7 @@ import {
 import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useNotificationStore } from "@/shared/model/stores";
 import { employees } from "@/entities/employee/model/mock";
+import { useIsAdmin } from "@/entities/user";
 
 export const EmployeesFilterBar = () => {
   const viewType = useEmployeesPageStore((state) => state.viewType);
@@ -19,6 +20,8 @@ export const EmployeesFilterBar = () => {
   const expertiseFilter = useEmployeesPageStore(
     (state) => state.expertiseFilter,
   );
+
+  const isAdmin = useIsAdmin();
 
   const setStatusFilter = useEmployeesPageStore(
     (state) => state.setStatusFilter,
@@ -40,26 +43,23 @@ export const EmployeesFilterBar = () => {
   };
 
   const getTagUsageCount = (_groupKey: string, tagValue: string) => {
-    const count = employees.filter(emp => {
+    const count = employees.filter((emp) => {
       const hasInTags = emp.tags?.includes(tagValue) || false;
       const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
       return hasInTags || hasInCompetencies;
     }).length;
-    
+
     return count;
   };
 
-  const getEmployeesByTag = (
-    _groupKey: string,
-    tagValue: string,
-  ) => {
-    const filtered = employees.filter(emp => {
+  const getEmployeesByTag = (_groupKey: string, tagValue: string) => {
+    const filtered = employees.filter((emp) => {
       const hasInTags = emp.tags?.includes(tagValue) || false;
       const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
       return hasInTags || hasInCompetencies;
     });
-    
-    return filtered.map(emp => ({
+
+    return filtered.map((emp) => ({
       name: emp.full_name,
       position: emp.job_title,
       photo: emp.photo_url,
@@ -67,7 +67,7 @@ export const EmployeesFilterBar = () => {
   };
 
   const getAllEmployees = () => {
-    return employees.map(emp => ({
+    return employees.map((emp) => ({
       id: String(emp.id),
       name: emp.full_name,
       position: emp.job_title,
@@ -87,14 +87,14 @@ export const EmployeesFilterBar = () => {
         groups={expertiseFilterGroups}
         value={expertiseFilter}
         onApply={setExpertiseFilter}
-        isAdmin={true}
+        isAdmin={isAdmin}
         getTagUsageCount={getTagUsageCount}
         getEmployeesByTag={getEmployeesByTag}
         getAllEmployees={getAllEmployees}
       />
 
       <div className="ml-auto" />
-      
+
       <div className="flex items-center gap-3">
         {viewType === "list" && (
           <Button
@@ -107,7 +107,7 @@ export const EmployeesFilterBar = () => {
             Экспортировать
           </Button>
         )}
-        <CreateEmployeeWrapper />
+        {isAdmin && <CreateEmployeeWrapper />}
       </div>
     </div>
   );

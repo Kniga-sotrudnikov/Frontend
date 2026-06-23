@@ -22,7 +22,7 @@ import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
 import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
-import { useAuthStore } from "@/entities/user";
+import { useIsAdmin } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 
 interface EmployeesListProps {
@@ -50,6 +50,8 @@ export const EmployeesList = ({
   const [employeeToArchive, setEmployeeToArchive] =
     useState<EmployeeData | null>(null);
 
+  const isAdmin = useIsAdmin();
+
   const { selectedEmployeeFromStore, openEmployeeModal, closeEmployeeModal } =
     useEmployeeModalStore(
       useShallow((state) => ({
@@ -64,6 +66,12 @@ export const EmployeesList = ({
       setSelectedEmployee(selectedEmployeeFromStore);
     }
   }, [selectedEmployeeFromStore]);
+
+  useEffect(() => {
+    if (!isAdmin && activeTab === "archive") {
+      setActiveTab("employees");
+    }
+  }, [activeTab, isAdmin]);
 
   const handleEmployeeClick = (employee: EmployeeData) => {
     setSelectedEmployee(employee);
@@ -144,8 +152,6 @@ export const EmployeesList = ({
     ? emptyTextMap[activeTab].all
     : emptyTextMap[activeTab];
 
-  const isAdmin = useAuthStore((state) => state.user?.role === "hr_admin");
-
   const handleToggleFavorite = () => {
     addNotification({
       iconType: "success",
@@ -209,15 +215,17 @@ export const EmployeesList = ({
                 {tabContentMap.favorites.length}
               </span>
             </TabsTrigger>
-            <TabsTrigger
-              value="archive"
-              className="flex items-center justify-center gap-1 px-3 py-2 button-small cursor-pointer"
-            >
-              Архив
-              <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {tabContentMap.archive.length}
-              </span>
-            </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger
+                value="archive"
+                className="flex items-center justify-center gap-1 px-3 py-2 button-small cursor-pointer"
+              >
+                Архив
+                <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
+                  {tabContentMap.archive.length}
+                </span>
+              </TabsTrigger>
+            )}
           </TabsList>
         </Tabs>
 
@@ -331,6 +339,7 @@ export const EmployeesList = ({
           items={itemsByTab}
           emptyText={emptyText}
           favoritesIds={favoritesIds}
+          canEditEmployee={isAdmin}
           onToggleFavorite={handleToggleFavorite}
           onUpdateEmployee={onUpdateEmployee}
           onArchiveEmployee={setEmployeeToArchive}
