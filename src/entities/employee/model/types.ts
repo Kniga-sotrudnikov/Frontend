@@ -15,7 +15,7 @@ export type TEmployee = {
   email_personal?: string;
   phone_corporate?: string;
   phone_personal?: string;
-  birthday?: string | Date;
+  birthday?: string;
   competencies?: string[];
   linear_manager?: string;
 };
@@ -50,7 +50,7 @@ export interface EmployeeData {
   emailPersonal?: string;
   phoneCorporate?: string;
   phonePersonal?: string;
-  birthday?: string | Date;
+  birthday?: string;
   competencies?: string[];
   roles?: string[];
   supervisor?: EmployeeSupervisor;

@@ -37,7 +37,7 @@ interface EmployeeProfileDialogProps {
   leader: ReactElement;
   roles: string[];
   city: string;
-  birthday: string | Date;
+  birthday: string;
   linkSocialNetwork: string;
   linkCV: string;
   linkProfile: string;
