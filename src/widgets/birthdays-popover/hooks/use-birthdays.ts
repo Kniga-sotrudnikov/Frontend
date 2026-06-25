@@ -1,53 +1,44 @@
-import { useState, useEffect, useCallback } from "react";
-import {
-  getTodayBirthdaysApi,
-  getCurrentMonthBirthdaysApi,
-  type BirthdayPerson,
-} from "@/entities/employee";
+import { useTodayBirthdays, useCurrentMonthBirthdays } from "@/entities/employee";
+import type { BirthdayPerson } from "@/entities/employee";
 
 interface UseBirthdaysReturn {
   todayBirthdays: BirthdayPerson[];
   currentMonthBirthdays: BirthdayPerson[];
   isLoading: boolean;
   error: string | null;
-  refetch: () => Promise<void>;
+  refetch: () => void;
   hasBirthdaysToday: boolean;
 }
 
 export const useBirthdays = (): UseBirthdaysReturn => {
-  const [todayBirthdays, setTodayBirthdays] = useState<BirthdayPerson[]>([]);
-  const [currentMonthBirthdays, setCurrentMonthBirthdays] = useState<BirthdayPerson[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: todayBirthdays = [],
+    isLoading: isLoadingToday,
+    error: errorToday,
+    refetch: refetchToday,
+  } = useTodayBirthdays();
 
-  const fetchBirthdays = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const [today, month] = await Promise.all([
-        getTodayBirthdaysApi(),
-        getCurrentMonthBirthdaysApi(),
-      ]);
-      setTodayBirthdays(today);
-      setCurrentMonthBirthdays(month);
-    } catch (err) {
-      setError("Не удалось загрузить данные о днях рождения");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const {
+    data: currentMonthBirthdays = [],
+    isLoading: isLoadingMonth,
+    error: errorMonth,
+    refetch: refetchMonth,
+  } = useCurrentMonthBirthdays();
 
-  useEffect(() => {
-    fetchBirthdays();
-  }, [fetchBirthdays]);
+  const isLoading = isLoadingToday || isLoadingMonth;
+  const error = errorToday?.message || errorMonth?.message || null;
+
+  const refetch = () => {
+    refetchToday();
+    refetchMonth();
+  };
 
   return {
     todayBirthdays,
     currentMonthBirthdays,
     isLoading,
     error,
-    refetch: fetchBirthdays,
+    refetch,
     hasBirthdaysToday: todayBirthdays.length > 0,
   };
 };
