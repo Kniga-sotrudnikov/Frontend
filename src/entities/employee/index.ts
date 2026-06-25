@@ -25,6 +25,25 @@ export {
   getTodayBirthdays,
   getUpcomingBirthdays,
 } from "./model/mock";
+
+export {
+  birthdayKeys,
+  usePublicBirthdays,
+  useTodayBirthdays,
+  useCurrentMonthBirthdays,
+  useUpcomingBirthdaysAdmin,
+  useBirthdaysSettings,
+} from "./model/birthday-queries";
+
+export {
+  getPublicBirthdaysApi,
+  getCurrentMonthBirthdaysApi,
+  getTodayBirthdaysApi,
+  getUpcomingBirthdaysAdminApi,
+  getBirthdaysSettingsApi,
+  updateBirthdaysSettingsApi,
+} from "./api/birthdays-api";
+
 export {
   getEmployeesListAdmin,
   createEmployee,

@@ -5,14 +5,14 @@ import type { BirthdayPerson } from "@/entities/employee";
 interface BirthdaysPopoverContentProps {
   todayBirthdays: BirthdayPerson[];
   onOpenModal: () => void;
+  hasBirthdays?: boolean;
 }
 
 export const BirthdaysPopoverContent = ({
   todayBirthdays,
   onOpenModal,
+  hasBirthdays = todayBirthdays.length > 0,
 }: BirthdaysPopoverContentProps) => {
-  const hasBirthdays = todayBirthdays.length > 0;
-
   return (
     <div className="flex flex-col gap-3 translate-x-[4px] -translate-y-[6px]">
       <span className="font-montserrat mt-0.5 text-xs font-semibold leading-5 tracking-[0.5px] text-gray-900">
