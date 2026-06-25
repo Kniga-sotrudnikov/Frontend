@@ -38,7 +38,7 @@ export const useExportPdf = () => {
       const scaledHeight = imgHeight * ratio;
 
       const x = (pdfWidth - scaledWidth) / 2;
-      const y = (pdfHeight - scaledHeight) / 2;
+      const y = 10;
 
       pdf.addImage(imgData, "PNG", x, y, scaledWidth, scaledHeight);
       pdf.save(filename);
