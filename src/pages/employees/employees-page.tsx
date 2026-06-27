@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { PageHeader } from "@/widgets/page-header";
 import { SearchInput } from "@/shared/ui/input";
@@ -17,6 +17,11 @@ import {
 } from "@/entities/employee";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { useEmployeeModalStore } from "@/features/employee";
+import { AppPagination } from "@ui/pagination";
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
+const DEFAULT_EMPLOYEE_LIMIT = 12;
 
 const EmployeesPage = () => {
   const { selectedVacancy, openVacancyModal, closeVacancyModal } =
@@ -31,8 +36,29 @@ const EmployeesPage = () => {
     (state) => state.openEmployeeModal,
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [limit, setLimit] = useState(DEFAULT_EMPLOYEE_LIMIT);
+  const [offset, setOffset] = useState(0);
+
   //TODO: Добавить логику передачи роли в хук
-  const { data: listData, isLoading: isListLoading } = useEmployeesList();
+  const { data: listData, isLoading: isListLoading } = useEmployeesList(
+    limit,
+    offset,
+  );
+
+  const totalCount = listData?.count ?? 0;
+  const page = Math.floor(offset / limit) + 1;
+  const totalPages = Math.max(Math.ceil(totalCount / limit), 1);
+
+  console.log({
+    limit,
+    offset,
+    totalCount,
+    resultsCount: listData?.results.length,
+    page,
+    totalPages,
+  });
+
   const employees = useMemo(() => {
     return listData?.results ?? [];
   }, [listData?.results]);
@@ -101,6 +127,14 @@ const EmployeesPage = () => {
                 onUpdateEmployee={handlePatchEmployee}
               />
             )}
+
+            <div>
+              <AppPagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={(nextPage) => setOffset((nextPage - 1) * limit)}
+              />
+            </div>
           </div>
         </div>
       </div>
