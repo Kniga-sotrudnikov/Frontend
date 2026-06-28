@@ -15,7 +15,6 @@ import {
   usePatchEmployee,
   type EmployeeData,
 } from "@/entities/employee";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 
@@ -105,29 +104,29 @@ const EmployeesPage = () => {
           <div className="space-y-3">
             <EmployeesFilterBar />
             {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
-            {isListLoading ? (
-              <Skeleton className="h-10 w-10"></Skeleton>
-            ) : (
-              <EmployeesList
-                employees={employees}
-                vacancies={mockVacancies}
-                favoritesIds={mockFavorites}
-                onUpdateEmployee={handlePatchEmployee}
-              />
-            )}
+            <EmployeesList
+              employees={employees}
+              vacancies={mockVacancies}
+              favoritesIds={mockFavorites}
+              onUpdateEmployee={handlePatchEmployee}
+              isLoading={isListLoading}
+              skeletonCount={limit}
+            />
 
             <div>
-              <AppPagination
-                page={page}
-                limit={limit}
-                totalCount={totalCount}
-                limitOptions={EMPLOYEES_LIMIT_OPTIONS}
-                onPageChange={(nextPage) => setOffset((nextPage - 1) * limit)}
-                onLimitChange={(nextLimit) => {
-                  setLimit(nextLimit);
-                  setOffset(0);
-                }}
-              />
+              {listData && (
+                <AppPagination
+                  page={page}
+                  limit={limit}
+                  totalCount={totalCount}
+                  limitOptions={EMPLOYEES_LIMIT_OPTIONS}
+                  onPageChange={(nextPage) => setOffset((nextPage - 1) * limit)}
+                  onLimitChange={(nextLimit) => {
+                    setLimit(nextLimit);
+                    setOffset(0);
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

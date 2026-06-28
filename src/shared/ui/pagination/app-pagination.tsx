@@ -84,7 +84,13 @@ export const AppPagination = ({
   return (
     <div className="flex items-center w-full gap-4">
       <div className="flex flex-1 justify-start body-overline">
-        <span className="whitespace-nowrap">{`${from}-${to} из ${totalCount}`}</span>
+        <span className="flex items-center gap-2 whitespace-nowrap">
+          <span>
+            {from}-{to}
+          </span>
+          <span>из</span>
+          <span>{totalCount}</span>
+        </span>
       </div>
 
       <div className="flex shrink-0 justify-center">
