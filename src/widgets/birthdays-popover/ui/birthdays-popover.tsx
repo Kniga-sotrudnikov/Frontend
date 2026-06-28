@@ -1,21 +1,23 @@
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
-import {
-  getTodayBirthdays,
-  getCurrentMonthBirthdays,
-} from "@/entities/employee";
 import { Button } from "@ui/button";
 import BirthdayIcon from "@/shared/assets/icons/birthday.svg";
 import { BirthdaysPopoverContent } from "./birthdays-popover-content";
 import { BirthdaysModal } from "./birthdays-modal";
+import { useBirthdays } from "../hooks/use-birthdays";
 
 export const BirthdaysPopover = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-
-  const todayBirthdays = getTodayBirthdays();
-  const currentMonthBirthdays = getCurrentMonthBirthdays();
-  const hasBirthdaysToday = todayBirthdays.length > 0;
+  
+  const {
+    todayBirthdays,
+    currentMonthBirthdays,
+    isLoading,
+    error,
+    hasBirthdaysToday,
+    refetch,
+  } = useBirthdays();
 
   const handleOpenModal = () => {
     setIsPopoverOpen(false);
@@ -26,9 +28,16 @@ export const BirthdaysPopover = () => {
     setIsModalOpen(false);
   };
 
+  const handlePopoverOpenChange = (open: boolean) => {
+    setIsPopoverOpen(open);
+    if (open) {
+      refetch();
+    }
+  };
+
   return (
     <>
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+      <Popover open={isPopoverOpen} onOpenChange={handlePopoverOpenChange}>
         <PopoverTrigger asChild>
           <Button
             variant="ghost"
@@ -48,10 +57,21 @@ export const BirthdaysPopover = () => {
           align="start"
           sideOffset={8}
         >
-          <BirthdaysPopoverContent
-            todayBirthdays={todayBirthdays}
-            onOpenModal={handleOpenModal}
-          />
+          {isLoading ? (
+            <div className="flex justify-center py-6">
+              <span className="text-gray-500">Загрузка...</span>
+            </div>
+          ) : error ? (
+            <div className="flex justify-center py-6">
+              <span className="text-red-500">{error}</span>
+            </div>
+          ) : (
+            <BirthdaysPopoverContent
+              todayBirthdays={todayBirthdays}
+              onOpenModal={handleOpenModal}
+              hasBirthdays={todayBirthdays.length > 0}
+            />
+          )}
         </PopoverContent>
       </Popover>
 
@@ -59,6 +79,7 @@ export const BirthdaysPopover = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         birthdays={currentMonthBirthdays}
+        isLoading={isLoading && currentMonthBirthdays.length === 0}
       />
     </>
   );
