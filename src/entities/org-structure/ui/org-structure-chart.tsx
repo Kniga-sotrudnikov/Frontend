@@ -1,8 +1,8 @@
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ZoomableImage } from "@/shared/ui/zoomable-image";
 import { ZoomablePDF } from "@/shared/ui/zoomable-pdf";
-import { useOrgStructureImage } from "@/entities/org-structure";
-import { isPdf } from "@/entities/org-structure";
+import { useOrgStructureImage } from "../api/use-org-structure-image";
+import { isPdf } from "../lib/is-pdf";
 
 interface OrgStructureChartProps {
     zoom: number;
