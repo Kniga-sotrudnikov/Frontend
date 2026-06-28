@@ -50,7 +50,7 @@ export const getEmployeeColumns = (
             e.stopPropagation();
             onToggleFavorite(row.original.id);
           }}
-          className={isFavorite ? "text-accent" : "text-gray-300"}
+          className={isFavorite ? "text-accent fill-current" : "text-gray-300"}
         />
       );
     },
@@ -124,7 +124,9 @@ export const getVacancyColumns = (
               event.stopPropagation();
               onToggleFavorite(row.original.id);
             }}
-            className={isFavorite ? "text-accent" : "text-gray-300"}
+            className={
+              isFavorite ? "text-accent fill-current" : "text-gray-300"
+            }
           />
         );
       },

@@ -105,7 +105,9 @@ export const EmployeeCard = ({
           >
             <StarIcon
               className={
-                isFavorite ? "size-5 text-purple-500" : "size-5 text-gray-300"
+                isFavorite
+                  ? "size-5 fill-current text-purple-500"
+                  : "size-5 text-gray-300"
               }
             />
           </button>
