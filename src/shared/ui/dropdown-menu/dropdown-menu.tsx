@@ -128,7 +128,7 @@ function DropdownMenuRadioItem({
   return (
     <DropdownMenuPrimitive.RadioItem
       className={cn(
-        "relative flex cursor-default items-center rounded-[var(--radius-8)] py-1.5 px-2 text-sm outline-none focus:bg-accent",
+        "relative flex cursor-default items-center rounded-[var(--radius-8)] py-1.5 px-2 text-sm outline-none focus:bg-muted data-[state=checked]:bg-secondary",
         className,
       )}
       {...props}

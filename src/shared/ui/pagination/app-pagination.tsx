@@ -83,7 +83,7 @@ export const AppPagination = ({
 
   return (
     <div className="flex items-center w-full gap-4">
-      <div className="flex flex-1 justify-start">
+      <div className="flex flex-1 justify-start body-overline">
         <span className="whitespace-nowrap">{`${from}-${to} из ${totalCount}`}</span>
       </div>
 
@@ -151,24 +151,21 @@ export const AppPagination = ({
       </div>
 
       <div className="flex flex-1 justify-end">
-        <div className="flex items-center gap-2 whitespace-nowrap">
+        <div className="flex items-center gap-2 whitespace-nowrap body-overline">
           <span>карточек на странице:</span>
 
           <DropdownMenu>
-            <DropdownMenuTrigger
-              hasArrow
-              aria-label="Количество карточек на странице"
-              className="h-8 min-w-20 justify-between rounded-[var(--radius-4)] border border-btn-border bg-white pl-3"
-            >
+            <DropdownMenuTrigger hasArrow className="px-2">
               {limit}
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" className="min-w-5">
               <DropdownMenuRadioGroup
                 value={String(limit)}
                 onValueChange={(value) => {
                   onLimitChange(Number(value));
                 }}
+                className="flex flex-col gap-1"
               >
                 {limitOptions.map((limitOption) => (
                   <DropdownMenuRadioItem
