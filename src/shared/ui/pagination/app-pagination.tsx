@@ -10,16 +10,27 @@ import DoubleArrowLeftIcon from "@/shared/assets/icons/double-arrows-left.svg?re
 import DoubleArrowRightIcon from "@/shared/assets/icons/double-arrows-right.svg?react";
 import ArrowLeftIcon from "@/shared/assets/icons/arrow-left.svg?react";
 import ArrowRightIcon from "@/shared/assets/icons/arrow-right.svg?react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@ui/dropdown-menu";
 
 type TPaginationPage = number | "ellipsis";
 
 type TAppPaginationProps = {
   page: number;
-  totalPages: number;
+  limit: number;
+  totalCount: number;
+  limitOptions?: number[];
   onPageChange: (page: number) => void;
+  onLimitChange: (limit: number) => void;
 };
 
 const MAX_VISIBLE_PAGES = 7;
+const DEFAULT_LIMIT_OPTIONS = [6, 12, 24, 50];
 
 const getPaginationPages = (
   page: number,
@@ -49,16 +60,18 @@ const getPaginationPages = (
 
 export const AppPagination = ({
   page,
-  totalPages,
+  limit,
+  totalCount,
+  limitOptions = DEFAULT_LIMIT_OPTIONS,
   onPageChange,
+  onLimitChange,
 }: TAppPaginationProps) => {
-  if (totalPages <= 1) {
-    return null;
-  }
-
+  const totalPages = Math.max(Math.ceil(totalCount / limit), 1);
   const pages = getPaginationPages(page, totalPages);
   const isFirstPage = page === 1;
   const isLastPage = page === totalPages;
+  const from = totalCount === 0 ? 0 : (page - 1) * limit + 1;
+  const to = Math.min(page * limit, totalCount);
 
   const goToPage = (nextPage: number) => {
     if (nextPage < 1) return;
@@ -69,63 +82,108 @@ export const AppPagination = ({
   };
 
   return (
-    <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationButton
-            disabled={isFirstPage}
-            aria-label="Первая страница"
-            onClick={() => goToPage(1)}
-          >
-            <DoubleArrowLeftIcon />
-          </PaginationButton>
-        </PaginationItem>
+    <div className="flex items-center w-full gap-4">
+      <div className="flex flex-1 justify-start">
+        <span className="whitespace-nowrap">{`${from}-${to} из ${totalCount}`}</span>
+      </div>
 
-        <PaginationItem>
-          <PaginationButton
-            disabled={isFirstPage}
-            aria-label="Предыдущая страница"
-            onClick={() => goToPage(page - 1)}
-          >
-            <ArrowLeftIcon />
-          </PaginationButton>
-        </PaginationItem>
+      <div className="flex shrink-0 justify-center">
+        {totalPages > 1 ? (
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationButton
+                  disabled={isFirstPage}
+                  aria-label="Первая страница"
+                  onClick={() => goToPage(1)}
+                >
+                  <DoubleArrowLeftIcon />
+                </PaginationButton>
+              </PaginationItem>
 
-        {pages.map((pageItem, index) => (
-          <PaginationItem key={`${pageItem}-${index}`}>
-            {pageItem === "ellipsis" ? (
-              <PaginationEllipsis />
-            ) : (
-              <PaginationButton
-                isActive={page === pageItem}
-                onClick={() => goToPage(pageItem)}
+              <PaginationItem>
+                <PaginationButton
+                  disabled={isFirstPage}
+                  aria-label="Предыдущая страница"
+                  onClick={() => goToPage(page - 1)}
+                >
+                  <ArrowLeftIcon />
+                </PaginationButton>
+              </PaginationItem>
+
+              {pages.map((pageItem, index) => (
+                <PaginationItem key={`${pageItem}-${index}`}>
+                  {pageItem === "ellipsis" ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationButton
+                      isActive={page === pageItem}
+                      onClick={() => goToPage(pageItem)}
+                    >
+                      {pageItem}
+                    </PaginationButton>
+                  )}
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationButton
+                  disabled={isLastPage}
+                  aria-label="Следующая страница"
+                  onClick={() => goToPage(page + 1)}
+                >
+                  <ArrowRightIcon />
+                </PaginationButton>
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationButton
+                  disabled={isLastPage}
+                  aria-label="Последняя страница"
+                  onClick={() => goToPage(totalPages)}
+                >
+                  <DoubleArrowRightIcon />
+                </PaginationButton>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        ) : null}
+      </div>
+
+      <div className="flex flex-1 justify-end">
+        <div className="flex items-center gap-2 whitespace-nowrap">
+          <span>карточек на странице:</span>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              hasArrow
+              aria-label="Количество карточек на странице"
+              className="h-8 min-w-20 justify-between rounded-[var(--radius-4)] border border-btn-border bg-white pl-3"
+            >
+              {limit}
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent align="end">
+              <DropdownMenuRadioGroup
+                value={String(limit)}
+                onValueChange={(value) => {
+                  onLimitChange(Number(value));
+                }}
               >
-                {pageItem}
-              </PaginationButton>
-            )}
-          </PaginationItem>
-        ))}
-
-        <PaginationItem>
-          <PaginationButton
-            disabled={isLastPage}
-            aria-label="Следующая страница"
-            onClick={() => goToPage(page + 1)}
-          >
-            <ArrowRightIcon />
-          </PaginationButton>
-        </PaginationItem>
-
-        <PaginationItem>
-          <PaginationButton
-            disabled={isLastPage}
-            aria-label="Последняя страница"
-            onClick={() => goToPage(totalPages)}
-          >
-            <DoubleArrowRightIcon />
-          </PaginationButton>
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+                {limitOptions.map((limitOption) => (
+                  <DropdownMenuRadioItem
+                    key={limitOption}
+                    value={String(limitOption)}
+                    className="cursor-pointer justify-center"
+                  >
+                    {limitOption}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </div>
   );
 };

@@ -19,7 +19,6 @@ import { Skeleton } from "@/shared/ui/skeleton";
 import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
 const DEFAULT_EMPLOYEE_LIMIT = 12;
 
@@ -36,7 +35,6 @@ const EmployeesPage = () => {
     (state) => state.openEmployeeModal,
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [limit, setLimit] = useState(DEFAULT_EMPLOYEE_LIMIT);
   const [offset, setOffset] = useState(0);
 
@@ -48,16 +46,6 @@ const EmployeesPage = () => {
 
   const totalCount = listData?.count ?? 0;
   const page = Math.floor(offset / limit) + 1;
-  const totalPages = Math.max(Math.ceil(totalCount / limit), 1);
-
-  console.log({
-    limit,
-    offset,
-    totalCount,
-    resultsCount: listData?.results.length,
-    page,
-    totalPages,
-  });
 
   const employees = useMemo(() => {
     return listData?.results ?? [];
@@ -131,8 +119,14 @@ const EmployeesPage = () => {
             <div>
               <AppPagination
                 page={page}
-                totalPages={totalPages}
+                limit={limit}
+                totalCount={totalCount}
+                limitOptions={EMPLOYEES_LIMIT_OPTIONS}
                 onPageChange={(nextPage) => setOffset((nextPage - 1) * limit)}
+                onLimitChange={(nextLimit) => {
+                  setLimit(nextLimit);
+                  setOffset(0);
+                }}
               />
             </div>
           </div>
