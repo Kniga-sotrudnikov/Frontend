@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { PageHeader } from "@/widgets/page-header";
 import { SearchInput } from "@/shared/ui/input";
@@ -15,8 +15,11 @@ import {
   usePatchEmployee,
   type EmployeeData,
 } from "@/entities/employee";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { useEmployeeModalStore } from "@/features/employee";
+import { AppPagination } from "@ui/pagination";
+
+const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
+const DEFAULT_EMPLOYEE_LIMIT = 12;
 
 const EmployeesPage = () => {
   const { selectedVacancy, openVacancyModal, closeVacancyModal } =
@@ -31,8 +34,18 @@ const EmployeesPage = () => {
     (state) => state.openEmployeeModal,
   );
 
+  const [limit, setLimit] = useState(DEFAULT_EMPLOYEE_LIMIT);
+  const [offset, setOffset] = useState(0);
+
   //TODO: Добавить логику передачи роли в хук
-  const { data: listData, isLoading: isListLoading } = useEmployeesList();
+  const { data: listData, isLoading: isListLoading } = useEmployeesList(
+    limit,
+    offset,
+  );
+
+  const totalCount = listData?.count ?? 0;
+  const page = Math.floor(offset / limit) + 1;
+
   const employees = useMemo(() => {
     return listData?.results ?? [];
   }, [listData?.results]);
@@ -91,16 +104,30 @@ const EmployeesPage = () => {
           <div className="space-y-3">
             <EmployeesFilterBar />
             {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
-            {isListLoading ? (
-              <Skeleton className="h-10 w-10"></Skeleton>
-            ) : (
-              <EmployeesList
-                employees={employees}
-                vacancies={mockVacancies}
-                favoritesIds={mockFavorites}
-                onUpdateEmployee={handlePatchEmployee}
-              />
-            )}
+            <EmployeesList
+              employees={employees}
+              vacancies={mockVacancies}
+              favoritesIds={mockFavorites}
+              onUpdateEmployee={handlePatchEmployee}
+              isLoading={isListLoading}
+              skeletonCount={limit}
+            />
+
+            <div>
+              {listData && (
+                <AppPagination
+                  page={page}
+                  limit={limit}
+                  totalCount={totalCount}
+                  limitOptions={EMPLOYEES_LIMIT_OPTIONS}
+                  onPageChange={(nextPage) => setOffset((nextPage - 1) * limit)}
+                  onLimitChange={(nextLimit) => {
+                    setLimit(nextLimit);
+                    setOffset(0);
+                  }}
+                />
+              )}
+            </div>
           </div>
         </div>
       </div>

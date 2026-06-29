@@ -24,12 +24,15 @@ import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
 import { useIsAdmin } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
+import { EmployeeCardsSkeleton } from "@/widgets/employee-card";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
   vacancies: VacancyData[];
   favoritesIds?: (number | string)[];
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
+  isLoading?: boolean;
+  skeletonCount?: number;
 }
 
 export const EmployeesList = ({
@@ -37,6 +40,8 @@ export const EmployeesList = ({
   vacancies,
   favoritesIds = [],
   onUpdateEmployee,
+  isLoading = false,
+  skeletonCount = 6,
 }: EmployeesListProps) => {
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
@@ -302,6 +307,8 @@ export const EmployeesList = ({
           columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
           data={tabContentMap.employees}
           onRowClick={handleEmployeeClick}
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
@@ -311,6 +318,8 @@ export const EmployeesList = ({
             openVacancyModal,
           )}
           data={tabContentMap.vacancies}
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
       ) : viewType === "list" &&
         hasNestedTabs &&
@@ -320,6 +329,8 @@ export const EmployeesList = ({
           data={nestedTabContentMap[activeTab].employees}
           onRowClick={handleEmployeeClick}
           containerClassName="rounded-tl-none"
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
       ) : viewType === "list" &&
         hasNestedTabs &&
@@ -332,7 +343,11 @@ export const EmployeesList = ({
             activeTab === "archive" ? "restore" : "respond",
           )}
           data={nestedTabContentMap[activeTab].vacancies}
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
+      ) : isLoading ? (
+        <EmployeeCardsSkeleton count={skeletonCount} />
       ) : (
         <RenderCards
           onEmployeeClick={handleEmployeeClick}
