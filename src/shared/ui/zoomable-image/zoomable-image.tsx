@@ -55,7 +55,7 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      className="w-full select-none"
+      className="w-full h-full select-none"
       style={{
         objectFit: "cover",
         objectViewBox,
