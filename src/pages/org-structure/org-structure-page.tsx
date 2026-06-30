@@ -1,24 +1,18 @@
 import { useState } from "react";
-import { SearchInput } from "@/shared/ui/input";
 import { PageHeader } from "@/widgets/page-header";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { ZoomControl } from "@/shared/ui/zoom-control";
 import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
-import { ZoomableImage } from "@/shared/ui/zoomable-image";
-import { ZoomablePDF } from "@/shared/ui/zoomable-pdf";
 import { useIsAdmin } from "@/entities/user";
-import Chart from "@/shared/assets/images/Chart.png";
-import ChartPdf from "@/shared/assets/images/Chart.pdf";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { ClarifyingModal } from "@/features/upload-org-structure";
+import { OrgStructureChart } from "@/entities/org-structure";
 
 const OrgStructurePage = () => {
   const [zoom, setZoom] = useState(100);
   const [isClarifyingOpen, setIsClarifyingOpen] = useState(false);
   const isAdmin = useIsAdmin();
-  // TODO: значение isImage будут определятся форматом файла загружаемого с сервера
-  const isImage = true;
   const isZoomabled = zoom > 100;
 
   return (
@@ -26,7 +20,6 @@ const OrgStructurePage = () => {
       <PageHeader
         title="Оргструктура"
         stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
-        search={<SearchInput placeholder="Поиск по ФИО, должности, тегам..." />}
         birthday={<BirthdaysPopover />}
         user={<HeaderUserCard />}
       />
@@ -49,11 +42,7 @@ const OrgStructurePage = () => {
           )}
         </div>
         <div className="border rounded-2xl border-border overflow-hidden flex-1 min-h-0">
-          {isImage ? (
-            <ZoomableImage src={Chart} alt="Оргструктура" zoom={zoom} />
-          ) : (
-            <ZoomablePDF src={ChartPdf} zoom={zoom} className="h-full" />
-          )}
+          <OrgStructureChart zoom={zoom}/>
         </div>
       </main>
       <ClarifyingModal

@@ -25,12 +25,15 @@ import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.ts
 import { useIsAdmin } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 import { useGetFavorites, useToggleFavorite } from "@/entities/favorites";
+import { EmployeeCardsSkeleton } from "@/widgets/employee-card";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
   vacancies: VacancyData[];
 
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
+  isLoading?: boolean;
+  skeletonCount?: number;
 }
 
 export const EmployeesList = ({
@@ -38,6 +41,8 @@ export const EmployeesList = ({
   vacancies,
 
   onUpdateEmployee,
+  isLoading = false,
+  skeletonCount = 6,
 }: EmployeesListProps) => {
   const [activeTab, setActiveTab] = useState<
     "employees" | "vacancies" | "favorites" | "archive"
@@ -317,6 +322,8 @@ export const EmployeesList = ({
           )}
           data={tabContentMap.employees}
           onRowClick={handleEmployeeClick}
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
@@ -326,6 +333,8 @@ export const EmployeesList = ({
             openVacancyModal,
           )}
           data={tabContentMap.vacancies}
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
       ) : viewType === "list" &&
         hasNestedTabs &&
@@ -338,6 +347,8 @@ export const EmployeesList = ({
           data={nestedTabContentMap[activeTab].employees}
           onRowClick={handleEmployeeClick}
           containerClassName="rounded-tl-none"
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
       ) : viewType === "list" &&
         hasNestedTabs &&
@@ -350,7 +361,11 @@ export const EmployeesList = ({
             activeTab === "archive" ? "restore" : "respond",
           )}
           data={nestedTabContentMap[activeTab].vacancies}
+          isLoading={isLoading}
+          skeletonRows={skeletonCount}
         />
+      ) : isLoading ? (
+        <EmployeeCardsSkeleton count={skeletonCount} />
       ) : (
         <RenderCards
           onEmployeeClick={handleEmployeeClick}
