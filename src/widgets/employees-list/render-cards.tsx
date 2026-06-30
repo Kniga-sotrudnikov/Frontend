@@ -12,7 +12,8 @@ interface RenderCardsProps {
   // TODO: убрать favoritesIds после подключения TanStack Query — получать из useFavoritesQuery()
   favoritesIds?: (number | string)[];
   canEditEmployee?: boolean;
-  onToggleFavorite?: (id: number | string) => void;
+  onToggleEmployeeFavorite?: (id: number | string) => void;
+  onToggleVacancyFavorite?: (id: number | string) => void;
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
   onEmployeeClick: (employee: EmployeeData) => void;
   onArchiveEmployee: (employee: EmployeeData) => void;
@@ -22,7 +23,8 @@ export const RenderCards = ({
   items,
   emptyText,
   favoritesIds = [],
-  onToggleFavorite,
+  onToggleEmployeeFavorite,
+  onToggleVacancyFavorite,
   canEditEmployee = false,
   onUpdateEmployee,
   onEmployeeClick,
@@ -50,7 +52,7 @@ export const RenderCards = ({
               employeeData={employee}
               isFavorite={favoritesIds.includes(item.id)}
               canEdit={canEditEmployee}
-              onFavorite={() => onToggleFavorite?.(item.id)}
+              onFavorite={() => onToggleEmployeeFavorite?.(item.id)}
               onUpdateEmployee={onUpdateEmployee}
               onArchive={() => onArchiveEmployee(employee)}
               primaryInfo={
@@ -74,7 +76,7 @@ export const RenderCards = ({
             key={id}
             {...vacancyProps}
             isFavorite={favoritesIds.includes(id)}
-            onFavorite={() => onToggleFavorite?.(id)}
+            onFavorite={() => onToggleVacancyFavorite?.(id)}
             onRespond={() => openVacancyModal(item)}
           />
         );

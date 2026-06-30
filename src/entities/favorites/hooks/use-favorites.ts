@@ -13,45 +13,28 @@ import type {
   UseToggleFavoriteReturn,
 } from "../model/types";
 
-/**
- * Ключи для React Query (для инвалидации кэша)
- */
 export const favoritesKeys = {
   all: ["favorites"] as const,
   list: () => [...favoritesKeys.all, "list"] as const,
 };
 
-/**
- * Хук для получения списка избранного
- * Автоматически выбирает API в зависимости от роли пользователя:
- * - Админ → /admin/favorites/ (видит все избранное + заметки)
- * - Пользователь → /favorites/ (видит только свои избранные)
- */
 export const useGetFavorites = () => {
   const isAdmin = useIsAdmin();
 
   return useQuery<NormalizedFavoritesResponse>({
     queryKey: favoritesKeys.list(),
     queryFn: async () => {
-      // 1. Выбираем API в зависимости от роли
       const response = isAdmin
         ? await favoritesApi.getAdminFavorites()
         : await favoritesApi.getUserFavorites();
 
-      // 2. Нормализуем данные к единому формату
       return normalizeFavoritesResponse(response);
     },
-    staleTime: 5 * 60 * 1000, // 5 минут
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
   });
 };
 
-/**
- * Хук для добавления в избранное
- * Автоматически выбирает API в зависимости от роли:
- * - Админ → может добавить с заметкой
- * - Пользователь → добавляет без заметки
- */
 export const useAddFavorite = () => {
   const queryClient = useQueryClient();
   const addNotification = useNotificationStore((state) => state.add);
@@ -73,7 +56,6 @@ export const useAddFavorite = () => {
       return normalizeFavorite(rawResult);
     },
     onSuccess: () => {
-      // Инвалидируем кэш, чтобы обновить список
       queryClient.invalidateQueries({ queryKey: favoritesKeys.list() });
 
       addNotification({
@@ -95,10 +77,6 @@ export const useAddFavorite = () => {
   });
 };
 
-/**
- * Хук для удаления из избранного
- * Автоматически выбирает API в зависимости от роли
- */
 export const useRemoveFavorite = () => {
   const queryClient = useQueryClient();
   const addNotification = useNotificationStore((state) => state.add);
@@ -113,7 +91,6 @@ export const useRemoveFavorite = () => {
       }
     },
     onSuccess: () => {
-      // Инвалидируем кэш, чтобы обновить список
       queryClient.invalidateQueries({ queryKey: favoritesKeys.list() });
 
       addNotification({
@@ -135,10 +112,6 @@ export const useRemoveFavorite = () => {
   });
 };
 
-/**
- * Хук для переключения состояния избранного (добавить/удалить)
- * Объединяет isFavorite, toggleFavorite и состояния загрузки
- */
 export const useToggleFavorite = (): UseToggleFavoriteReturn => {
   const { data: favoritesData, isLoading: isLoadingFavorites } =
     useGetFavorites();
@@ -147,18 +120,10 @@ export const useToggleFavorite = (): UseToggleFavoriteReturn => {
 
   const favorites = favoritesData?.results ?? [];
 
-  /**
-   * Проверить, находится ли сотрудник в избранном
-   */
   const isFavorite = (employeeId: number): boolean => {
     return favorites.some((fav) => fav.employeeId === employeeId);
   };
 
-  /**
-   * Переключить состояние избранного
-   * - Если в избранном → удалить
-   * - Если не в избранном → добавить
-   */
   const toggleFavorite = (employeeId: number, note?: string) => {
     if (isFavorite(employeeId)) {
       removeFavorite(employeeId);
