@@ -76,7 +76,7 @@ export const EmployeesFilterBar = () => {
   };
 
   return (
-    <div className="flex items-center gap-3 flex-nowrap">
+    <div className="flex items-center gap-3 flex-wrap">
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
       <FilterCities
         options={citiesFilterOptions}
@@ -93,21 +93,30 @@ export const EmployeesFilterBar = () => {
         getAllEmployees={getAllEmployees}
       />
 
-      <div className="ml-auto" />
+      <div className="hidden flex-1 min-[1150px]:block" />
 
       <div className="flex items-center gap-3">
         {viewType === "list" && (
           <Button
             variant="outline"
             size="default"
-            className="gap-2"
+            className="gap-2 max-[1100px]:size-8 max-[1100px]:w-24 max-[1100px]:gap-0 max-[1100px]:px-0"
             onClick={onExportClick}
           >
             <ExportIcon className="size-5" />
-            Экспортировать
+            <span className="max-[1100px]:sr-only">Экспортировать</span>
           </Button>
         )}
-        {isAdmin && <CreateEmployeeWrapper />}
+        {isAdmin && (
+          <CreateEmployeeWrapper
+            buttonClassName={
+              viewType === "list"
+                ? "max-[1100px]:size-8 max-[1100px]:w-24 max-[1100px]:gap-0 max-[1100px]:px-0"
+                : undefined
+            }
+            hideButtonLabelOnCompact={viewType === "list"}
+          />
+        )}
       </div>
     </div>
   );
