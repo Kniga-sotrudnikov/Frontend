@@ -59,7 +59,7 @@ export const EmployeesList = ({
   const isAdmin = useIsAdmin();
 
   const { data: favoritesData } = useGetFavorites();
-  const { toggleFavorite } = useToggleFavorite();
+  const { toggleFavorite, isPending } = useToggleFavorite();
 
   const favoriteIds = useMemo(() => {
     return favoritesData?.results.map((f) => f.employeeId) ?? [];
@@ -165,6 +165,7 @@ export const EmployeesList = ({
     : emptyTextMap[activeTab];
 
   const handleToggleEmployeeFavorite = (id: string | number) => {
+    if (isPending) return;
     toggleFavorite(Number(id));
   };
 
@@ -319,6 +320,7 @@ export const EmployeesList = ({
           columns={getEmployeeColumns(
             favoriteIds,
             handleToggleEmployeeFavorite,
+            isPending,
           )}
           data={tabContentMap.employees}
           onRowClick={handleEmployeeClick}
@@ -343,6 +345,7 @@ export const EmployeesList = ({
           columns={getEmployeeColumns(
             favoriteIds,
             handleToggleEmployeeFavorite,
+            isPending,
           )}
           data={nestedTabContentMap[activeTab].employees}
           onRowClick={handleEmployeeClick}
@@ -377,6 +380,7 @@ export const EmployeesList = ({
           onToggleVacancyFavorite={handleToggleVacancyFavorite}
           onUpdateEmployee={onUpdateEmployee}
           onArchiveEmployee={setEmployeeToArchive}
+          isPending={isPending}
         />
       )}
 

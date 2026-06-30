@@ -9,6 +9,7 @@ import ArchiveIcon from "@/shared/assets/icons/delete.svg?react";
 import RestoreIcon from "@/shared/assets/icons/archive.svg?react";
 import { EditEmployeeButton } from "@/features/employee";
 import { useDeleteEmployee, type EmployeeData } from "@/entities/employee";
+import { cn } from "@/shared/lib";
 
 interface EmployeeCardProps {
   /**
@@ -22,6 +23,7 @@ interface EmployeeCardProps {
   employeeData: EmployeeData;
   // TODO: убрать после подключения TanStack Query — получать из useFavoritesQuery()
   isFavorite?: boolean;
+  isLoading?: boolean;
   canEdit?: boolean;
   onFavorite?: () => void;
   onArchive?: () => void;
@@ -36,6 +38,7 @@ export const EmployeeCard = ({
   primaryInfo,
   employeeData,
   isFavorite = false,
+  isLoading = false,
   canEdit = false,
   onFavorite,
   onRestore,
@@ -100,7 +103,11 @@ export const EmployeeCard = ({
         >
           <button
             onClick={onFavoriteClick}
-            className="p-0 text-gray-500 cursor-pointer"
+            disabled={isLoading}
+            className={cn(
+              "p-0 text-gray-500 cursor-pointer",
+              isLoading && "opacity-50 pointer-events-none",
+            )}
             aria-label="В избранное"
           >
             <StarIcon

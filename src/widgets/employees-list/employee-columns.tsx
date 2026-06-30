@@ -4,6 +4,7 @@ import StarIcon from "@/shared/assets/icons/star.svg?react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { EmployeeData } from "@/entities/employee";
 import type { VacancyData } from "@/entities/vacancy";
+import { cn } from "@/shared/lib";
 
 type VacancyAction = "respond" | "restore";
 
@@ -36,6 +37,7 @@ const statusConfig: Record<
 export const getEmployeeColumns = (
   favoritesIds: (number | string)[],
   onToggleFavorite: (id: number | string) => void,
+  isPending?: boolean,
 ): ColumnDef<EmployeeData>[] => [
   {
     id: "favorite",
@@ -48,9 +50,13 @@ export const getEmployeeColumns = (
         <StarIcon
           onClick={(e) => {
             e.stopPropagation();
+            if (isPending) return;
             onToggleFavorite(row.original.id);
           }}
-          className={isFavorite ? "text-accent fill-current" : "text-gray-300"}
+          className={cn(
+            isFavorite ? "text-accent" : "text-gray-300",
+            isPending && "opacity-50 pointer-events-none",
+          )}
         />
       );
     },

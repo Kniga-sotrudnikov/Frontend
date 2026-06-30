@@ -17,6 +17,7 @@ interface RenderCardsProps {
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
   onEmployeeClick: (employee: EmployeeData) => void;
   onArchiveEmployee: (employee: EmployeeData) => void;
+  isPending?: boolean;
 }
 
 export const RenderCards = ({
@@ -29,6 +30,7 @@ export const RenderCards = ({
   onUpdateEmployee,
   onEmployeeClick,
   onArchiveEmployee,
+  isPending = false,
 }: RenderCardsProps) => {
   const openVacancyModal = useVacancyModalStore(
     (state) => state.openVacancyModal,
@@ -52,7 +54,10 @@ export const RenderCards = ({
               employeeData={employee}
               isFavorite={favoritesIds.includes(item.id)}
               canEdit={canEditEmployee}
-              onFavorite={() => onToggleEmployeeFavorite?.(item.id)}
+              onFavorite={() => {
+                if (isPending) return;
+                onToggleEmployeeFavorite?.(Number(item.id));
+              }}
               onUpdateEmployee={onUpdateEmployee}
               onArchive={() => onArchiveEmployee(employee)}
               primaryInfo={
