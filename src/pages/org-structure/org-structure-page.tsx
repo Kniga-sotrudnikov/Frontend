@@ -16,15 +16,15 @@ const OrgStructurePage = () => {
   const isZoomabled = zoom > 100;
 
   return (
-    <div>
+    <div className="flex h-full min-h-0 flex-col">
       <PageHeader
         title="Оргструктура"
         stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
         birthday={<BirthdaysPopover />}
         user={<HeaderUserCard />}
       />
-      <main className="h-screen pt-5 pb-10 px-10 flex flex-col gap-5 max-[1100px]:px-5">
-        <div className="flex justify-start gap-7">
+      <main className="flex min-h-0 flex-1 flex-col gap-5 px-10 pt-5 pb-10 max-[1100px]:px-5">
+        <div className="flex shrink-0 justify-start gap-7">
           {isAdmin && (
             <Button variant="outline" onClick={() => setIsClarifyingOpen(true)}>
               Загрузить схему
@@ -41,7 +41,7 @@ const OrgStructurePage = () => {
             </Button>
           )}
         </div>
-        <div className="border rounded-2xl border-border overflow-hidden flex-1 min-h-0">
+        <div className="min-h-0 flex-1 overflow-hidden">
           <OrgStructureChart zoom={zoom} />
         </div>
       </main>
