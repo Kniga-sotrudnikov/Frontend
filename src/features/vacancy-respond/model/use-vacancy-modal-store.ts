@@ -1,9 +1,9 @@
 import { create } from "zustand";
-import type { VacancyData } from "@/entities/vacancy";
+import type { NormalizedVacancyDetail } from "@/entities/vacancy";
 
 interface VacancyModalStore {
-  selectedVacancy: VacancyData | null;
-  openVacancyModal: (vacancy: VacancyData) => void;
+  selectedVacancy: NormalizedVacancyDetail | null;
+  openVacancyModal: (vacancy: NormalizedVacancyDetail) => void;
   closeVacancyModal: () => void;
 }
 

@@ -3,7 +3,7 @@ import { Badge } from "@/shared/ui/badge";
 import StarIcon from "@/shared/assets/icons/star.svg?react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { EmployeeData } from "@/entities/employee";
-import type { VacancyData } from "@/entities/vacancy";
+import type { NormalizedVacancy } from "@/entities/vacancy";
 import { cn } from "@/shared/lib";
 
 type VacancyAction = "respond" | "restore";
@@ -113,10 +113,10 @@ export const getEmployeeColumns = (
 export const getVacancyColumns = (
   favoritesIds: (number | string)[],
   onToggleFavorite: (id: number | string) => void,
-  onAction: (vacancy: VacancyData) => void,
+  onAction: (vacancy: NormalizedVacancy) => void,
   action: VacancyAction = "respond",
-): ColumnDef<VacancyData>[] => {
-  const columns: ColumnDef<VacancyData>[] = [
+): ColumnDef<NormalizedVacancy>[] => {
+  const columns: ColumnDef<NormalizedVacancy>[] = [
     {
       id: "favorite",
       header: "",

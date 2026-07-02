@@ -9,7 +9,6 @@ import { EmployeesList } from "@/widgets/employees-list";
 import { EmployeesFilterBar } from "@/widgets/employees-filter-bar";
 import { VacancyCard } from "@/widgets/vacancy-card";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
-import { mockVacancies } from "./mocks/mocks";
 import {
   useEmployeesList,
   usePatchEmployee,
@@ -17,6 +16,7 @@ import {
 } from "@/entities/employee";
 import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
+import { useGetVacancyDetail } from "@/entities/vacancy";
 
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
 const DEFAULT_EMPLOYEE_LIMIT = 12;
@@ -36,11 +36,15 @@ const EmployeesPage = () => {
 
   const [limit, setLimit] = useState(DEFAULT_EMPLOYEE_LIMIT);
   const [offset, setOffset] = useState(0);
+  const [vacancyIdFromUrl, setVacancyIdFromUrl] = useState<number | null>(null);
 
   //TODO: Добавить логику передачи роли в хук
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
     limit,
     offset,
+  );
+  const { data: vacancyDetailFromUrl } = useGetVacancyDetail(
+    vacancyIdFromUrl ?? 0,
   );
 
   const totalCount = listData?.count ?? 0;
@@ -70,20 +74,23 @@ const EmployeesPage = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const vacancyId = params.get("vacancy");
+    const employeeId = params.get("employee");
 
     if (vacancyId) {
-      const vacancy = mockVacancies.find((v) => String(v.id) === vacancyId);
-      if (vacancy) {
-        openVacancyModal(vacancy);
-      }
+      setVacancyIdFromUrl(Number(vacancyId));
     }
 
-    const employeeId = params.get("employee");
     if (employeeId) {
       const employee = employees.find((e) => String(e.id) === employeeId);
       if (employee) openEmployeeModal(employee);
     }
-  }, [openVacancyModal, openEmployeeModal, employees]);
+  }, [employees, openEmployeeModal]);
+
+  useEffect(() => {
+    if (vacancyDetailFromUrl) {
+      openVacancyModal(vacancyDetailFromUrl);
+    }
+  }, [vacancyDetailFromUrl, openVacancyModal]);
 
   return (
     <>
@@ -106,7 +113,6 @@ const EmployeesPage = () => {
             {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
             <EmployeesList
               employees={employees}
-              vacancies={mockVacancies}
               onUpdateEmployee={handlePatchEmployee}
               isLoading={isListLoading}
               skeletonCount={limit}
@@ -139,14 +145,14 @@ const EmployeesPage = () => {
           }}
           vacancy={{
             id: selectedVacancy.id,
-            title: selectedVacancy.profession,
-            location: selectedVacancy.city,
-            employmentDetails: [],
+            title: selectedVacancy.title,
+            location: selectedVacancy.location,
+            employmentDetails: selectedVacancy.employmentDetails,
             franchise: selectedVacancy.franchise,
             department: selectedVacancy.department,
-            description: selectedVacancy.position,
-            responsibilities: [],
-            competencies: [],
+            description: selectedVacancy.description,
+            responsibilities: selectedVacancy.responsibilities,
+            competencies: selectedVacancy.competencies,
           }}
           onRespond={() => {}}
           onExportPDF={() => {}}
