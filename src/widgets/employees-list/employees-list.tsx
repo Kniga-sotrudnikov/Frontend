@@ -118,12 +118,10 @@ export const EmployeesList = ({
 
   useEffect(() => {
     if (vacancyDetail) {
-      console.log("🚀 vacancyDetail перед openVacancyModal:", vacancyDetail);
       openVacancyModal(vacancyDetail);
     }
   }, [vacancyDetail, openVacancyModal]);
 
-  // ✅ Обработчик клика по кнопке "Откликнуться"
   const handleVacancyClick = (vacancy: NormalizedVacancy) => {
     setSelectedVacancyId(vacancy.id);
   };
