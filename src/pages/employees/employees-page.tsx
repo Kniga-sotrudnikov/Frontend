@@ -38,6 +38,7 @@ const EmployeesPage = () => {
   const [offset, setOffset] = useState(0);
   const [vacancyIdFromUrl, setVacancyIdFromUrl] = useState<number | null>(null);
 
+  //TODO: Добавить логику передачи роли в хук
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
     limit,
     offset,
@@ -53,8 +54,11 @@ const EmployeesPage = () => {
     return listData?.results ?? [];
   }, [listData?.results]);
 
+  //TODO: Обработать сценарий если при редактировании происходит ошибка
   const { mutate: patchEmployee } = usePatchEmployee();
 
+  //TODO: разобраться с недостающими полями и с несоответствием типов!
+  // Согласовать обязательные поля с бекендом
   const handlePatchEmployee = (employee: EmployeeData) => {
     patchEmployee({
       id: employee.id,
@@ -106,6 +110,7 @@ const EmployeesPage = () => {
 
           <div className="space-y-3">
             <EmployeesFilterBar />
+            {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
             <EmployeesList
               employees={employees}
               onUpdateEmployee={handlePatchEmployee}
