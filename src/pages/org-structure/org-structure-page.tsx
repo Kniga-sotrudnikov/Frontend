@@ -23,7 +23,7 @@ const OrgStructurePage = () => {
         birthday={<BirthdaysPopover />}
         user={<HeaderUserCard />}
       />
-      <main className="h-screen pt-5 pb-10 px-10 flex flex-col gap-5">
+      <main className="h-screen pt-5 pb-10 px-10 flex flex-col gap-5 max-[1100px]:px-5">
         <div className="flex justify-start gap-7">
           {isAdmin && (
             <Button variant="outline" onClick={() => setIsClarifyingOpen(true)}>
@@ -42,7 +42,7 @@ const OrgStructurePage = () => {
           )}
         </div>
         <div className="border rounded-2xl border-border overflow-hidden flex-1 min-h-0">
-          <OrgStructureChart zoom={zoom}/>
+          <OrgStructureChart zoom={zoom} />
         </div>
       </main>
       <ClarifyingModal

@@ -47,7 +47,7 @@ export function HeaderUserCard() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger hasArrow>
-        <div className="flex h-[60px] w-[247px] items-center gap-3 rounded-lg  px-2 py-2">
+        <div className="flex h-[60px] max-w-[250px] items-center gap-3 rounded-lg px-1 py-2">
           {/* Аватар */}
           {employee.photo ? (
             <img
@@ -62,11 +62,13 @@ export function HeaderUserCard() {
           )}
 
           {/* Имя и должность */}
-          <div className="flex flex-col gap-1 items-start">
-            <span className="body-m-semibold whitespace-nowrap text-black">
+          <div className="flex flex-col gap-1 items-start min-w-0">
+            <span className="w-full truncate text-start body-m-semibold whitespace-nowrap text-black">
               {employee.name}
             </span>
-            <span className="body-m text-black">{employee.position}</span>
+            <span className="w-full truncate body-m text-start text-black">
+              {employee.position}
+            </span>
           </div>
         </div>
       </DropdownMenuTrigger>

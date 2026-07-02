@@ -98,7 +98,7 @@ const EmployeesPage = () => {
           user={<HeaderUserCard />}
         />
 
-        <div className="mx-10 mt-5 grid grid-cols-[295px_minmax(0,1fr)] gap-x-7 min-h-screen">
+        <div className="px-10 pt-5 grid grid-cols-[295px_minmax(0,1fr)] gap-x-7 min-h-screen max-[1100px]:px-5">
           <Navbar />
 
           <div className="space-y-3">
