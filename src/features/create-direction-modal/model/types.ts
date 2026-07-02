@@ -8,13 +8,10 @@ export interface CreateDirectionFormValues {
 }
 
 export interface CreateDirectionModalProps {
-  /** Триггер открытия — не передавать при контролируемом `open` */
   children?: React.ReactNode;
   entityType?: "direction" | "sis";
   shortEmployees?: TShortEmployee[];
-  /** Контролируемое состояние открытия */
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  /** Вызывается при создании направления/СИС (шаг 1) */
   onCreate?: (values: CreateDirectionFormValues) => void;
 }

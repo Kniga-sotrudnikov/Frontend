@@ -7,6 +7,7 @@ import {
   shortEmployees as mockEmployees,
 } from "@/entities/employee";
 import { OrgSection, DirectionFormFields } from "@/entities/org-structure";
+import { useUpdateDepartment } from "@/entities/org-structure/api/use-department-mutations";
 import type { EditDirectionModalProps, Department } from "../model/types";
 
 export function EditDirectionModal({
@@ -24,29 +25,23 @@ export function EditDirectionModal({
   onEditDepartment,
   onDeleteDepartment,
   onSave,
-}: EditDirectionModalProps) {
+  departmentId,
+}: EditDirectionModalProps & { departmentId?: number }) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const open = isControlled ? controlledOpen : internalOpen;
   const setOpen = isControlled
     ? (val: boolean) => controlledOnOpenChange?.(val)
     : setInternalOpen;
+  
   const [name, setName] = useState(initialName);
   const [headName, setHeadName] = useState(initialHeadName);
   const [headId, setHeadId] = useState<number | null>(initialHeadId);
   const [description, setDescription] = useState(initialDescription);
-  const [departments, setDepartments] =
-    useState<Department[]>(initialDepartments);
+  const [departments, setDepartments] = useState<Department[]>(initialDepartments);
 
+  const updateDepartment = useUpdateDepartment();
   const addNotification = useNotificationStore((state) => state.add);
-
-  const showDevNotification = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Функция будет доступна в ближайшее время",
-    });
-  };
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -59,11 +54,43 @@ export function EditDirectionModal({
     setOpen(isOpen);
   };
 
-  const handleSave = () => {
-    if (onSave) {
+  const handleSave = async () => {
+    if (!departmentId) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "ID подразделения не указан",
+      });
+      return;
+    }
+
+    if (!name.trim()) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "Название обязательно для заполнения",
+      });
+      return;
+    }
+
+    try {
+      await updateDepartment.mutateAsync({
+        id: departmentId,
+        data: {
+          name: name.trim(),
+          description: description.trim() || undefined,
+          // Если нужно обновлять руководителя
+          // head_id: headId,
+        },
+      });
+
+      handleOpenChange(false);
+      
       onSave?.({ name, headName, description }, departments);
-    } else {
-      showDevNotification();
+    } catch (error) {
+      console.error("Error updating department:", error);
     }
   };
 
@@ -71,7 +98,11 @@ export function EditDirectionModal({
     if (onAddDepartment) {
       onAddDepartment();
     } else {
-      showDevNotification();
+      addNotification({
+        iconType: "success",
+        title: "В разработке",
+        message: "Функция будет доступна в ближайшее время",
+      });
     }
   };
 
@@ -79,7 +110,11 @@ export function EditDirectionModal({
     if (onEditDepartment) {
       onEditDepartment(dept);
     } else {
-      showDevNotification();
+      addNotification({
+        iconType: "success",
+        title: "В разработке",
+        message: "Функция будет доступна в ближайшее время",
+      });
     }
   };
 
@@ -87,9 +122,15 @@ export function EditDirectionModal({
     if (onDeleteDepartment) {
       onDeleteDepartment(dept);
     } else {
-      showDevNotification();
+      addNotification({
+        iconType: "success",
+        title: "В разработке",
+        message: "Функция будет доступна в ближайшее время",
+      });
     }
   };
+
+  const isNameValid = name.trim().length > 0;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -149,6 +190,7 @@ export function EditDirectionModal({
               variant="ghost"
               size="plain"
               className="button-small px-4 h-8"
+              disabled={updateDepartment.isPending}
             >
               Отмена
             </Button>
@@ -158,8 +200,9 @@ export function EditDirectionModal({
             size="plain"
             className="button-small px-4 h-8"
             onClick={handleSave}
+            disabled={!isNameValid || updateDepartment.isPending}
           >
-            Сохранить изменения
+            {updateDepartment.isPending ? "Сохранение..." : "Сохранить изменения"}
           </Button>
         </div>
       </DialogContent>
