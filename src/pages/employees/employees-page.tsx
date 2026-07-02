@@ -87,7 +87,7 @@ const EmployeesPage = () => {
 
   return (
     <>
-      <div className="bg-gray-50 min-h-screen">
+      <div className="flex h-full min-h-0 flex-col bg-gray-50">
         <PageHeader
           title="Книга сотрудников"
           stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
@@ -98,7 +98,7 @@ const EmployeesPage = () => {
           user={<HeaderUserCard />}
         />
 
-        <div className="px-10 pt-5 grid grid-cols-[295px_minmax(0,1fr)] gap-x-7 min-h-screen max-[1100px]:px-5">
+        <div className="grid min-h-0 flex-1 grid-cols-[295px_minmax(0,1fr)] gap-x-7 px-10 pt-5 max-[1100px]:px-5">
           <Navbar />
 
           <div className="space-y-3">
