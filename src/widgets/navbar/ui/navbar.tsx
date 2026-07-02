@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useOrgStructure } from "@/entities/org-structure";
+import { useState, useEffect } from "react";
+import { useOrgStructure, useOrgStructureStore } from "@/entities/org-structure";
 import RenderUnits from "./render-unit";
 import { EditOrgStructureModal } from "@/widgets/edit-org-structure-modal";
 import { Button } from "@/shared/ui/button";
@@ -8,14 +8,25 @@ import { useIsAdmin } from "@/entities/user";
 
 function Navbar() {
   const { data, isPending, isError } = useOrgStructure();
-  const tree = [{
+  const loadFromTree = useOrgStructureStore((state) => state.loadFromTree);
+  const tree = useOrgStructureStore((state) => state.tree);
+  
+  const [selectedName, setSelectedName] = useState<string | null>(null);
+  const isAdmin = useIsAdmin();
+
+  useEffect(() => {
+    if (data) {
+      loadFromTree(data);
+    }
+  }, [data, loadFromTree]);
+
+  const displayTree = tree.length > 0 ? tree : data ?? [];
+  const treeForRender = [{
     id: -1,
     name: "Направления",
     head: true,
-    items: data ?? []
-  }]
-  const [selectedName, setSelectedName] = useState<string | null>(null);
-  const isAdmin = useIsAdmin();
+    items: displayTree
+  }];
 
   return (
     <div className="h-full w-full bg-white px-2.5 pt-2.5 pb-5 rounded-t-2xl border-t border-l border-r border-border">
@@ -37,7 +48,7 @@ function Navbar() {
         )}
       </div>
       
-      {!isPending && !isError && tree?.map((unit) => (
+      {!isPending && !isError && treeForRender?.map((unit) => (
         <RenderUnits
           unit={unit}
           selectedName={selectedName}

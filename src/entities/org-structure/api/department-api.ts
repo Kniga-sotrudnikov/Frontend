@@ -17,4 +17,7 @@ export const departmentApi = {
   
   getTree: () => 
     apiClient.get<DepartmentResponse[]>('/org-structure/tree/'),
+
+  delete: (id: number) => 
+    apiClient.delete(`/departments/${id}/`),
 };

@@ -47,3 +47,24 @@ export const useUpdateDepartment = () => {
     },
   });
 };
+
+export const useDeleteDepartment = () => {
+  const queryClient = useQueryClient();
+  const addNotification = useNotificationStore((state) => state.add);
+
+  return useMutation({
+    mutationFn: (id: number) => departmentApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["org-structure"] });
+      addNotification({
+        type: "success",
+        iconType: "success",
+        title: "Успешно",
+        message: "Подразделение удалено",
+      });
+    },
+    onError: (error: AxiosError) => {
+      handleHttpError(error);
+    },
+  });
+};
