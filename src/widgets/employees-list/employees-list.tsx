@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
 import { useShallow } from "zustand/react/shallow";
@@ -24,12 +24,13 @@ import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
 import { useIsAdmin } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
+import { useGetFavorites, useToggleFavorite } from "@/entities/favorites";
 import { EmployeeCardsSkeleton } from "@/widgets/employee-card";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
   vacancies: VacancyData[];
-  favoritesIds?: (number | string)[];
+
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
   isLoading?: boolean;
   skeletonCount?: number;
@@ -38,7 +39,7 @@ interface EmployeesListProps {
 export const EmployeesList = ({
   employees,
   vacancies,
-  favoritesIds = [],
+
   onUpdateEmployee,
   isLoading = false,
   skeletonCount = 6,
@@ -56,6 +57,13 @@ export const EmployeesList = ({
     useState<EmployeeData | null>(null);
 
   const isAdmin = useIsAdmin();
+
+  const { data: favoritesData } = useGetFavorites();
+  const { toggleFavorite, isPending } = useToggleFavorite();
+
+  const favoriteIds = useMemo(() => {
+    return favoritesData?.results.map((f) => f.employeeId) ?? [];
+  }, [favoritesData]);
 
   const { selectedEmployeeFromStore, openEmployeeModal, closeEmployeeModal } =
     useEmployeeModalStore(
@@ -101,12 +109,11 @@ export const EmployeesList = ({
   );
 
   const favoriteEmployees = employees.filter(
-    (emp) => favoritesIds.includes(emp.id) && !emp.isArchived,
+    (emp) => favoriteIds.includes(Number(emp.id)) && !emp.isArchived,
   );
 
-  const favoriteVacancies = vacancies.filter(
-    (vac) => favoritesIds.includes(vac.id) && !vac.isArchived,
-  );
+  //  TODO: вакансии в избранном - ПОКА пустой массив (ждем API)
+  const favoriteVacancies: VacancyData[] = [];
 
   const allFavorites = [...favoriteEmployees, ...favoriteVacancies];
 
@@ -157,11 +164,17 @@ export const EmployeesList = ({
     ? emptyTextMap[activeTab].all
     : emptyTextMap[activeTab];
 
-  const handleToggleFavorite = () => {
+  const handleToggleEmployeeFavorite = (id: string | number) => {
+    if (isPending) return;
+    toggleFavorite(Number(id));
+  };
+
+  // TODO: Когда появится API для вакансий - заменить на реальный
+  const handleToggleVacancyFavorite = (id: string | number) => {
     addNotification({
-      iconType: "success",
+      iconType: "warning",
       title: "В разработке",
-      message: "Требуется реализовать добавление в Избранное",
+      message: `Избранное для вакансии #${id} появится позже`,
     });
   };
 
@@ -304,7 +317,11 @@ export const EmployeesList = ({
 
       {viewType === "list" && activeTab === "employees" ? (
         <DataTable
-          columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
+          columns={getEmployeeColumns(
+            favoriteIds,
+            handleToggleEmployeeFavorite,
+            isPending,
+          )}
           data={tabContentMap.employees}
           onRowClick={handleEmployeeClick}
           isLoading={isLoading}
@@ -313,8 +330,8 @@ export const EmployeesList = ({
       ) : viewType === "list" && activeTab === "vacancies" ? (
         <DataTable
           columns={getVacancyColumns(
-            favoritesIds,
-            handleToggleFavorite,
+            favoriteIds,
+            handleToggleVacancyFavorite,
             openVacancyModal,
           )}
           data={tabContentMap.vacancies}
@@ -325,7 +342,11 @@ export const EmployeesList = ({
         hasNestedTabs &&
         activeEntityTab === "employees" ? (
         <DataTable
-          columns={getEmployeeColumns(favoritesIds, handleToggleFavorite)}
+          columns={getEmployeeColumns(
+            favoriteIds,
+            handleToggleEmployeeFavorite,
+            isPending,
+          )}
           data={nestedTabContentMap[activeTab].employees}
           onRowClick={handleEmployeeClick}
           containerClassName="rounded-tl-none"
@@ -337,8 +358,8 @@ export const EmployeesList = ({
         activeEntityTab === "vacancies" ? (
         <DataTable
           columns={getVacancyColumns(
-            favoritesIds,
-            handleToggleFavorite,
+            favoriteIds,
+            handleToggleVacancyFavorite,
             activeTab === "archive" ? handleRestoreVacancy : openVacancyModal,
             activeTab === "archive" ? "restore" : "respond",
           )}
@@ -353,11 +374,13 @@ export const EmployeesList = ({
           onEmployeeClick={handleEmployeeClick}
           items={itemsByTab}
           emptyText={emptyText}
-          favoritesIds={favoritesIds}
+          favoritesIds={favoriteIds}
           canEditEmployee={isAdmin}
-          onToggleFavorite={handleToggleFavorite}
+          onToggleEmployeeFavorite={handleToggleEmployeeFavorite}
+          onToggleVacancyFavorite={handleToggleVacancyFavorite}
           onUpdateEmployee={onUpdateEmployee}
           onArchiveEmployee={setEmployeeToArchive}
+          isPending={isPending}
         />
       )}
 

@@ -9,7 +9,7 @@ import { EmployeesList } from "@/widgets/employees-list";
 import { EmployeesFilterBar } from "@/widgets/employees-filter-bar";
 import { VacancyCard } from "@/widgets/vacancy-card";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
-import { mockFavorites, mockVacancies } from "./mocks/mocks";
+import { mockVacancies } from "./mocks/mocks";
 import {
   useEmployeesList,
   usePatchEmployee,
@@ -107,7 +107,6 @@ const EmployeesPage = () => {
             <EmployeesList
               employees={employees}
               vacancies={mockVacancies}
-              favoritesIds={mockFavorites}
               onUpdateEmployee={handlePatchEmployee}
               isLoading={isListLoading}
               skeletonCount={limit}
