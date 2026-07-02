@@ -22,6 +22,7 @@ import type {
 } from "../model/types";
 import { FormSelect } from "@/features/create-employee/ui/form-select";
 import { FormInput } from "@/features/create-employee/ui/form-input";
+import { usePreventDialogClose } from "@/shared/lib/hooks/use-prevent-dialog-close";
 
 type TagsManagerProps = {
   groups: TExpertiseFilterGroup[];
@@ -165,9 +166,9 @@ export const TagsManager = ({
           : group,
       ),
     );
-    
+
     setNewTagName("");
-    
+
     addNotification({
       type: "success",
       iconType: "success",
@@ -310,7 +311,11 @@ export const TagsManager = ({
     setSelectedEmployeesForTag([]);
   };
 
-  const handleOpenAddEmployees = (groupKey: string, tagValue: string, tagLabel: string) => {
+  const handleOpenAddEmployees = (
+    groupKey: string,
+    tagValue: string,
+    tagLabel: string,
+  ) => {
     if (getAllEmployees) {
       const employeesList = getAllEmployees();
       setEmployeesListForTag(employeesList || []);
@@ -332,8 +337,13 @@ export const TagsManager = ({
       title: "Успешно",
       message: `Сотрудники добавлены к тегу «${addEmployeesDialog.tagLabel}»`,
     });
-    
-    setAddEmployeesDialog({ open: false, groupKey: "", tagValue: "", tagLabel: "" });
+
+    setAddEmployeesDialog({
+      open: false,
+      groupKey: "",
+      tagValue: "",
+      tagLabel: "",
+    });
     setSelectedEmployeesForTag([]);
   };
 
@@ -359,12 +369,17 @@ export const TagsManager = ({
       ) ?? 0)
     : 0;
 
+  const preventDialogClose = usePreventDialogClose();
+
   return (
     <>
       <div onClick={() => setOpen(true)}>{trigger}</div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="!w-[752px] !h-[912px] !max-w-none !p-0 !rounded-8 !border !border-gray-200 !bg-white">
+        <DialogContent
+          className="!w-[752px] !h-[912px] !max-w-none !p-0 !rounded-8 !border !border-gray-200 !bg-white"
+          onInteractOutside={preventDialogClose}
+        >
           <div className="flex justify-between items-center px-5 pt-5 pb-0 flex-shrink-0">
             <DialogHeader className="!p-0">
               <DialogTitle className="text-[16px] font-semibold text-gray-900 leading-[22px]">
@@ -447,11 +462,13 @@ export const TagsManager = ({
                                 variant="ghost"
                                 size="xs"
                                 className="text-purple-500 mb-1 ml-1"
-                                onClick={() => handleOpenAddEmployees(
-                                  editingTag.groupKey,
-                                  editingTag.optionValue,
-                                  editingTag.newLabel
-                                )}
+                                onClick={() =>
+                                  handleOpenAddEmployees(
+                                    editingTag.groupKey,
+                                    editingTag.optionValue,
+                                    editingTag.newLabel,
+                                  )
+                                }
                               >
                                 <PlusIcon className="size-2 mr-1" />
                                 Добавить сотрудников
@@ -495,7 +512,9 @@ export const TagsManager = ({
                                     <Button
                                       variant="ghost"
                                       className="text-[#FF383C] hover:text-red-700"
-                                      onClick={() => handleRemoveEmployeeFromTag(emp.name)}
+                                      onClick={() =>
+                                        handleRemoveEmployeeFromTag(emp.name)
+                                      }
                                     >
                                       <TrashIcon className="size-4" />
                                     </Button>
@@ -644,7 +663,9 @@ export const TagsManager = ({
 
       <AddEmployeesToTagDialog
         open={addEmployeesDialog.open}
-        onOpenChange={(open) => setAddEmployeesDialog(prev => ({ ...prev, open }))}
+        onOpenChange={(open) =>
+          setAddEmployeesDialog((prev) => ({ ...prev, open }))
+        }
         tagLabel={addEmployeesDialog.tagLabel}
         employees={employeesListForTag}
         selectedEmployees={selectedEmployeesForTag}
