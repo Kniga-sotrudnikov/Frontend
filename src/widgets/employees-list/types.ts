@@ -1,4 +1,4 @@
 import type { EmployeeData } from "@/entities/employee";
-import type { VacancyData } from "@/entities/vacancy";
+import type { NormalizedVacancy } from "@/entities/vacancy";
 
-export type EmployeesListType = EmployeeData | VacancyData;
+export type EmployeesListType = EmployeeData | NormalizedVacancy;

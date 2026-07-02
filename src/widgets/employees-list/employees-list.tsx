@@ -118,10 +118,12 @@ export const EmployeesList = ({
 
   useEffect(() => {
     if (vacancyDetail) {
+      console.log("🚀 vacancyDetail перед openVacancyModal:", vacancyDetail);
       openVacancyModal(vacancyDetail);
     }
   }, [vacancyDetail, openVacancyModal]);
 
+  // ✅ Обработчик клика по кнопке "Откликнуться"
   const handleVacancyClick = (vacancy: NormalizedVacancy) => {
     setSelectedVacancyId(vacancy.id);
   };
@@ -350,7 +352,7 @@ export const EmployeesList = ({
           columns={getVacancyColumns(
             favoriteIds,
             handleToggleVacancyFavorite,
-            openVacancyModal,
+            handleVacancyClick,
           )}
           data={tabContentMap.vacancies}
           isLoading={isLoading}
@@ -378,7 +380,7 @@ export const EmployeesList = ({
           columns={getVacancyColumns(
             favoriteIds,
             handleToggleVacancyFavorite,
-            activeTab === "archive" ? handleRestoreVacancy : openVacancyModal,
+            activeTab === "archive" ? handleRestoreVacancy : handleVacancyClick,
             activeTab === "archive" ? "restore" : "respond",
           )}
           data={nestedTabContentMap[activeTab].vacancies}
