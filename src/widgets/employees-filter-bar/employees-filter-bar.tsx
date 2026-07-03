@@ -1,5 +1,3 @@
-// /src/widgets/employees-filter-bar/ui/employees-filter-bar.tsx
-
 import { Button } from "@/shared/ui/button";
 import ExportIcon from "@/shared/assets/icons/export.svg?react";
 import {
@@ -12,7 +10,8 @@ import {
 } from "@/features/employee";
 import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useNotificationStore } from "@/shared/model/stores";
-import { useEmployeesList } from "@/entities/employee";
+import { getEmployeesListPublic } from "@/entities/employee";
+import { useQuery } from "@tanstack/react-query";
 import { useIsAdmin } from "@/entities/user";
 
 const isTagObject = (tag: unknown): tag is { id: number; name?: string } => {
@@ -40,8 +39,12 @@ export const EmployeesFilterBar = () => {
   );
   const addNotification = useNotificationStore((state) => state.add);
 
-  // Получаем реальных сотрудников из API
-  const { data: employeesData } = useEmployeesList(100, 0);
+  const { data: employeesData } = useQuery({
+    queryKey: ["employees-raw", 100, 0],
+    queryFn: () => getEmployeesListPublic({ limit: 100, offset: 0 }),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const employees = employeesData?.results || [];
 
   const onExportClick = () => {
