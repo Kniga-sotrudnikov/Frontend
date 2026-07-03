@@ -4,7 +4,15 @@ import { CreateEmployeeDialog } from "./create-employee-dialog";
 import type { CreateEmployeeFormValues } from "../model/types";
 import { useCreateEmployee } from "@/entities/employee";
 
-export const CreateEmployeeWrapper = () => {
+interface CreateEmployeeWrapperProps {
+  buttonClassName?: string;
+  hideButtonLabelOnCompact?: boolean;
+}
+
+export const CreateEmployeeWrapper = ({
+  buttonClassName,
+  hideButtonLabelOnCompact = false,
+}: CreateEmployeeWrapperProps) => {
   const [open, setOpen] = useState(false);
   //TODO: Обработать сценарий если при создании происходит ошибка
   const { mutate } = useCreateEmployee();
@@ -25,7 +33,11 @@ export const CreateEmployeeWrapper = () => {
 
   return (
     <>
-      <CreateEmployeeButton onClick={() => setOpen(true)} />
+      <CreateEmployeeButton
+        onClick={() => setOpen(true)}
+        className={buttonClassName}
+        hideLabelOnCompact={hideButtonLabelOnCompact}
+      />
       <CreateEmployeeDialog
         open={open}
         onOpenChange={setOpen}

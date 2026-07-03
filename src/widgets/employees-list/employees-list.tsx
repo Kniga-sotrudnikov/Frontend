@@ -213,6 +213,7 @@ export const EmployeesList = ({
     <div>
       <div className="flex justify-between items-center mb-3">
         <Tabs
+          className="min-w-0 flex-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           value={activeTab}
           onValueChange={(value) => {
             const tab = value as

@@ -22,6 +22,8 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
   const objectViewBox = `inset(${insetY * 100}% ${(1 - insetX - size) * 100}% ${(1 - insetY - size) * 100}% ${insetX * 100}%)`;
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoom <= 100) return;
+
     dragStart.current = {
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -31,7 +33,8 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLImageElement>) => {
-    if (!dragStart.current) return;
+    if (!dragStart.current || zoom <= 100) return;
+
     const dx =
       (dragStart.current.mouseX - e.clientX) / e.currentTarget.clientWidth;
     const dy =
@@ -55,9 +58,10 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      className="w-full h-full select-none"
+      className="block h-auto max-h-full w-full select-none rounded-2xl border border-border min-[1600px]:mx-auto min-[1600px]:h-full min-[1600px]:w-auto min-[1600px]:max-w-full"
       style={{
-        objectFit: "cover",
+        objectFit: zoom > 100 ? "cover" : "contain",
+        objectPosition: "top left",
         objectViewBox,
         cursor: zoom > 100 ? "grab" : "default",
       }}
