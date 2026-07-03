@@ -4,7 +4,7 @@ import type { BirthdayPerson } from "../model/mock";
 interface PublicBirthdayResponse {
   id: number;
   full_name: string;
-  birthday: string;
+  birthday_display: string;
   department_name?: string;
   job_title?: string;
   photo_url?: string;
@@ -13,7 +13,7 @@ interface PublicBirthdayResponse {
 interface AdminBirthdayResponse {
   id: number;
   full_name: string;
-  birthday: string;
+  birthday_display: string;
   department_name: string;
   job_title: string;
   email: string;
@@ -31,23 +31,52 @@ interface BirthdaySettingsUpdate {
   notification_days_before?: number;
 }
 
-const mapApiToBirthday = (data: PublicBirthdayResponse | AdminBirthdayResponse): BirthdayPerson => {
-  const date = new Date(data.birthday);
-  const monthNames = [
-    "января", "февраля", "марта", "апреля", "мая", "июня",
-    "июля", "августа", "сентября", "октября", "ноября", "декабря"
-  ];
-  
-  return {
-    name: data.full_name,
-    date: `${date.getDate()} ${monthNames[date.getMonth()]}`,
-    fullDate: date,
-  };
+const monthNames = [
+  "января", "февраля", "марта", "апреля", "мая", "июня",
+  "июля", "августа", "сентября", "октября", "ноября", "декабря"
+];
+
+const mapApiToBirthday = (data: PublicBirthdayResponse | AdminBirthdayResponse): BirthdayPerson | null => {
+  try {
+    const parts = data.birthday_display.split('.');
+    if (parts.length !== 2) {
+      return null;
+    }
+    
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    
+    if (isNaN(day) || isNaN(month) || day < 1 || day > 31 || month < 0 || month > 11) {
+      return null;
+    }
+    
+    const currentYear = new Date().getFullYear();
+    const date = new Date(currentYear, month, day);
+    
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    
+    return {
+      name: data.full_name,
+      date: `${day} ${monthNames[month]}`,
+      fullDate: date,
+    };
+  } catch {
+    return null;
+  }
 };
 
 export const getPublicBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
-  const response = await apiClient.get<PublicBirthdayResponse[]>('/employees/birthdays/');
-  return response.data.map(mapApiToBirthday);
+  try {
+    const response = await apiClient.get<PublicBirthdayResponse[]>('/employees/birthdays/');
+    return response.data
+      .map(mapApiToBirthday)
+      .filter((item): item is BirthdayPerson => item !== null);
+  } catch (error) {
+    console.error("Error fetching birthdays:", error);
+    return [];
+  }
 };
 
 export const getCurrentMonthBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
@@ -72,18 +101,35 @@ export const getTodayBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
 };
 
 export const getUpcomingBirthdaysAdminApi = async (): Promise<BirthdayPerson[]> => {
-  const response = await apiClient.get<AdminBirthdayResponse[]>('/admin/birthdays/upcoming/');
-  return response.data.map(mapApiToBirthday);
+  try {
+    const response = await apiClient.get<AdminBirthdayResponse[]>('/admin/birthdays/upcoming/');
+    return response.data
+      .map(mapApiToBirthday)
+      .filter((item): item is BirthdayPerson => item !== null);
+  } catch (error) {
+    console.error("Error fetching upcoming birthdays:", error);
+    return [];
+  }
 };
 
 export const getBirthdaysSettingsApi = async (): Promise<BirthdaySettings> => {
-  const response = await apiClient.get<BirthdaySettings>('/admin/birthdays/settings/');
-  return response.data;
+  try {
+    const response = await apiClient.get<BirthdaySettings>('/admin/birthdays/settings/');
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching birthdays settings:", error);
+    return {};
+  }
 };
 
 export const updateBirthdaysSettingsApi = async (
   data: BirthdaySettingsUpdate
 ): Promise<BirthdaySettings> => {
-  const response = await apiClient.patch<BirthdaySettings>('/admin/birthdays/settings/', data);
-  return response.data;
+  try {
+    const response = await apiClient.patch<BirthdaySettings>('/admin/birthdays/settings/', data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating birthdays settings:", error);
+    throw error;
+  }
 };
