@@ -1,3 +1,5 @@
+// /src/widgets/employees-filter-bar/ui/employees-filter-bar.tsx
+
 import { Button } from "@/shared/ui/button";
 import ExportIcon from "@/shared/assets/icons/export.svg?react";
 import {
@@ -10,8 +12,12 @@ import {
 } from "@/features/employee";
 import { CreateEmployeeWrapper } from "@/features/create-employee";
 import { useNotificationStore } from "@/shared/model/stores";
-import { employees } from "@/entities/employee/model/mock";
+import { useEmployeesList } from "@/entities/employee";
 import { useIsAdmin } from "@/entities/user";
+
+const isTagObject = (tag: unknown): tag is { id: number; name?: string } => {
+  return tag !== null && typeof tag === 'object' && 'id' in tag;
+};
 
 export const EmployeesFilterBar = () => {
   const viewType = useEmployeesPageStore((state) => state.viewType);
@@ -34,6 +40,10 @@ export const EmployeesFilterBar = () => {
   );
   const addNotification = useNotificationStore((state) => state.add);
 
+  // Получаем реальных сотрудников из API
+  const { data: employeesData } = useEmployeesList(100, 0);
+  const employees = employeesData?.results || [];
+
   const onExportClick = () => {
     addNotification({
       iconType: "success",
@@ -42,27 +52,42 @@ export const EmployeesFilterBar = () => {
     });
   };
 
-  const getTagUsageCount = (_groupKey: string, tagValue: string) => {
+  const hasTag = (emp: typeof employees[0], tagId: number): boolean => {
+    if (!emp.tags || emp.tags.length === 0) return false;
+    
+    for (const tag of emp.tags) {
+      if (isTagObject(tag)) {
+        if (tag.id === tagId) return true;
+      }
+      if (typeof tag === 'string' && tag === String(tagId)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const getTagUsageCount = (tagId: number) => {
     const count = employees.filter((emp) => {
-      const hasInTags = emp.tags?.includes(tagValue) || false;
-      const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
-      return hasInTags || hasInCompetencies;
+      const hasTagInTags = hasTag(emp, tagId);
+      const hasInCompetencies = emp.competencies?.includes(String(tagId)) || false;
+      return hasTagInTags || hasInCompetencies;
     }).length;
 
     return count;
   };
 
-  const getEmployeesByTag = (_groupKey: string, tagValue: string) => {
+  const getEmployeesByTag = (tagId: number) => {
     const filtered = employees.filter((emp) => {
-      const hasInTags = emp.tags?.includes(tagValue) || false;
-      const hasInCompetencies = emp.competencies?.includes(tagValue) || false;
-      return hasInTags || hasInCompetencies;
+      const hasTagInTags = hasTag(emp, tagId);
+      const hasInCompetencies = emp.competencies?.includes(String(tagId)) || false;
+      return hasTagInTags || hasInCompetencies;
     });
 
     return filtered.map((emp) => ({
+      id: String(emp.id),
       name: emp.full_name,
       position: emp.job_title,
-      photo: emp.photo_url,
+      photo: emp.photo_url || undefined,
     }));
   };
 
@@ -71,7 +96,7 @@ export const EmployeesFilterBar = () => {
       id: String(emp.id),
       name: emp.full_name,
       position: emp.job_title,
-      photo: emp.photo_url,
+      photo: emp.photo_url || undefined,
     }));
   };
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@ui/button";
 import {
   Dialog,
@@ -8,6 +8,14 @@ import {
   DialogClose,
 } from "@ui/dialog";
 import { useNotificationStore } from "@/shared/model/stores";
+import {
+  useTags,
+  useDeleteTag,
+  useUpdateTag,
+  useCreateTag,
+  useBulkAddTags,
+  useBulkRemoveTags,
+} from "@/entities/tags";
 import PlusIcon from "@icons/plus.svg?react";
 import TrashIcon from "@icons/trash.svg?react";
 import EyevisibleIcon from "@icons/eye-visible.svg?react";
@@ -16,10 +24,7 @@ import GridIcon from "@icons/grid.svg?react";
 import { AddTagDialog } from "./add-tag-dialog";
 import { AddEmployeesToTagDialog } from "./add-employees-to-tag-dialog";
 import { EmployeesListDialog } from "./employees-list-dialog";
-import type {
-  TExpertiseFilterGroup,
-  TExpertiseFilterOption,
-} from "../model/types";
+import type { TExpertiseFilterGroup } from "../model/types";
 import { FormSelect } from "@/features/create-employee/ui/form-select";
 import { FormInput } from "@/features/create-employee/ui/form-input";
 import { usePreventDialogClose } from "@/shared/lib/hooks/use-prevent-dialog-close";
@@ -28,23 +33,23 @@ type TagsManagerProps = {
   groups: TExpertiseFilterGroup[];
   onSave: (updatedGroups: TExpertiseFilterGroup[]) => void;
   trigger: React.ReactNode;
-  getTagUsageCount?: (groupKey: string, tagValue: string) => number;
+  getTagUsageCount?: (tagId: number) => number;
   getEmployeesByTag?: (
-    groupKey: string,
-    tagValue: string,
-  ) => Array<{ name: string; position: string; photo?: string }>;
+    tagId: number,
+  ) => Array<{ id: string; name: string; position: string; photo?: string }>;
   getAllEmployees?: () => Array<{
     id: string;
     name: string;
     position: string;
     photo?: string;
   }>;
+  onTagsUpdate?: (updatedGroups: TExpertiseFilterGroup[]) => void;
 };
 
 type EditingTag = {
-  groupKey: string;
-  optionValue: string;
-  newLabel: string;
+  id: number;
+  name: string;
+  newName: string;
 };
 
 type Employee = {
@@ -54,29 +59,6 @@ type Employee = {
   photo?: string;
 };
 
-const labelToValue = (label: string): string => {
-  return label
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-zа-яё0-9\s]/g, "")
-    .replace(/\s+/g, "-");
-};
-
-const getDeclension = (
-  count: number,
-  one: string,
-  few: string,
-  many: string,
-): string => {
-  const mod10 = count % 10;
-  const mod100 = count % 100;
-
-  if (mod100 >= 11 && mod100 <= 19) return many;
-  if (mod10 === 1) return one;
-  if (mod10 >= 2 && mod10 <= 4) return few;
-  return many;
-};
-
 export const TagsManager = ({
   groups,
   onSave,
@@ -84,19 +66,17 @@ export const TagsManager = ({
   getTagUsageCount,
   getEmployeesByTag,
   getAllEmployees,
+  onTagsUpdate,
 }: TagsManagerProps) => {
   const [open, setOpen] = useState(false);
-  const [localGroups, setLocalGroups] =
-    useState<TExpertiseFilterGroup[]>(groups);
   const [editingTag, setEditingTag] = useState<EditingTag | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [selectedGroupForNewTag, setSelectedGroupForNewTag] =
     useState<string>("");
   const [selectedTagForEmployees, setSelectedTagForEmployees] = useState<{
-    groupKey: string;
-    tagValue: string;
-    label: string;
+    tagId: number;
+    tagName: string;
   } | null>(null);
 
   const [employeesListForTag, setEmployeesListForTag] = useState<Employee[]>(
@@ -108,20 +88,46 @@ export const TagsManager = ({
 
   const [addEmployeesDialog, setAddEmployeesDialog] = useState<{
     open: boolean;
-    groupKey: string;
-    tagValue: string;
-    tagLabel: string;
+    tagId: number;
+    tagName: string;
   }>({
     open: false,
-    groupKey: "",
-    tagValue: "",
-    tagLabel: "",
+    tagId: 0,
+    tagName: "",
   });
 
   const addNotification = useNotificationStore((state) => state.add);
 
+  const { data: tagsData, isLoading, refetch } = useTags({ limit: 100 });
+
+  const tags = useMemo(() => tagsData?.results || [], [tagsData]);
+
+  const deleteTagMutation = useDeleteTag();
+  const updateTagMutation = useUpdateTag();
+  const createTagMutation = useCreateTag();
+  const bulkAddTagsMutation = useBulkAddTags();
+  const bulkRemoveTagsMutation = useBulkRemoveTags();
+
+  useEffect(() => {
+    if (tags.length > 0 && groups.length > 0) {
+      const updatedGroups = groups.map((group) => {
+        const groupTags = tags.map((tag) => ({
+          value: String(tag.id),
+          label: tag.name,
+        }));
+
+        return {
+          ...group,
+          options: groupTags,
+        };
+      });
+
+      onTagsUpdate?.(updatedGroups);
+    }
+  }, [tags, groups, onTagsUpdate]);
+
   const handleSave = () => {
-    onSave(localGroups);
+    onSave(groups);
     addNotification({
       type: "success",
       iconType: "success",
@@ -132,123 +138,115 @@ export const TagsManager = ({
   };
 
   const handleCancel = () => {
-    setLocalGroups(groups);
     setOpen(false);
   };
 
-  const addTag = (groupKey: string, newLabel: string) => {
-    const trimmedLabel = newLabel.trim();
-    if (!trimmedLabel) return;
+  const addTag = (newName: string) => {
+    const trimmedName = newName.trim();
+    if (!trimmedName) return;
 
-    const newValue = labelToValue(trimmedLabel);
-
-    const group = localGroups.find((g) => g.key === groupKey);
-    const exists = group?.options.some((opt) => opt.value === newValue);
-
-    if (exists) {
-      addNotification({
-        type: "error",
-        title: "Ошибка",
-        message: "Тег с таким названием уже существует",
-      });
-      return;
-    }
-
-    const newOption: TExpertiseFilterOption = {
-      value: newValue,
-      label: trimmedLabel,
-    };
-
-    setLocalGroups((prev) =>
-      prev.map((group) =>
-        group.key === groupKey
-          ? { ...group, options: [...group.options, newOption] }
-          : group,
-      ),
+    createTagMutation.mutate(
+      { name: trimmedName },
+      {
+        onSuccess: () => {
+          addNotification({
+            type: "success",
+            iconType: "success",
+            title: "Успешно",
+            message: `Тег «${trimmedName}» добавлен`,
+          });
+          setNewTagName("");
+          refetch();
+        },
+        onError: (error) => {
+          addNotification({
+            type: "error",
+            title: "Ошибка",
+            message: "Не удалось создать тег",
+          });
+          console.error("Error creating tag:", error);
+        },
+      },
     );
-
-    setNewTagName("");
-
-    addNotification({
-      type: "success",
-      iconType: "success",
-      title: "Успешно",
-      message: `Тег «${trimmedLabel}» добавлен`,
-    });
   };
 
-  const deleteTag = (groupKey: string, optionValue: string) => {
-    const usageCount = getTagUsageCount?.(groupKey, optionValue) ?? 0;
+  const deleteTag = (tagId: number) => {
+    const usageCount = getTagUsageCount?.(tagId) ?? 0;
     if (usageCount > 0) {
       addNotification({
         type: "error",
         title: "Нельзя удалить",
-        message: `Тег используется у ${usageCount} ${getDeclension(usageCount, "сотрудника", "сотрудников", "сотрудников")}. Сначала удалите его у всех сотрудников.`,
+        message: `Тег используется у ${usageCount} сотрудников. Сначала удалите его у всех сотрудников.`,
       });
       return;
     }
 
-    setLocalGroups((prev) =>
-      prev.map((group) =>
-        group.key === groupKey
-          ? {
-              ...group,
-              options: group.options.filter((opt) => opt.value !== optionValue),
-            }
-          : group,
-      ),
-    );
+    deleteTagMutation.mutate(tagId, {
+      onSuccess: () => {
+        addNotification({
+          type: "success",
+          iconType: "success",
+          title: "Успешно",
+          message: "Тег удален",
+        });
+        refetch();
+      },
+      onError: (error) => {
+        addNotification({
+          type: "error",
+          title: "Ошибка",
+          message: "Не удалось удалить тег",
+        });
+        console.error("Error deleting tag:", error);
+      },
+    });
   };
 
-  const startEditTag = (groupKey: string, option: TExpertiseFilterOption) => {
+  const startEditTag = (tag: { id: number; name: string }) => {
     setEditingTag({
-      groupKey,
-      optionValue: option.value,
-      newLabel: option.label,
+      id: tag.id,
+      name: tag.name,
+      newName: tag.name,
     });
   };
 
   const saveEditTag = () => {
     if (!editingTag) return;
 
-    const newLabel = editingTag.newLabel.trim();
-    if (!newLabel) {
+    const newName = editingTag.newName.trim();
+    if (!newName) {
       setEditingTag(null);
       return;
     }
 
-    const newValue = labelToValue(newLabel);
-    const group = localGroups.find((g) => g.key === editingTag.groupKey);
-
-    const exists = group?.options.some(
-      (opt) => opt.value === newValue && opt.value !== editingTag.optionValue,
-    );
-
-    if (exists) {
-      addNotification({
-        type: "error",
-        title: "Ошибка",
-        message: "Тег с таким названием уже существует",
-      });
+    if (newName === editingTag.name) {
       setEditingTag(null);
       return;
     }
 
-    setLocalGroups((prev) =>
-      prev.map((group) =>
-        group.key === editingTag.groupKey
-          ? {
-              ...group,
-              options: group.options.map((opt) =>
-                opt.value === editingTag.optionValue
-                  ? { ...opt, label: newLabel, value: newValue }
-                  : opt,
-              ),
-            }
-          : group,
-      ),
+    updateTagMutation.mutate(
+      { id: editingTag.id, data: { name: newName } },
+      {
+        onSuccess: () => {
+          addNotification({
+            type: "success",
+            iconType: "success",
+            title: "Успешно",
+            message: `Тег обновлен`,
+          });
+          setEditingTag(null);
+          refetch();
+        },
+        onError: (error) => {
+          addNotification({
+            type: "error",
+            title: "Ошибка",
+            message: "Не удалось обновить тег",
+          });
+          console.error("Error updating tag:", error);
+        },
+      },
     );
-    setEditingTag(null);
   };
 
   const handleAddTagClick = () => {
@@ -261,28 +259,31 @@ export const TagsManager = ({
     setSelectedEmployeesForTag([]);
     setNewTagName("");
     setIsAddDialogOpen(true);
-    if (localGroups.length > 0 && !selectedGroupForNewTag) {
-      setSelectedGroupForNewTag(localGroups[0].key);
+    if (groups.length > 0 && !selectedGroupForNewTag) {
+      setSelectedGroupForNewTag(groups[0].key);
     }
   };
 
-  const handleShowEmployees = (
-    groupKey: string,
-    tagValue: string,
-    label: string,
-  ) => {
-    setSelectedTagForEmployees({ groupKey, tagValue, label });
+  const handleShowEmployees = (tagId: number, tagName: string) => {
+    setSelectedTagForEmployees({ tagId, tagName });
+  };
+
+  const getTagEmployeeCount = (tagId: number): number => {
+    return getTagUsageCount?.(tagId) ?? 0;
+  };
+
+  const getTagEmployees = (tagId: number) => {
+    return getEmployeesByTag?.(tagId) ?? [];
   };
 
   const handleAddTag = () => {
     if (selectedGroupForNewTag && newTagName.trim()) {
-      addTag(selectedGroupForNewTag, newTagName);
-
+      addTag(newTagName);
       if (selectedEmployeesForTag.length > 0) {
         addNotification({
           type: "success",
           title: "Успешно",
-          message: `Сотрудники добавлены к тегу «${newTagName}»`,
+          message: `Сотрудники будут добавлены к тегу «${newTagName}»`,
         });
         setSelectedEmployeesForTag([]);
       }
@@ -311,11 +312,7 @@ export const TagsManager = ({
     setSelectedEmployeesForTag([]);
   };
 
-  const handleOpenAddEmployees = (
-    groupKey: string,
-    tagValue: string,
-    tagLabel: string,
-  ) => {
+  const handleOpenAddEmployees = (tagId: number, tagName: string) => {
     if (getAllEmployees) {
       const employeesList = getAllEmployees();
       setEmployeesListForTag(employeesList || []);
@@ -325,51 +322,96 @@ export const TagsManager = ({
     setSelectedEmployeesForTag([]);
     setAddEmployeesDialog({
       open: true,
-      groupKey,
-      tagValue,
-      tagLabel,
+      tagId,
+      tagName,
     });
   };
 
   const handleAddEmployeesToTag = () => {
-    addNotification({
-      type: "success",
-      title: "Успешно",
-      message: `Сотрудники добавлены к тегу «${addEmployeesDialog.tagLabel}»`,
-    });
+    if (selectedEmployeesForTag.length === 0) {
+      addNotification({
+        type: "error",
+        title: "Ошибка",
+        message: "Выберите хотя бы одного сотрудника",
+      });
+      return;
+    }
 
-    setAddEmployeesDialog({
-      open: false,
-      groupKey: "",
-      tagValue: "",
-      tagLabel: "",
-    });
-    setSelectedEmployeesForTag([]);
+    bulkAddTagsMutation.mutate(
+      {
+        employee_ids: selectedEmployeesForTag.map((id) => Number(id)),
+        tag_ids: [addEmployeesDialog.tagId],
+      },
+      {
+        onSuccess: () => {
+          addNotification({
+            type: "success",
+            iconType: "success",
+            title: "Успешно",
+            message: `Сотрудники добавлены к тегу «${addEmployeesDialog.tagName}»`,
+          });
+          setAddEmployeesDialog({
+            open: false,
+            tagId: 0,
+            tagName: "",
+          });
+          setSelectedEmployeesForTag([]);
+          refetch();
+        },
+        onError: (error) => {
+          addNotification({
+            type: "error",
+            title: "Ошибка",
+            message: "Не удалось добавить сотрудников к тегу",
+          });
+          console.error("Error adding employees to tag:", error);
+        },
+      },
+    );
   };
 
-  const handleRemoveEmployeeFromTag = (employeeName: string) => {
-    addNotification({
-      type: "success",
-      title: "Успешно",
-      message: `Сотрудник «${employeeName}» удалён из тега`,
-    });
+  const handleRemoveEmployeeFromTag = (
+    employeeId: string,
+    employeeName: string,
+  ) => {
+    if (!editingTag) return;
+
+    bulkRemoveTagsMutation.mutate(
+      {
+        employee_ids: [Number(employeeId)],
+        tag_ids: [editingTag.id],
+      },
+      {
+        onSuccess: () => {
+          addNotification({
+            type: "success",
+            iconType: "success",
+            title: "Успешно",
+            message: `Сотрудник «${employeeName}» удалён из тега`,
+          });
+          refetch();
+        },
+        onError: (error) => {
+          addNotification({
+            type: "error",
+            title: "Ошибка",
+            message: "Не удалось удалить сотрудника из тега",
+          });
+          console.error("Error removing employee from tag:", error);
+        },
+      },
+    );
   };
-
-  const employeesList = selectedTagForEmployees
-    ? (getEmployeesByTag?.(
-        selectedTagForEmployees.groupKey,
-        selectedTagForEmployees.tagValue,
-      ) ?? [])
-    : [];
-
-  const employeesCount = selectedTagForEmployees
-    ? (getTagUsageCount?.(
-        selectedTagForEmployees.groupKey,
-        selectedTagForEmployees.tagValue,
-      ) ?? 0)
-    : 0;
 
   const preventDialogClose = usePreventDialogClose();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -390,25 +432,22 @@ export const TagsManager = ({
           </div>
 
           <div className="flex-1 overflow-y-auto px-4 pb-6">
-            {localGroups.map((group) => (
+            {groups.map((group) => (
               <div key={group.key} className="mb-6">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-[16px] font-semibold leading-6 tracking-[0.15px] text-[#2C2A29]">
-                    {group.title} ({group.options.length})
+                    {group.title} ({tags.length})
                   </h3>
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  {group.options.map((option) => {
-                    const usageCount =
-                      getTagUsageCount?.(group.key, option.value) ?? 0;
-                    const isEditing =
-                      editingTag?.optionValue === option.value &&
-                      editingTag?.groupKey === group.key;
+                  {tags.map((tag) => {
+                    const usageCount = getTagEmployeeCount(tag.id);
+                    const isEditing = editingTag?.id === tag.id;
 
                     return (
                       <div
-                        key={option.value}
+                        key={tag.id}
                         className={`bg-white border border-[#DFDDDD] rounded-[8px] ${
                           isEditing
                             ? "p-[10px_12px]"
@@ -423,14 +462,9 @@ export const TagsManager = ({
                                   Категория
                                 </label>
                                 <FormSelect
-                                  value={editingTag.groupKey}
-                                  onValueChange={(value) =>
-                                    setEditingTag({
-                                      ...editingTag,
-                                      groupKey: value,
-                                    })
-                                  }
-                                  options={localGroups.map((g) => ({
+                                  value={editingTag.id.toString()}
+                                  onValueChange={() => {}}
+                                  options={groups.map((g) => ({
                                     value: g.key,
                                     label: g.title,
                                   }))}
@@ -443,11 +477,11 @@ export const TagsManager = ({
                                 </label>
                                 <FormInput
                                   placeholder="Например, Опыт в коучинге"
-                                  value={editingTag.newLabel}
+                                  value={editingTag.newName}
                                   onChange={(e) =>
                                     setEditingTag({
                                       ...editingTag,
-                                      newLabel: e.target.value,
+                                      newName: e.target.value,
                                     })
                                   }
                                 />
@@ -464,9 +498,8 @@ export const TagsManager = ({
                                 className="text-purple-500 mb-1 ml-1"
                                 onClick={() =>
                                   handleOpenAddEmployees(
-                                    editingTag.groupKey,
-                                    editingTag.optionValue,
-                                    editingTag.newLabel,
+                                    editingTag.id,
+                                    editingTag.newName,
                                   )
                                 }
                               >
@@ -476,10 +509,7 @@ export const TagsManager = ({
                             </div>
 
                             <div className="flex flex-col gap-2 mt-1">
-                              {getEmployeesByTag?.(
-                                editingTag.groupKey,
-                                editingTag.optionValue,
-                              )
+                              {getTagEmployees(editingTag.id)
                                 ?.slice(0, 3)
                                 .map((emp, idx) => (
                                   <div
@@ -512,9 +542,12 @@ export const TagsManager = ({
                                     <Button
                                       variant="ghost"
                                       className="text-[#FF383C] hover:text-red-700"
-                                      onClick={() =>
-                                        handleRemoveEmployeeFromTag(emp.name)
-                                      }
+                                      onClick={() => {
+                                        handleRemoveEmployeeFromTag(
+                                          emp.id,
+                                          emp.name,
+                                        );
+                                      }}
                                     >
                                       <TrashIcon className="size-4" />
                                     </Button>
@@ -527,9 +560,8 @@ export const TagsManager = ({
                                 className="text-xs text-gray-500 tracking-[-0.5px] hover:text-gray-700 text-left w-fit"
                                 onClick={() =>
                                   handleShowEmployees(
-                                    editingTag.groupKey,
-                                    editingTag.optionValue,
-                                    editingTag.newLabel,
+                                    editingTag.id,
+                                    editingTag.newName,
                                   )
                                 }
                               >
@@ -547,9 +579,12 @@ export const TagsManager = ({
                               </Button>
                               <Button
                                 onClick={saveEditTag}
-                                className="w-[111px] h-[33px] text-xs font-medium bg-purple-500 hover:bg-purple-600 text-white leading-5 tracking-[-0.75px]"
+                                disabled={updateTagMutation.isPending}
+                                className="w-[111px] h-[33px] text-xs font-medium bg-purple-500 hover:bg-purple-600 text-white leading-5 tracking-[-0.75px] disabled:opacity-50"
                               >
-                                Сохранить
+                                {updateTagMutation.isPending
+                                  ? "Сохранение..."
+                                  : "Сохранить"}
                               </Button>
                             </div>
                           </div>
@@ -561,17 +596,11 @@ export const TagsManager = ({
                               </div>
                               <div className="flex flex-col gap-1">
                                 <span className="text-[16px] font-medium leading-5 tracking-[0.1px] text-[#2C2A29]">
-                                  {option.label}
+                                  {tag.name}
                                 </span>
                                 {usageCount > 0 && (
                                   <span className="text-[14px] font-normal leading-5 tracking-[0.1px] text-[#2C2A29]">
-                                    Используется у {usageCount}{" "}
-                                    {getDeclension(
-                                      usageCount,
-                                      "сотрудника",
-                                      "сотрудников",
-                                      "сотрудников",
-                                    )}
+                                    Используется у {usageCount} сотрудников
                                   </span>
                                 )}
                               </div>
@@ -580,27 +609,22 @@ export const TagsManager = ({
                             <div className="flex items-center gap-5 px-2">
                               <button
                                 className="w-5 h-5 text-[#7A7A7A] hover:text-purple-500 transition-colors"
-                                onClick={() => startEditTag(group.key, option)}
+                                onClick={() => startEditTag(tag)}
                               >
                                 <EditIcon className="size-4" />
                               </button>
                               <button
                                 className="w-5 h-5 text-[#7A7A7A] hover:text-purple-500 transition-colors"
                                 onClick={() =>
-                                  handleShowEmployees(
-                                    group.key,
-                                    option.value,
-                                    option.label,
-                                  )
+                                  handleShowEmployees(tag.id, tag.name)
                                 }
                               >
                                 <EyevisibleIcon className="size-4" />
                               </button>
                               <button
                                 className="w-5 h-5 text-[#FF383C] hover:text-red-700 transition-colors"
-                                onClick={() =>
-                                  deleteTag(group.key, option.value)
-                                }
+                                onClick={() => deleteTag(tag.id)}
+                                disabled={deleteTagMutation.isPending}
                               >
                                 <TrashIcon className="size-4" />
                               </button>
@@ -648,7 +672,7 @@ export const TagsManager = ({
       <AddTagDialog
         open={isAddDialogOpen}
         onOpenChange={setIsAddDialogOpen}
-        groups={localGroups}
+        groups={groups}
         selectedGroup={selectedGroupForNewTag}
         onGroupChange={setSelectedGroupForNewTag}
         tagName={newTagName}
@@ -666,7 +690,8 @@ export const TagsManager = ({
         onOpenChange={(open) =>
           setAddEmployeesDialog((prev) => ({ ...prev, open }))
         }
-        tagLabel={addEmployeesDialog.tagLabel}
+        tagLabel={addEmployeesDialog.tagName}
+        tagId={addEmployeesDialog.tagId}
         employees={employeesListForTag}
         selectedEmployees={selectedEmployeesForTag}
         onEmployeeToggle={handleEmployeeToggle}
@@ -677,9 +702,17 @@ export const TagsManager = ({
       <EmployeesListDialog
         open={!!selectedTagForEmployees}
         onOpenChange={() => setSelectedTagForEmployees(null)}
-        title={selectedTagForEmployees?.label ?? ""}
-        employees={employeesList}
-        totalCount={employeesCount}
+        title={selectedTagForEmployees?.tagName ?? ""}
+        employees={
+          selectedTagForEmployees
+            ? getTagEmployees(selectedTagForEmployees.tagId)
+            : []
+        }
+        totalCount={
+          selectedTagForEmployees
+            ? getTagEmployeeCount(selectedTagForEmployees.tagId)
+            : 0
+        }
       />
     </>
   );

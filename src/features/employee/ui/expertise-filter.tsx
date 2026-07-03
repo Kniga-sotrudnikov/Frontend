@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
 import { Button } from "@ui/button";
 import { FilterTrigger } from "@/features/employee/ui/filter-trigger";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
@@ -8,6 +7,7 @@ import { DropdownMenuSeparator } from "@ui/dropdown-menu";
 import { SearchInput } from "@ui/input";
 import { FilterRemoveBadge } from "@/features/employee/ui/filter-remove-badge";
 import { TagsManager } from "./tags-manager";
+import { useTags } from "@/entities/tags";
 import type {
   TExpertiseFilterGroup,
   TExpertiseFilterValue,
@@ -21,12 +21,16 @@ type TExpertiseFilterProps = {
   onApply: (value: TExpertiseFilterValue) => void;
   isAdmin?: boolean;
   onTagsUpdate?: (updatedGroups: TExpertiseFilterGroup[]) => void;
-  getTagUsageCount?: (groupKey: string, tagValue: string) => number;
+  getTagUsageCount?: (tagId: number) => number;
   getEmployeesByTag?: (
-    groupKey: string,
-    tagValue: string,
-  ) => Array<{ name: string; position: string; photo?: string }>;
-  getAllEmployees?: () => Array<{ id: string; name: string; position: string; photo?: string }>;
+    tagId: number,
+  ) => Array<{ id: string; name: string; position: string; photo?: string }>;
+  getAllEmployees?: () => Array<{
+    id: string;
+    name: string;
+    position: string;
+    photo?: string;
+  }>;
 };
 
 export const ExpertiseFilter = ({
@@ -42,12 +46,32 @@ export const ExpertiseFilter = ({
   const [open, setOpen] = useState(false);
   const [draftValue, setDraftValue] = useState<TExpertiseFilterValue>(value);
   const [searchValue, setSearchValue] = useState("");
-  const [currentGroups, setCurrentGroups] = useState<TExpertiseFilterGroup[]>(groups);
+  const [currentGroups, setCurrentGroups] = useState<TExpertiseFilterGroup[]>(
+    groups,
+  );
+
+  const { data: tagsData } = useTags({ limit: 100 });
+
+  useEffect(() => {
+    if (tagsData?.results && groups.length > 0) {
+      const updatedGroups = groups.map((group) => ({
+        ...group,
+        options: tagsData.results.map((tag) => ({
+          value: String(tag.id),
+          label: tag.name,
+        })),
+      }));
+      setCurrentGroups(updatedGroups);
+      onTagsUpdate?.(updatedGroups);
+    }
+  }, [tagsData, groups, onTagsUpdate]);
+
+  const displayGroups = currentGroups.length > 0 ? currentGroups : groups;
 
   const normalizedSearchValue = searchValue.trim().toLowerCase();
 
   const filteredGroups = normalizedSearchValue
-    ? groups
+    ? displayGroups
         .map((group) => ({
           ...group,
           options: group.options.filter((option) =>
@@ -55,24 +79,18 @@ export const ExpertiseFilter = ({
           ),
         }))
         .filter((group) => group.options.length > 0)
-    : groups;
+    : displayGroups;
 
   const activeFilters = Object.entries(draftValue).flatMap(
     ([groupKey, selectedValues]) => {
-      const group = groups.find((group) => group.key === groupKey);
-
-      if (!group) {
-        return [];
-      }
+      const group = displayGroups.find((group) => group.key === groupKey);
+      if (!group) return [];
 
       return selectedValues.flatMap((selectedValue) => {
         const option = group.options.find(
           (option) => option.value === selectedValue,
         );
-
-        if (!option) {
-          return [];
-        }
+        if (!option) return [];
 
         return [
           {
@@ -86,15 +104,12 @@ export const ExpertiseFilter = ({
   );
 
   const selectedCount = Object.values(draftValue).reduce(
-    (count, groupValue) => {
-      return count + groupValue.length;
-    },
+    (count, groupValue) => count + groupValue.length,
     0,
   );
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen);
-
     if (!nextOpen) {
       setSearchValue("");
       setDraftValue(value);
@@ -104,7 +119,6 @@ export const ExpertiseFilter = ({
   const handleRemoveFilter = (groupKey: string, optionValue: string) => {
     setDraftValue((prevState) => {
       const nextValue = { ...prevState };
-
       const nextGroupValue = (nextValue[groupKey] ?? []).filter(
         (value) => value !== optionValue,
       );
@@ -132,13 +146,11 @@ export const ExpertiseFilter = ({
   const handleGroupChange = (groupKey: string, groupValue: string[]) => {
     setDraftValue((prevState) => {
       const nextValue = { ...prevState };
-
       if (groupValue.length > 0) {
         nextValue[groupKey] = groupValue;
       } else {
         delete nextValue[groupKey];
       }
-
       return nextValue;
     });
   };
@@ -180,9 +192,11 @@ export const ExpertiseFilter = ({
                 getTagUsageCount={getTagUsageCount}
                 getEmployeesByTag={getEmployeesByTag}
                 getAllEmployees={getAllEmployees}
+                onTagsUpdate={handleTagsUpdate}
               />
             </div>
           )}
+
           <SearchInput
             wrapperClassName="h-9 shrink-0"
             placeholder="Найти тег"
@@ -240,8 +254,14 @@ export const ExpertiseFilter = ({
               Ничего не найдено
             </div>
           )}
+
           <div className="flex self-end gap-2">
-            <Button onClick={handleApplyFilters} className="w-[118px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)] disabled:opacity-50 disabled:cursor-not-allowed">Применить</Button>
+            <Button
+              onClick={handleApplyFilters}
+              className="w-[118px] h-[32px] text-xs tracking-[-0.5px] bg-purple-500 hover:bg-purple-600 text-white rounded-[var(--radius-8)] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Применить
+            </Button>
           </div>
         </PopoverContent>
       </Popover>
