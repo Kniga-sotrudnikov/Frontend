@@ -4,7 +4,7 @@ import { ProfessionCard } from "@/widgets/profession-card";
 import { EmptyPlaceholder } from "@ui/empty-placeholder";
 import type { EmployeesListType } from "./types";
 import { type EmployeeData } from "@/entities/employee";
-import { useVacancyModalStore } from "@/features/vacancy-respond";
+import { type NormalizedVacancy } from "@/entities/vacancy";
 
 interface RenderCardsProps {
   items: EmployeesListType[];
@@ -16,6 +16,7 @@ interface RenderCardsProps {
   onToggleVacancyFavorite?: (id: number | string) => void;
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
   onEmployeeClick: (employee: EmployeeData) => void;
+  onVacancyClick?: (vacancy: NormalizedVacancy) => void;
   onArchiveEmployee: (employee: EmployeeData) => void;
   isPending?: boolean;
 }
@@ -29,13 +30,10 @@ export const RenderCards = ({
   canEditEmployee = false,
   onUpdateEmployee,
   onEmployeeClick,
+  onVacancyClick,
   onArchiveEmployee,
   isPending = false,
 }: RenderCardsProps) => {
-  const openVacancyModal = useVacancyModalStore(
-    (state) => state.openVacancyModal,
-  );
-
   if (items.length === 0) {
     return <EmptyPlaceholder text={emptyText} />;
   }
@@ -82,7 +80,7 @@ export const RenderCards = ({
             {...vacancyProps}
             isFavorite={favoritesIds.includes(id)}
             onFavorite={() => onToggleVacancyFavorite?.(id)}
-            onRespond={() => openVacancyModal(item)}
+            onRespond={() => onVacancyClick?.(item)}
           />
         );
       })}

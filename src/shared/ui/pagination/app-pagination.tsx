@@ -158,7 +158,7 @@ export const AppPagination = ({
 
       <div className="flex flex-1 justify-end">
         <div className="flex items-center gap-2 whitespace-nowrap body-overline">
-          <span>Карточек на странице:</span>
+          <span className="max-[1300px]:hidden">Карточек на странице:</span>
 
           <DropdownMenu>
             <DropdownMenuTrigger hasArrow className="px-2">

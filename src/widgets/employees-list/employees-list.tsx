@@ -7,7 +7,6 @@ import ListIcon from "@/shared/assets/icons/list.svg?react";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import { Button } from "@/shared/ui/button";
 import type { EmployeeData } from "@/entities/employee";
-import type { VacancyData } from "@/entities/vacancy";
 import { RenderCards } from "./render-cards";
 import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
@@ -26,10 +25,11 @@ import { useIsAdmin } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 import { useGetFavorites, useToggleFavorite } from "@/entities/favorites";
 import { EmployeeCardsSkeleton } from "@/widgets/employee-card";
+import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
+import type { NormalizedVacancy } from "@/entities/vacancy";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
-  vacancies: VacancyData[];
 
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
   isLoading?: boolean;
@@ -38,7 +38,6 @@ interface EmployeesListProps {
 
 export const EmployeesList = ({
   employees,
-  vacancies,
 
   onUpdateEmployee,
   isLoading = false,
@@ -57,6 +56,9 @@ export const EmployeesList = ({
     useState<EmployeeData | null>(null);
 
   const isAdmin = useIsAdmin();
+
+  const { data: vacanciesData } = useGetVacancies();
+  const vacancies = vacanciesData?.results ?? [];
 
   const { data: favoritesData } = useGetFavorites();
   const { toggleFavorite, isPending } = useToggleFavorite();
@@ -108,12 +110,28 @@ export const EmployeesList = ({
     (state) => state.openVacancyModal,
   );
 
+  const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(
+    null,
+  );
+
+  const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
+
+  useEffect(() => {
+    if (vacancyDetail) {
+      openVacancyModal(vacancyDetail);
+    }
+  }, [vacancyDetail, openVacancyModal]);
+
+  const handleVacancyClick = (vacancy: NormalizedVacancy) => {
+    setSelectedVacancyId(vacancy.id);
+  };
+
   const favoriteEmployees = employees.filter(
     (emp) => favoriteIds.includes(Number(emp.id)) && !emp.isArchived,
   );
 
   //  TODO: вакансии в избранном - ПОКА пустой массив (ждем API)
-  const favoriteVacancies: VacancyData[] = [];
+  const favoriteVacancies: NormalizedVacancy[] = [];
 
   const allFavorites = [...favoriteEmployees, ...favoriteVacancies];
 
@@ -183,7 +201,7 @@ export const EmployeesList = ({
     onUpdateEmployee?.(updatedEmployee);
   };
 
-  const handleRestoreVacancy = (vacancy: VacancyData) => {
+  const handleRestoreVacancy = (vacancy: NormalizedVacancy) => {
     addNotification({
       iconType: "success",
       title: "В разработке",
@@ -195,6 +213,7 @@ export const EmployeesList = ({
     <div>
       <div className="flex justify-between items-center mb-3">
         <Tabs
+          className="min-w-0 flex-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           value={activeTab}
           onValueChange={(value) => {
             const tab = value as
@@ -332,7 +351,7 @@ export const EmployeesList = ({
           columns={getVacancyColumns(
             favoriteIds,
             handleToggleVacancyFavorite,
-            openVacancyModal,
+            handleVacancyClick,
           )}
           data={tabContentMap.vacancies}
           isLoading={isLoading}
@@ -360,7 +379,7 @@ export const EmployeesList = ({
           columns={getVacancyColumns(
             favoriteIds,
             handleToggleVacancyFavorite,
-            activeTab === "archive" ? handleRestoreVacancy : openVacancyModal,
+            activeTab === "archive" ? handleRestoreVacancy : handleVacancyClick,
             activeTab === "archive" ? "restore" : "respond",
           )}
           data={nestedTabContentMap[activeTab].vacancies}
@@ -372,6 +391,7 @@ export const EmployeesList = ({
       ) : (
         <RenderCards
           onEmployeeClick={handleEmployeeClick}
+          onVacancyClick={handleVacancyClick}
           items={itemsByTab}
           emptyText={emptyText}
           favoritesIds={favoriteIds}

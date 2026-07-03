@@ -11,6 +11,7 @@ import { Checkbox } from "@ui/checkbox";
 import { FormInput } from "@/features/create-employee/ui/form-input";
 import { FormSelect } from "@/features/create-employee/ui/form-select";
 import type { TExpertiseFilterGroup } from "../model/types";
+import { usePreventDialogClose } from "@/shared/lib/hooks/use-prevent-dialog-close";
 
 type Employee = {
   id: string;
@@ -52,6 +53,7 @@ export const AddTagDialog = ({
   onSave,
 }: AddTagDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const preventDialogClose = usePreventDialogClose();
 
   useEffect(() => {
     if (open) {
@@ -71,7 +73,7 @@ export const AddTagDialog = ({
     return employees.filter(
       (emp) =>
         emp.name.toLowerCase().includes(query) ||
-        emp.position.toLowerCase().includes(query)
+        emp.position.toLowerCase().includes(query),
     );
   }, [employees, searchQuery]);
 
@@ -89,7 +91,10 @@ export const AddTagDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!w-[753px] !max-w-none !h-auto !p-5 !rounded-12 !border !border-gray-200 !bg-white overflow-hidden">
+      <DialogContent
+        className="!w-[753px] !max-w-none !h-auto !p-5 !rounded-12 !border !border-gray-200 !bg-white overflow-hidden"
+        onInteractOutside={preventDialogClose}
+      >
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center">
             <DialogHeader className="!p-0">

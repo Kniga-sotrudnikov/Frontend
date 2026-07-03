@@ -11,6 +11,7 @@ import { useNotificationStore } from "@/shared/model/stores";
 import type { CreateEmployeeFormValues } from "../model/types";
 import { validateForm, type ValidationErrors } from "../model/validation";
 import { EmployeeForm } from "./employee-form";
+import { usePreventDialogClose } from "@/shared/lib/hooks/use-prevent-dialog-close";
 
 interface CreateEmployeeDialogProps {
   open: boolean;
@@ -54,6 +55,7 @@ export const CreateEmployeeDialog = ({
 
   const firstInputRef = useRef<HTMLInputElement>(null);
   const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const preventDialogClose = usePreventDialogClose();
 
   const addNotification = useNotificationStore((state) => state.add);
 
@@ -186,6 +188,7 @@ export const CreateEmployeeDialog = ({
       <DialogContent
         className="!w-[800px] !h-[832px] !max-w-none !p-0 !rounded-8 !border !border-gray-200 !bg-white"
         onKeyDown={handleKeyDown}
+        onInteractOutside={preventDialogClose}
       >
         <form onSubmit={handleSubmit} className="flex flex-col h-full gap-1">
           <div className="flex justify-between items-center px-5 pt-5 pb-0 flex-shrink-0">
