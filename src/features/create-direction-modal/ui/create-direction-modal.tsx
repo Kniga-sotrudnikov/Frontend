@@ -7,6 +7,7 @@ import {
   shortEmployees as mockEmployees,
 } from "@/entities/employee";
 import { DirectionFormFields } from "@/entities/org-structure";
+import { useCreateDepartment } from "@/entities/org-structure/api/use-department-mutations";
 import type { CreateDirectionModalProps } from "../model/types";
 
 const TOTAL_STEPS = 2;
@@ -30,26 +31,21 @@ export function CreateDirectionModal({
   const [headName, setHeadName] = useState("");
   const [headId, setHeadId] = useState<number | null>(null);
   const [description, setDescription] = useState("");
+  const [step, setStep] = useState(1);
 
+  const createDepartment = useCreateDepartment();
   const addNotification = useNotificationStore((state) => state.add);
 
   const isDirection = entityType === "direction";
   const entityWord = isDirection ? "направление" : "СИС";
   const entityGenitive = isDirection ? "направления" : "службы";
 
-  const showDevNotification = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Функция будет доступна в ближайшее время",
-    });
-  };
-
   const resetForm = () => {
     setName("");
     setHeadName("");
     setHeadId(null);
     setDescription("");
+    setStep(1);
   };
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -57,12 +53,50 @@ export function CreateDirectionModal({
     setOpen(isOpen);
   };
 
-  const handleCreate = () => {
-    if (onCreate) {
-      onCreate({ name, headName, headId, description });
-    } else {
-      showDevNotification();
+  const handleCreate = async () => {
+    if (!name.trim()) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "Название обязательно для заполнения",
+      });
+      return;
     }
+
+    try {
+      await createDepartment.mutateAsync({
+        name: name.trim(),
+        type: isDirection ? "direction" : "sis",
+        description: description.trim() || undefined,
+        // Если нужно привязывать к руководителю, добавляем поле head_id
+        // head_id: headId,
+      });
+
+      handleOpenChange(false);
+      
+      onCreate?.({
+        name,
+        headName,
+        headId,
+        description,
+      });
+    } catch (error) {
+      console.error("Error creating department:", error);
+    }
+  };
+
+  const handleNext = () => {
+    if (!name.trim()) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "Название обязательно для заполнения",
+      });
+      return;
+    }
+    setStep(2);
   };
 
   const isNameValid = name.trim().length > 0;
@@ -77,29 +111,40 @@ export function CreateDirectionModal({
             <h2 className="body-m-semibold text-black">{title}</h2>
             <DialogClose variant="icon" />
           </div>
-          <span className="body-s text-gray-900">Шаг 1 из {TOTAL_STEPS}</span>
+          <span className="body-s text-gray-900">
+            Шаг {step} из {TOTAL_STEPS}
+          </span>
         </div>
 
         <div className="flex flex-col flex-1 gap-6 overflow-y-auto">
-          <DirectionFormFields
-            nameLabel="Название*"
-            name={name}
-            onNameChange={setName}
-            headLabel="Руководитель"
-            headSlot={
-              <EmployeeSelect
-                value={headId}
-                employees={shortEmployees}
-                onSelect={(id, selectedName) => {
-                  setHeadId(id);
-                  setHeadName(selectedName);
-                }}
-              />
-            }
-            description={description}
-            onDescriptionChange={setDescription}
-            descriptionPlaceholder={`Краткое описание ${entityGenitive}`}
-          />
+          {step === 1 ? (
+            <DirectionFormFields
+              nameLabel="Название*"
+              name={name}
+              onNameChange={setName}
+              headLabel="Руководитель"
+              headSlot={
+                <EmployeeSelect
+                  value={headId}
+                  employees={shortEmployees}
+                  onSelect={(id, selectedName) => {
+                    setHeadId(id);
+                    setHeadName(selectedName);
+                  }}
+                />
+              }
+              description={description}
+              onDescriptionChange={setDescription}
+              descriptionPlaceholder={`Краткое описание ${entityGenitive}`}
+            />
+          ) : (
+            // TODO Шаг 2 - добавление отделов
+            <div className="flex flex-col items-center justify-center py-8">
+              <p className="text-center text-gray-500">
+                Шаг 2: Добавление отделов (в разработке)
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end gap-3.75 shrink-0">
@@ -108,28 +153,43 @@ export function CreateDirectionModal({
               variant="ghost"
               size="plain"
               className="button-small px-4 h-8"
+              disabled={createDepartment.isPending}
             >
               Отменить
             </Button>
           </DialogClose>
-          <Button
-            variant="outline"
-            size="plain"
-            className="button-small px-4 h-8 border-primary text-black"
-            disabled={!isNameValid}
-            onClick={handleCreate}
-          >
-            Сохранить {entityWord}
-          </Button>
-          <Button
-            variant="default"
-            size="plain"
-            className="button-small px-4 h-8"
-            disabled={!isNameValid}
-            onClick={showDevNotification}
-          >
-            Далее
-          </Button>
+          {step === 1 ? (
+            <>
+              <Button
+                variant="outline"
+                size="plain"
+                className="button-small px-4 h-8 border-primary text-black"
+                disabled={!isNameValid || createDepartment.isPending}
+                onClick={handleCreate}
+              >
+                Сохранить {entityWord}
+              </Button>
+              <Button
+                variant="default"
+                size="plain"
+                className="button-small px-4 h-8"
+                disabled={!isNameValid || createDepartment.isPending}
+                onClick={handleNext}
+              >
+                Далее
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="default"
+              size="plain"
+              className="button-small px-4 h-8"
+              onClick={handleCreate}
+              disabled={createDepartment.isPending}
+            >
+              {createDepartment.isPending ? "Сохранение..." : "Завершить"}
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

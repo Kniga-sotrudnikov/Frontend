@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import type { OrgUnit } from "./types";
 import type { OrgItemType } from "../ui/org-item";
-import { mockTree, mockDirections, mockSisList } from "./mock-data";
 
 export type OrgEntityType = "direction" | "sis";
 
@@ -13,12 +12,14 @@ interface OrgStructureStore {
   updateItem: (entityType: OrgEntityType, item: OrgItemType) => void;
   setDirections: (items: OrgItemType[]) => void;
   setSisList: (items: OrgItemType[]) => void;
+  setTree: (tree: OrgUnit[]) => void;
+  loadFromTree: (tree: OrgUnit[]) => void;
 }
 
 export const useOrgStructureStore = create<OrgStructureStore>()((set) => ({
-  tree: mockTree,
-  directions: mockDirections,
-  sisList: mockSisList,
+  tree: [],
+  directions: [],
+  sisList: [],
   isLoading: false,
   updateItem: (entityType, item) => {
     set((state) => {
@@ -32,4 +33,23 @@ export const useOrgStructureStore = create<OrgStructureStore>()((set) => ({
   },
   setDirections: (directions) => set({ directions }),
   setSisList: (sisList) => set({ sisList }),
+  setTree: (tree) => set({ tree }),
+  loadFromTree: (tree) => {
+    const directionsNode = tree.find(u => u.name === "Направления");
+    const sisNode = tree.find(u => u.name === "СИС");
+  
+    const directions = directionsNode?.items?.map((item): OrgItemType => ({
+      id: String(item.id || ''),
+      name: item.name,
+      headName: '',
+    })) || [];
+    
+    const sisList = sisNode?.items?.map((item): OrgItemType => ({
+      id: String(item.id || ''),
+      name: item.name,
+      headName: '',
+    })) || [];
+    
+    set({ tree, directions, sisList });
+  },
 }));

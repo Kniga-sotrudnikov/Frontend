@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   useOrgStructureStore,
   OrgSection,
   type OrgItemType,
+  type OrgUnit,
+  useDeleteDepartment,
 } from "@/entities/org-structure";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
@@ -34,6 +36,7 @@ export function EditOrgStructureModal({
 }: EditOrgStructureModalProps) {
   const directions = useOrgStructureStore((state) => state.directions);
   const sisList = useOrgStructureStore((state) => state.sisList);
+  const tree = useOrgStructureStore((state) => state.tree);
   const updateItem = useOrgStructureStore((state) => state.updateItem);
   const setDirections = useOrgStructureStore((state) => state.setDirections);
   const setSisList = useOrgStructureStore((state) => state.setSisList);
@@ -44,28 +47,48 @@ export function EditOrgStructureModal({
     name: string;
     headName: string;
     entityType: "direction" | "sis";
+    departmentId?: number;
   } | null>(null);
   const [creatingEntityType, setCreatingEntityType] = useState<
     "direction" | "sis" | null
   >(null);
 
-  const [localDirections, setLocalDirections] = useState(directions);
-  const [localSisList, setLocalSisList] = useState(sisList);
+  const [localDirections, setLocalDirections] = useState<OrgItemType[]>([]);
+  const [localSisList, setLocalSisList] = useState<OrgItemType[]>([]);
   const addNotification = useNotificationStore((state) => state.add);
 
-  // TODO Удалить после получения данных с бэка
-  const mockDepartments: Department[] = [
-    { id: "1", name: "Маркетинг", headName: "Иванова Татьяна Викторовна" },
-    { id: "2", name: "Разработка", headName: "Петров Михаил Иванович" },
-  ];
+  const deleteDepartment = useDeleteDepartment();
 
-  const showDevNotification = () => {
-    addNotification({
-      iconType: "success",
-      title: "В разработке",
-      message: "Функция будет доступна в ближайшее время",
-    });
-  };
+  useEffect(() => {
+    setLocalDirections(directions);
+  }, [directions]);
+
+  useEffect(() => {
+    setLocalSisList(sisList);
+  }, [sisList]);
+
+  const getDepartmentsForEntity = useMemo(() => {
+    return (entityType: "direction" | "sis", entityId?: string): Department[] => {
+      if (!tree || tree.length === 0) return [];
+
+      const parentNodeName = entityType === "direction" ? "Направления" : "СИС";
+      const parentNode = tree.find(u => u.name === parentNodeName);
+      
+      if (!parentNode?.items) return [];
+
+      const targetNode = parentNode.items.find(
+        (item: OrgUnit) => String(item.id) === entityId
+      );
+
+      if (!targetNode?.items) return [];
+
+      return targetNode.items.map((item: OrgUnit): Department => ({
+        id: String(item.id || ''),
+        name: item.name,
+        headName: '',
+      }));
+    };
+  }, [tree]);
 
   const handleAddDirection = () => {
     if (onAddDirection) {
@@ -107,26 +130,104 @@ export function EditOrgStructureModal({
   };
 
   const handleEditDirection = (item: OrgItemType) => {
-    setEditingDirection({ ...item, entityType: "direction" });
+    let departmentId: number | undefined;
+    const directionNode = tree.find(u => u.name === "Направления");
+    if (directionNode?.items) {
+      const found = directionNode.items.find((u: OrgUnit) => String(u.id) === item.id);
+      if (found?.id) departmentId = found.id;
+    }
+
+    setEditingDirection({ 
+      ...item, 
+      entityType: "direction",
+      departmentId 
+    });
   };
 
   const handleEditSis = (item: OrgItemType) => {
-    setEditingDirection({ ...item, entityType: "sis" });
+    let departmentId: number | undefined;
+    const sisNode = tree.find(u => u.name === "СИС");
+    if (sisNode?.items) {
+      const found = sisNode.items.find((u: OrgUnit) => String(u.id) === item.id);
+      if (found?.id) departmentId = found.id;
+    }
+
+    setEditingDirection({ 
+      ...item, 
+      entityType: "sis",
+      departmentId 
+    });
   };
 
-  const handleDeleteDirection = (item: OrgItemType) => {
+  const handleDeleteDirection = async (item: OrgItemType) => {
     if (onDeleteDirection) {
       onDeleteDirection(item);
-    } else {
-      showDevNotification();
+      return;
+    }
+
+    const directionNode = tree.find(u => u.name === "Направления");
+    let departmentId: number | undefined;
+    if (directionNode?.items) {
+      const found = directionNode.items.find((u: OrgUnit) => String(u.id) === item.id);
+      if (found?.id) departmentId = found.id;
+    }
+
+    if (!departmentId) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "Не удалось найти ID подразделения",
+      });
+      return;
+    }
+
+    try {
+      await deleteDepartment.mutateAsync(departmentId);
+      setLocalDirections((items) => items.filter((i) => i.id !== item.id));
+      addNotification({
+        iconType: "success",
+        title: "Удалено",
+        message: `«${item.name}» удалено`,
+      });
+    } catch (error) {
+      console.error("Error deleting direction:", error);
     }
   };
 
-  const handleDeleteSis = (item: OrgItemType) => {
+  const handleDeleteSis = async (item: OrgItemType) => {
     if (onDeleteSis) {
       onDeleteSis(item);
-    } else {
-      showDevNotification();
+      return;
+    }
+
+    const sisNode = tree.find(u => u.name === "СИС");
+    let departmentId: number | undefined;
+    if (sisNode?.items) {
+      const found = sisNode.items.find((u: OrgUnit) => String(u.id) === item.id);
+      if (found?.id) departmentId = found.id;
+    }
+
+    if (!departmentId) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "Не удалось найти ID подразделения",
+      });
+      return;
+    }
+
+    try {
+      await deleteDepartment.mutateAsync(departmentId);
+      setLocalSisList((items) => items.filter((i) => i.id !== item.id));
+      addNotification({
+        iconType: "success",
+        title: "Удалено",
+        message: `«${item.name}» удалено`,
+      });
+    } catch (error) {
+      console.error("Error deleting sis:", error);
     }
   };
 
@@ -139,11 +240,8 @@ export function EditOrgStructureModal({
       headName: values.headName,
     };
 
-    // 1. Пишем в стор — «источник правды» обновлён
     updateItem(editingDirection.entityType, updated);
 
-    // 2. Обновляем открытый черновик, иначе список в модалке
-    //    покажет старое имя (localDirections — снапшот, он стор не слушает)
     const patch = (items: OrgItemType[]) =>
       items.map((i) => (i.id === updated.id ? updated : i));
     if (editingDirection.entityType === "direction") {
@@ -167,12 +265,17 @@ export function EditOrgStructureModal({
   };
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (isOpen) {
-      setLocalDirections(directions);
-      setLocalSisList(sisList);
-    }
     setOpen(isOpen);
   };
+
+  const editingDepartments = useMemo(() => {
+    if (!editingDirection) return [];
+    
+    return getDepartmentsForEntity(
+      editingDirection.entityType, 
+      editingDirection.id
+    );
+  }, [editingDirection, getDepartmentsForEntity]);
 
   return (
     <>
@@ -228,6 +331,7 @@ export function EditOrgStructureModal({
           </div>
         </DialogContent>
       </Dialog>
+      
       <EditDirectionModal
         key={editingDirection?.id ?? "none"}
         open={editingDirection !== null}
@@ -235,9 +339,11 @@ export function EditOrgStructureModal({
         entityType={editingDirection?.entityType}
         initialName={editingDirection?.name ?? ""}
         initialHeadName={editingDirection?.headName ?? ""}
-        departments={mockDepartments}
+        departments={editingDepartments}
+        departmentId={editingDirection?.departmentId}
         onSave={handleDirectionSave}
       />
+      
       <CreateDirectionModal
         key={creatingEntityType ?? "none-create"}
         open={creatingEntityType !== null}

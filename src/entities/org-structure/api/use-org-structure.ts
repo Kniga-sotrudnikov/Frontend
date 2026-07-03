@@ -1,23 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/shared/api/client";
-import type { OrgUnit } from "../model/types";
+import type { DepartmentResponse, OrgUnit } from "../model/types";
 
-export interface OrgUnitResponse {
-  id: number;
-  name: string;
-  // TODO В ответе пока только Направления и отделы, добавить СИС/УК, когда появятся
-  // Возможно СИС/УК будут самостоятельные api
-  type: "direction" | "department";
-  employee_count: number;
-  children: OrgUnitResponse[];
-}
-
-function mapOrgUnit(data: OrgUnitResponse): OrgUnit {
+function mapDepartmentToOrgUnit(data: DepartmentResponse): OrgUnit {
   return {
     id: data.id,
     name: data.name,
     employeeCount: data.employee_count,
-    items: data.children.map(mapOrgUnit),
+    items: data.children?.map(mapDepartmentToOrgUnit) || [],
   };
 }
 
@@ -25,9 +15,9 @@ export const useOrgStructure = () => {
   return useQuery({
     queryKey: ["org-structure"],
     queryFn: async () => {
-      const response = await apiClient.get<OrgUnitResponse[]>("/org-structure/tree/");
+      const response = await apiClient.get<DepartmentResponse[]>("/org-structure/tree/");
       return response.data;
     },
-    select: (data) => data.map(mapOrgUnit)
-  })
-}
+    select: (data) => data.map(mapDepartmentToOrgUnit),
+  });
+};

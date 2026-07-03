@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PageHeader } from "@/widgets/page-header";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { ZoomControl } from "@/shared/ui/zoom-control";
@@ -7,7 +7,12 @@ import { Separator } from "@/shared/ui/separator";
 import { useIsAdmin } from "@/entities/user";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { ClarifyingModal } from "@/features/upload-org-structure";
-import { OrgStructureChart } from "@/entities/org-structure";
+import {
+  OrgStructureChart,
+  useOrgStructure,
+  useOrgStructureStore,
+  type OrgUnit,
+} from "@/entities/org-structure";
 
 const OrgStructurePage = () => {
   const [zoom, setZoom] = useState(100);
@@ -15,11 +20,38 @@ const OrgStructurePage = () => {
   const isAdmin = useIsAdmin();
   const isZoomabled = zoom > 100;
 
+  const { data: treeData, isLoading } = useOrgStructure();
+  const setTree = useOrgStructureStore((state) => state.setTree);
+
+  useEffect(() => {
+    if (treeData) {
+      setTree(treeData);
+    }
+  }, [treeData, setTree]);
+
+  const countEmployees = (units: OrgUnit[]): number => {
+    return units.reduce((sum, unit) => {
+      return sum + (unit.employeeCount || 0) + countEmployees(unit.items || []);
+    }, 0);
+  };
+
+  const totalEmployees = treeData ? countEmployees(treeData) : 0;
+
+  const directionsNode = treeData?.find((u) => u.name === "Направления");
+  const sisNode = treeData?.find((u) => u.name === "СИС");
+
+  const directionsCount = directionsNode?.items?.length || 0;
+  const sisCount = sisNode?.items?.length || 0;
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <PageHeader
         title="Оргструктура"
-        stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
+        stats={
+          isLoading
+            ? "Загрузка..."
+            : `${totalEmployees} сотрудников, ${directionsCount} направлений, ${sisCount} СИС`
+        }
         birthday={<BirthdaysPopover />}
         user={<HeaderUserCard />}
       />

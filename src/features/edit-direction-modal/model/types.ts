@@ -10,9 +10,7 @@ export interface DirectionFormValues {
 }
 
 export interface EditDirectionModalProps {
-  /** Trigger element — omit when using controlled `open` prop */
   children?: React.ReactNode;
-  /** Controlled open state */
   entityType?: "direction" | "sis";
   shortEmployees?: TShortEmployee[];
   initialHeadId?: number | null;
@@ -26,4 +24,5 @@ export interface EditDirectionModalProps {
   onEditDepartment?: (dept: Department) => void;
   onDeleteDepartment?: (dept: Department) => void;
   onSave?: (values: DirectionFormValues, departments: Department[]) => void;
+  departmentId?: number;
 }
