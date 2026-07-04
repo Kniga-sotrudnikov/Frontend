@@ -9,12 +9,14 @@ import type {
 
 const mapStatus = (status: TEmployee["status"]): EmployeeStatus => {
   switch (status) {
-    case "active":
+    case "working":
       return "working";
     case "vacation":
       return "vacation";
-    case "sick":
+    case "sick_leave":
       return "sick";
+    case "business_trip":
+      return "bizTrip"
     default:
       return "working";
   }

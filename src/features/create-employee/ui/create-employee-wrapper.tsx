@@ -32,6 +32,10 @@ export const CreateEmployeeWrapper = ({
       birthday: format(data.birthday as Date, "yyyy-MM-dd"),
       department: Number(data.department),
       city: data.city,
+      employment_status : data.status,
+      crm_profile: data.crmProfileLink,
+      resume_link: data.resumeLink,
+      social_network: data.socialNetworkLink,
     });
   };
 

@@ -6,15 +6,15 @@ const mapStatus = (
 ): CreateEmployeeFormValues["status"] => {
   switch (status) {
     case "working":
-      return "active";
+      return "working";
     case "vacation":
       return "vacation";
     case "bizTrip":
-      return "active";
+      return "business_trip";
     case "sick":
-      return "sick";
+      return "sick_leave";
     default:
-      return "active";
+      return "working";
   }
 };
 

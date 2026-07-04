@@ -1,7 +1,15 @@
 /**
  * Устаревший тип статуса, вместо него следует использовать `EmploymentStatus`
  */
-export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
+//export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
+
+export type TEmployeeStatus =
+  | "working"
+  | "vacation"
+  | "sick_leave"
+  /* | "maternity_leave" */
+  | "business_trip"
+ /*  | "remote" */;
 
 export type TEmployee = {
   id: number;
@@ -64,13 +72,7 @@ export interface EmployeeData {
   role?: string;
 }
 
-export type EmploymentStatus =
-  | "working"
-  | "vacation"
-  | "sick_leave"
-  | "maternity_leave"
-  | "business_trip"
-  | "remote";
+
 
 export type StatusEnum = "active" | "archived";
 
@@ -103,7 +105,7 @@ export interface BaseEmployeeRequestResponse {
 
   city?: string | null;
 
-  employment_status?: EmploymentStatus;
+  employment_status?: TEmployeeStatus;
 
   crm_profile?: string | null;
   social_network?: string | null;
@@ -143,7 +145,7 @@ export interface EmployeeShortResponse {
 
   city: string | null;
 
-  employment_status: EmploymentStatus;
+  employment_status: TEmployeeStatus;
   employment_status_display: string;
 
   supervisor_name: string | null;
@@ -176,7 +178,7 @@ interface BaseEmployeeDetail {
 
   city: string | null;
 
-  employment_status: EmploymentStatus;
+  employment_status: TEmployeeStatus;
   employment_status_display: string;
 
   supervisor_name: string | null;

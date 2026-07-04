@@ -16,12 +16,19 @@ import type { CreateEmployeeFormValues } from "../model/types";
 import type { ValidationErrors } from "../model/validation";
 import { useDepartmentsList } from "@/entities/org-structure/api/use-department-list";
 
-const statusOptions = [
+/* const statusOptions = [
   { value: "active", label: "В работе" },
   { value: "vacation", label: "В отпуске" },
   { value: "sick", label: "На больничном" },
   { value: "maternity", label: "В декрете" },
-];
+]; */
+
+const statusOptions = [
+  {value: "working", label: "В работе"},
+  {value: "vacation", label: "В отпуске"},
+  {value: "sick_leave", label: "На больничном"},
+  {value: "business_trip", label: "В командировке"},
+] satisfies {value: TEmployeeStatus; label: string}[];
 
 const minDate = new Date(1950, 0, 1);
 const maxDate = new Date(new Date().getFullYear() + 10, 11, 31);

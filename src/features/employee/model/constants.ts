@@ -3,10 +3,10 @@ import type { TEmployeeStatus } from "@/entities/employee";
 
 export const statusFilterOptions: { value: TEmployeeStatus; label: string }[] =
   [
-    { value: "active", label: "В работе" },
+    { value: "working", label: "В работе" },
     { value: "vacation", label: "В отпуске" },
-    { value: "sick", label: "На больничном" },
-    { value: "maternity", label: "В декрете" },
+    { value: "sick_leave", label: "На больничном" },
+    { value: "business_trip", label: "В командировке" },
   ];
 
 export const citiesFilterOptions: { value: string; label: string }[] = [

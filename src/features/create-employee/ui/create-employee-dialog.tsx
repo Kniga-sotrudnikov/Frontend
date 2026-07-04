@@ -31,7 +31,7 @@ const initialValues: CreateEmployeeFormValues = {
   phonePersonal: "",
   birthday: undefined,
   city: "",
-  status: "active",
+  status: "working",
   competencies: [],
   resumeLink: "",
   crmProfileLink: "",
