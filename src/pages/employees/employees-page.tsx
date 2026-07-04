@@ -41,6 +41,9 @@ const EmployeesPage = () => {
   const [vacancyIdFromUrl, setVacancyIdFromUrl] = useState<number | null>(null);
 
   const selectedUnit = useSelectionUnitStore((state) => state.selectedUnit);
+  const setSelectedUnit = useSelectionUnitStore(
+    (state) => state.setSelectedUnit,
+  );
   const filter = useMemo(
     () => selectedUnitToFilter(selectedUnit),
     [selectedUnit],
@@ -50,6 +53,11 @@ const EmployeesPage = () => {
   useEffect(() => {
     setOffset(0);
   }, [selectedUnit]);
+
+  // сброс выбранного узла при уходе со страницы
+  useEffect(() => {
+    return () => setSelectedUnit(null);
+  }, [setSelectedUnit]);
 
   //TODO: Добавить логику передачи роли в хук
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
