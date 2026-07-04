@@ -1,18 +1,21 @@
-import { useState } from "react";
-import { useOrgStructure } from "@/entities/org-structure";
+import { useOrgStructure, useSelectionUnitStore } from "@/entities/org-structure";
 import RenderUnits from "./render-unit";
 import { EditOrgStructureModal } from "@/widgets/edit-org-structure-modal";
 import { Button } from "@/shared/ui/button";
 import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import { useIsAdmin } from "@/entities/user";
+import { handleSelect } from "../assets/handle-select";
+
 
 function Navbar() {
   /* Сейчас хук useOrgStructure возвращает только структуру "Направления",
   возможно, когда на бэкенде добавят "СИС" и "УК" для них будут созданы 
   отдельные ендпоинты */
   const { data, isPending, isError } = useOrgStructure();
-  const [selectedName, setSelectedName] = useState<string | null>(null);
   const isAdmin = useIsAdmin();
+  const selectedUnit = useSelectionUnitStore((state) => state.selectedUnit);
+  const setSelectedUnit = useSelectionUnitStore((state) => state.setSelectedUnit);
+  
   
   /* Дерево оргструктуры на бэкенде не содержит верхнеуровневые заголовки,
   при этом они должны быть встроены в дерево оргструктуры для рендера. 
@@ -62,8 +65,8 @@ function Navbar() {
       {!isPending && !isError && treeForRender?.map((unit) => (
         <RenderUnits
           unit={unit}
-          selectedName={selectedName}
-          onSelect={setSelectedName}
+          selectedId={selectedUnit?.id ?? null}
+          onSelect={(unit) => handleSelect(unit, selectedUnit, setSelectedUnit)}
           key={unit.id}
         />
       ))}

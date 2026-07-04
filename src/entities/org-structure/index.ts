@@ -18,3 +18,5 @@ export {
   useDeleteDepartment,
 } from "./api/use-department-mutations";
 export { departmentApi } from "./api/department-api";
+export { useSelectionUnitStore } from "./model/use-selection-unit-store";
+export type { SelectedOrgUnit } from "./model/types";

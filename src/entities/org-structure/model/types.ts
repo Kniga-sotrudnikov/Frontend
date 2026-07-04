@@ -47,3 +47,10 @@ export interface DirectionFormValues {
   parent?: number | null;
   display_order?: number;
 }
+
+export interface SelectedOrgUnit {
+  id: number;
+  name: string;
+  head: boolean;
+  type?: 'direction' | 'department';
+}
