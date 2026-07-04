@@ -25,7 +25,9 @@ export const CreateEmployeeWrapper = ({
       full_name: data.fullName,
       job_title: data.position,
       email: data.emailCorporate,
+      personal_email: data.emailPersonal,
       phone: data.phoneCorporate,
+      personal_phone: data.phonePersonal,
       birthday: "0001-01-01",
       department: Number(data.department),
     });

@@ -13,7 +13,6 @@ import { PhotoUpload } from "./photo-upload";
 import { CompetenciesSelect } from "./competencies-select";
 import { FormSelect } from "./form-select";
 import {
-  LEADER_OPTIONS,
   CITY_OPTIONS,
 } from "../model/constants";
 import type { CreateEmployeeFormValues } from "../model/types";
@@ -288,7 +287,7 @@ export const EmployeeForm = memo(function EmployeeForm({
             )}
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
               Руководитель
             </Label.Root>
@@ -301,7 +300,7 @@ export const EmployeeForm = memo(function EmployeeForm({
               }))}
               placeholder="Выберите руководителя"
             />
-          </div>
+          </div> */}
 
           <div className="space-y-2">
             <Label.Root
