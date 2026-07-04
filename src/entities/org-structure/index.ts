@@ -10,7 +10,7 @@ export type {
   DepartmentResponse,
   DirectionFormValues,
 } from "./model/types";
-export { useOrgStructureStore } from "./model/use-org-structure-store";
+export { getDirections, getSisList } from "./lib/derive-org-lists";
 export { useOrgStructure } from "./api/use-org-structure";
 export { 
   useCreateDepartment, 

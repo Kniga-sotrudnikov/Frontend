@@ -1,6 +1,7 @@
 export interface OrgUnit {
   id?: number;
   name: string;
+  type?: 'direction' | 'sis' | 'department';
   head?: boolean;
   employeeCount?: number;
   items?: OrgUnit[];

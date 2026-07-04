@@ -6,8 +6,11 @@ import {
   EmployeeSelect,
   shortEmployees as mockEmployees,
 } from "@/entities/employee";
-import { OrgSection, DirectionFormFields } from "@/entities/org-structure";
-import { useUpdateDepartment } from "@/entities/org-structure/api/use-department-mutations";
+import {
+  OrgSection,
+  DirectionFormFields,
+  useUpdateDepartment,
+} from "@/entities/org-structure";
 import type { EditDirectionModalProps, Department } from "../model/types";
 
 export function EditDirectionModal({
