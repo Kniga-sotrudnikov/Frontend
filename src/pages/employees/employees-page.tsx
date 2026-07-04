@@ -17,6 +17,8 @@ import {
 import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 import { useGetVacancyDetail } from "@/entities/vacancy";
+import { useSelectionUnitStore } from "@/entities/org-structure";
+import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
 
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
 const DEFAULT_EMPLOYEE_LIMIT = 12;
@@ -38,10 +40,23 @@ const EmployeesPage = () => {
   const [offset, setOffset] = useState(0);
   const [vacancyIdFromUrl, setVacancyIdFromUrl] = useState<number | null>(null);
 
+  const selectedUnit = useSelectionUnitStore((state) => state.selectedUnit);
+  const filter = useMemo(
+    () => selectedUnitToFilter(selectedUnit),
+    [selectedUnit],
+  );
+
+  // при смене выбранного узла возвращаемся на первую страницу
+  useEffect(() => {
+    setOffset(0);
+  }, [selectedUnit]);
+
   //TODO: Добавить логику передачи роли в хук
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
     limit,
     offset,
+    undefined,
+    filter,
   );
   const { data: vacancyDetailFromUrl } = useGetVacancyDetail(
     vacancyIdFromUrl ?? 0,
