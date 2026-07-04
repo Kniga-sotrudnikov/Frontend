@@ -28,8 +28,9 @@ function RenderUnit({ unit, selectedId, onSelect }: RenderUnitProps) {
             size="sm"
             className={cn(
               "group w-full justify-start transition-none text-sm",
-              isActive &&
-                "bg-secondary hover:bg-secondary aria-expanded:bg-secondary",
+              isActive
+                ? "bg-secondary hover:bg-secondary aria-expanded:bg-secondary"
+                : "aria-expanded:not-hover:bg-transparent",
               unit.head && "mt-5",
             )}
           >
