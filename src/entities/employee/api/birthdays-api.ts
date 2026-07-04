@@ -68,24 +68,16 @@ const mapApiToBirthday = (data: PublicBirthdayResponse | AdminBirthdayResponse):
 };
 
 export const getPublicBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
-  try {
-    const response = await apiClient.get<PublicBirthdayResponse[]>('/employees/birthdays/');
-    return response.data
-      .map(mapApiToBirthday)
-      .filter((item): item is BirthdayPerson => item !== null);
-  } catch (error) {
-    console.error("Error fetching birthdays:", error);
-    return [];
-  }
+  const response = await apiClient.get<PublicBirthdayResponse[]>('/employees/birthdays/');
+  return response.data
+    .map(mapApiToBirthday)
+    .filter((item): item is BirthdayPerson => item !== null);
 };
 
 export const getCurrentMonthBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
   const allBirthdays = await getPublicBirthdaysApi();
   const currentMonth = new Date().getMonth();
-  
-  return allBirthdays.filter(
-    (birthday) => birthday.fullDate.getMonth() === currentMonth
-  );
+  return allBirthdays.filter((birthday) => birthday.fullDate.getMonth() === currentMonth);
 };
 
 export const getTodayBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
@@ -93,7 +85,6 @@ export const getTodayBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
   const today = new Date();
   const todayMonth = today.getMonth();
   const todayDay = today.getDate();
-  
   return allBirthdays.filter((birthday) => {
     return birthday.fullDate.getMonth() === todayMonth && 
            birthday.fullDate.getDate() === todayDay;
@@ -101,35 +92,20 @@ export const getTodayBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
 };
 
 export const getUpcomingBirthdaysAdminApi = async (): Promise<BirthdayPerson[]> => {
-  try {
-    const response = await apiClient.get<AdminBirthdayResponse[]>('/admin/birthdays/upcoming/');
-    return response.data
-      .map(mapApiToBirthday)
-      .filter((item): item is BirthdayPerson => item !== null);
-  } catch (error) {
-    console.error("Error fetching upcoming birthdays:", error);
-    return [];
-  }
+  const response = await apiClient.get<AdminBirthdayResponse[]>('/admin/birthdays/upcoming/');
+  return response.data
+    .map(mapApiToBirthday)
+    .filter((item): item is BirthdayPerson => item !== null);
 };
 
 export const getBirthdaysSettingsApi = async (): Promise<BirthdaySettings> => {
-  try {
-    const response = await apiClient.get<BirthdaySettings>('/admin/birthdays/settings/');
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching birthdays settings:", error);
-    return {};
-  }
+  const response = await apiClient.get<BirthdaySettings>('/admin/birthdays/settings/');
+  return response.data;
 };
 
 export const updateBirthdaysSettingsApi = async (
   data: BirthdaySettingsUpdate
 ): Promise<BirthdaySettings> => {
-  try {
-    const response = await apiClient.patch<BirthdaySettings>('/admin/birthdays/settings/', data);
-    return response.data;
-  } catch (error) {
-    console.error("Error updating birthdays settings:", error);
-    throw error;
-  }
+  const response = await apiClient.patch<BirthdaySettings>('/admin/birthdays/settings/', data);
+  return response.data;
 };
