@@ -19,16 +19,16 @@ export const CreateEmployeeWrapper = ({
   const { mutate } = useCreateEmployee();
 
   //TODO: разобраться с недостающими полями и с несоответствием типов!
-  // Согласовать обязательные поля с бекендом
-  // Убрать моковые данные
   const handleSubmit = async (data: CreateEmployeeFormValues) => {
     mutate({
       full_name: data.fullName,
       job_title: data.position,
+      role_description: data.role.split(",").map(item => item.trim()).filter(Boolean),
       email: data.emailCorporate,
       personal_email: data.emailPersonal,
       phone: data.phoneCorporate,
       personal_phone: data.phonePersonal,
+      interests: data.aboutMe,
       birthday: format(data.birthday as Date, "yyyy-MM-dd"),
       department: Number(data.department),
       city: data.city,
@@ -36,6 +36,7 @@ export const CreateEmployeeWrapper = ({
       crm_profile: data.crmProfileLink,
       resume_link: data.resumeLink,
       social_network: data.socialNetworkLink,
+      //tags: data.competencies,
     });
   };
 

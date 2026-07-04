@@ -84,7 +84,7 @@ export type TTag = {
 export interface BaseEmployeeRequestResponse {
   full_name: string;
   job_title: string;
-  role_description?: string;
+  role_description?: string[];
 
   email: string;
   phone?: string;
