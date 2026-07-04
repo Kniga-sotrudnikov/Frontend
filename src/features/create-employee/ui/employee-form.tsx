@@ -12,9 +12,6 @@ import type { TEmployeeStatus } from "@/entities/employee";
 import { PhotoUpload } from "./photo-upload";
 import { CompetenciesSelect } from "./competencies-select";
 import { FormSelect } from "./form-select";
-import {
-  CITY_OPTIONS,
-} from "../model/constants";
 import type { CreateEmployeeFormValues } from "../model/types";
 import type { ValidationErrors } from "../model/validation";
 import { useDepartmentsList } from "@/entities/org-structure/api/use-department-list";
@@ -61,12 +58,13 @@ export const EmployeeForm = memo(function EmployeeForm({
 
   const { data } = useDepartmentsList();
 
-  const departmentOptions = data?.results
-  ?.filter((dep) => dep.type === 'department')
-  ?.map(dep => ({
-    value: dep.id.toString(),
-    label: dep.name,
-  })) ?? [];
+  const departmentOptions =
+    data?.results
+      ?.filter((dep) => dep.type === "department")
+      ?.map((dep) => ({
+        value: dep.id.toString(),
+        label: dep.name,
+      })) ?? [];
 
   return (
     <>
@@ -347,17 +345,19 @@ export const EmployeeForm = memo(function EmployeeForm({
             )}
           </div>
 
-          <div className="space-y-2 -mb-3">
-            <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
+          <div className="space-y-2">
+            <Label.Root
+              htmlFor="city"
+              className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
+            >
               Город
             </Label.Root>
-            <FormSelect
+            <FormInput
+              id="city"
+              ref={firstInputRef}
               value={values.city}
-              onValueChange={(value) => onUpdate("city", value)}
-              options={CITY_OPTIONS.map((city) => ({
-                value: city.value,
-                label: city.value,
-              }))}
+              onChange={(e) => onUpdate("city", e.target.value)}
+              onBlur={() => onBlur("city")}
               placeholder="Выберите город"
               error={!!showError("city")}
             />

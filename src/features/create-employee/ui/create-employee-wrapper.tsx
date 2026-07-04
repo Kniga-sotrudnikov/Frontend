@@ -30,6 +30,7 @@ export const CreateEmployeeWrapper = ({
       personal_phone: data.phonePersonal,
       birthday: "0001-01-01",
       department: Number(data.department),
+      city: data.city,
     });
   };
 
