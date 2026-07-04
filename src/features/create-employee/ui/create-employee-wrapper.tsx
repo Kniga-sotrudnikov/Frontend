@@ -27,7 +27,7 @@ export const CreateEmployeeWrapper = ({
       email: data.emailCorporate,
       phone: data.phoneCorporate,
       birthday: "0001-01-01",
-      department: 1,
+      department: Number(data.department),
     });
   };
 

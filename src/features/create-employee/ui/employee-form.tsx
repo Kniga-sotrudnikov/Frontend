@@ -13,12 +13,12 @@ import { PhotoUpload } from "./photo-upload";
 import { CompetenciesSelect } from "./competencies-select";
 import { FormSelect } from "./form-select";
 import {
-  DEPARTMENT_OPTIONS,
   LEADER_OPTIONS,
   CITY_OPTIONS,
 } from "../model/constants";
 import type { CreateEmployeeFormValues } from "../model/types";
 import type { ValidationErrors } from "../model/validation";
+import { useDepartmentsList } from "@/entities/org-structure/api/use-department-list";
 
 const statusOptions = [
   { value: "active", label: "В работе" },
@@ -60,6 +60,15 @@ export const EmployeeForm = memo(function EmployeeForm({
 
   const RequiredMark = () => <span className="text-red-600 ml-0.5">*</span>;
 
+  const { data } = useDepartmentsList();
+
+  const departmentOptions = data?.results
+  ?.filter((dep) => dep.type === 'department')
+  ?.map(dep => ({
+    value: dep.id.toString(),
+    label: dep.name,
+  })) ?? [];
+
   return (
     <>
       <div className="mb-5" data-photo-upload>
@@ -100,10 +109,7 @@ export const EmployeeForm = memo(function EmployeeForm({
             <FormSelect
               value={values.department}
               onValueChange={(value) => onUpdate("department", value)}
-              options={DEPARTMENT_OPTIONS.map((dept) => ({
-                value: dept.value,
-                label: dept.value,
-              }))}
+              options={departmentOptions}
               placeholder="Выберите отдел"
               error={!!showError("department")}
             />
