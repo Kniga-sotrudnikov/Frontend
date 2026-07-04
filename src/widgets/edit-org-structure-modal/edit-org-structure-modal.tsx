@@ -48,7 +48,7 @@ export function EditOrgStructureModal({
     headName: string;
     entityType: "direction" | "sis";
     departmentId?: number;
-    headId?: number;
+    headId?: number | null;
   } | null>(null);
   const [creatingEntityType, setCreatingEntityType] = useState<
     "direction" | "sis" | null
@@ -132,14 +132,14 @@ export function EditOrgStructureModal({
 
   const handleEditDirection = (item: OrgItemType) => {
     let departmentId: number | undefined;
-    let headId: number | undefined;
+    let headId: number | null = null;
     
     const directionNode = tree.find(u => u.name === "Направления");
     if (directionNode?.items) {
       const found = directionNode.items.find((u: OrgUnit) => String(u.id) === item.id);
       if (found) {
         departmentId = found.id;
-        headId = found.headId;
+        headId = found.headId ?? null;
       }
     }
 
@@ -153,14 +153,14 @@ export function EditOrgStructureModal({
 
   const handleEditSis = (item: OrgItemType) => {
     let departmentId: number | undefined;
-    let headId: number | undefined;
+    let headId: number | null = null;
     
     const sisNode = tree.find(u => u.name === "СИС");
     if (sisNode?.items) {
       const found = sisNode.items.find((u: OrgUnit) => String(u.id) === item.id);
       if (found) {
         departmentId = found.id;
-        headId = found.headId;
+        headId = found.headId ?? null;
       }
     }
 
