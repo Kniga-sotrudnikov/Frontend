@@ -3,6 +3,7 @@ import { CreateEmployeeButton } from "./create-employee-button";
 import { CreateEmployeeDialog } from "./create-employee-dialog";
 import type { CreateEmployeeFormValues } from "../model/types";
 import { useCreateEmployee } from "@/entities/employee";
+import { format } from "date-fns";
 
 interface CreateEmployeeWrapperProps {
   buttonClassName?: string;
@@ -28,7 +29,7 @@ export const CreateEmployeeWrapper = ({
       personal_email: data.emailPersonal,
       phone: data.phoneCorporate,
       personal_phone: data.phonePersonal,
-      birthday: "0001-01-01",
+      birthday: format(data.birthday as Date, "yyyy-MM-dd"),
       department: Number(data.department),
       city: data.city,
     });
