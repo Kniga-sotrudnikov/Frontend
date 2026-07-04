@@ -21,7 +21,7 @@ import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
 import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
 import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
-import { useIsAdmin } from "@/entities/user";
+import { useIsAdmin, useAuthStore } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 import { useGetFavorites, useToggleFavorite } from "@/entities/favorites";
 import { EmployeeCardsSkeleton } from "@/widgets/employee-card";
@@ -56,6 +56,9 @@ export const EmployeesList = ({
     useState<EmployeeData | null>(null);
 
   const isAdmin = useIsAdmin();
+  
+  const currentUser = useAuthStore((state) => state.user);
+  const currentEmployeeId = currentUser?.employee_id;
 
   const { data: vacanciesData } = useGetVacancies();
   const vacancies = vacanciesData?.results ?? [];
@@ -66,6 +69,11 @@ export const EmployeesList = ({
   const favoriteIds = useMemo(() => {
     return favoritesData?.results.map((f) => f.employeeId) ?? [];
   }, [favoritesData]);
+
+  const filteredEmployees = useMemo(() => {
+    if (!currentEmployeeId) return employees;
+    return employees.filter((emp) => Number(emp.id) !== currentEmployeeId);
+  }, [employees, currentEmployeeId]);
 
   const { selectedEmployeeFromStore, openEmployeeModal, closeEmployeeModal } =
     useEmployeeModalStore(
@@ -122,11 +130,26 @@ export const EmployeesList = ({
     }
   }, [vacancyDetail, openVacancyModal]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const vacancyId = params.get("vacancy");
+    const employeeId = params.get("employee");
+
+    if (vacancyId) {
+      setSelectedVacancyId(Number(vacancyId));
+    }
+
+    if (employeeId) {
+      const employee = filteredEmployees.find((e) => String(e.id) === employeeId);
+      if (employee) openEmployeeModal(employee);
+    }
+  }, [filteredEmployees, openEmployeeModal]);
+
   const handleVacancyClick = (vacancy: NormalizedVacancy) => {
     setSelectedVacancyId(vacancy.id);
   };
 
-  const favoriteEmployees = employees.filter(
+  const favoriteEmployees = filteredEmployees.filter(
     (emp) => favoriteIds.includes(Number(emp.id)) && !emp.isArchived,
   );
 
@@ -135,12 +158,12 @@ export const EmployeesList = ({
 
   const allFavorites = [...favoriteEmployees, ...favoriteVacancies];
 
-  const archivedEmployees = employees.filter((emp) => emp.isArchived === true);
+  const archivedEmployees = filteredEmployees.filter((emp) => emp.isArchived === true);
   const archivedVacancies = vacancies.filter((vac) => vac.isArchived === true);
   const allArchived = [...archivedEmployees, ...archivedVacancies];
 
   const tabContentMap = {
-    employees: employees.filter((emp) => !emp.isArchived),
+    employees: filteredEmployees.filter((emp) => !emp.isArchived),
     vacancies: vacancies.filter((vac) => !vac.isArchived),
     favorites: allFavorites,
     archive: allArchived,
