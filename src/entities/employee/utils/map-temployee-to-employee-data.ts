@@ -67,7 +67,7 @@ export const mapEmployeeListResponse = (
   };
 };
 
-export const mapEmployeeDetail = (
+/* export const mapEmployeeDetail = (
   data: EmployeeDetailAdminResponse | EmployeeDetailPublicResponse,
 ): EmployeeData => {
   return {
@@ -87,5 +87,67 @@ export const mapEmployeeDetail = (
     phonePersonal: undefined,
     birthday: data.birthday,
     competencies: data.tags.map((t) => t.name),
+  };
+}; */
+
+export const mapEmployeeDetail = (
+  data: EmployeeDetailAdminResponse | EmployeeDetailPublicResponse,
+): EmployeeData => {
+  return {
+    id: data.id,
+
+    name: data.full_name,
+    position: data.job_title,
+
+    department: String(data.department_id),
+    franchise: data.direction_name ?? "",
+
+    status: data.employment_status,
+
+    photo: data.photo_url ?? undefined,
+
+    city: data.city ?? "",
+
+    // 👇 руководитель
+    linearManager:
+      data.supervisor_name ??
+      data.supervisor_detail?.full_name ??
+      "",
+
+    supervisor: data.supervisor_detail
+      ? {
+          name: data.supervisor_detail.full_name,
+          position: data.supervisor_detail.job_title,
+          photo: data.supervisor_detail.photo_url ?? undefined,
+        }
+      : undefined,
+
+    // 👇 контакты
+    emailCorporate: data.email ?? undefined,
+    phoneCorporate: data.phone ?? undefined,
+
+    // 👇 дата
+    birthday: data.birthday ?? undefined,
+
+    // 👇 компетенции
+    competencies: data.tags?.map((t) => t.name) ?? [],
+
+    // 👇 роли / описание роли
+    //roles: data.role_description ?? [],
+    role: data.role_description?.join(", ") ?? "",
+
+    // 👇 доп поля
+    socialNetwork: data.social_network ?? undefined,
+    resumeLink: data.resume_link ?? undefined,
+    crmProfile: data.crm_profile ?? undefined,
+
+    aboutMe: data.interests ?? undefined,
+
+    // 👇 пока нет в API — оставляем как есть
+    emailPersonal: undefined,
+    phonePersonal: undefined,
+
+    // 👇 архив (если появится статус — можно расширить)
+    isArchived: false,
   };
 };

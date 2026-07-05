@@ -158,42 +158,99 @@ export interface EmployeesListResponse {
   previous: string | null;
   results: EmployeeShortResponse[];
 }
-// {
-//     "id": 37,
-//     "full_name": "04 тест 14",
-//     "job_title": "тест 14",
-//     "department_name": "Корневая соц. практика",
-//     "direction_name": "Трудоустройство",
-//     "photo_url": null,
-//     "status": "active",
-//     "birthday_display": "3 июля",
-//     "tags": [],
-//     "city": "Москва",
-//     "employment_status": "sick_leave",
-//     "employment_status_display": "На больничном",
-//     "supervisor_name": null,
-//     "supervisor_id": null,
-//     "email": "testcorp14@test.test",
-//     "phone": "+7 (843) 345-67-89",
-//     "interests": "urhgiusergius",
-//     "birthday": "2020-07-03",
-//     "role_description": [
-//         "рандомная роль 1",
-//         "рандомная роль 2"
-//     ],
-//     "department": 9,
-//     "department_id": 9,
-//     "crm_profile": "https://employeebook.rassokha.pro/crm",
-//     "social_network": "https://employeebook.rassokha.pro/social",
-//     "resume_link": "https://employeebook.rassokha.pro/resume",
-//     "supervisor_detail": null,
-//     "supervisor_photo_url": null,
-//     "photo_original_url": null,
-//     "created_at": "2026-07-04T23:16:07.428074Z",
-//     "updated_at": "2026-07-04T23:16:07.428094Z",
-//     "created_by": 1
+
+export interface SupervisorDetail {
+  id: number;
+  full_name: string;
+  job_title: string;
+  photo_url: string | null;
+  department_name: string;
+  department_id: number;
+}
+
+// interface BaseEmployeeDetail {
+//   id: number;
+
+//   full_name: string;
+//   job_title: string;
+
+//   department_name: string;
+//   direction_name: string | null;
+
+//   photo_url: string | null;
+
+//   status: StatusEnum;
+
+//   birthday_display: string | null;
+
+//   tags: TTag[];
+
+//   city: string | null;
+
+//   employment_status: TEmployeeStatus;
+//   employment_status_display: string;
+
+//   supervisor_name: string | null;
+//   supervisor_id: number | null;
+
+//   email: string;
+//   phone: string;
+
+//   interests: string;
+
+//   birthday: string;
+
+//   /**
+//    * ❗ неизвестный формат с бэка (в сваггере string, по факту объект)
+//    */
+//   role_description: unknown;
+
+//   department: number;
+
+//   /**
+//    * ❗ нет в сваггере
+//    */
+//   department_id: number;
+
+//   /**
+//    * ❗ нет в сваггере
+//    */
+//   crm_profile: string | null;
+
+//   /**
+//    * ❗ нет в сваггере
+//    */
+//   social_network: string | null;
+
+//   /**
+//    * ❗ нет в сваггере
+//    */
+//   resume_link: string | null;
+
+//   /**
+//    * ❗ нет в сваггере
+//    */
+//   supervisor_detail: unknown | null;
+
+//   /**
+//    * ❗ нет в сваггере
+//    */
+//   supervisor_photo_url: string | null;
+
+//   /**
+//    * ❗ нет в сваггере
+//    */
+//   photo_original_url: string | null;
+
+//   created_at: string;
+//   updated_at: string;
 // }
-interface BaseEmployeeDetail {
+
+//export type EmployeeDetailAdminResponse = BaseEmployeeDetail;
+
+
+
+export interface EmployeeDetailAdminResponse {
   id: number;
 
   full_name: string;
@@ -203,10 +260,12 @@ interface BaseEmployeeDetail {
   direction_name: string | null;
 
   photo_url: string | null;
+  photo_original_url: string | null;
 
   status: StatusEnum;
 
   birthday_display: string | null;
+  birthday: string;
 
   tags: TTag[];
 
@@ -217,60 +276,28 @@ interface BaseEmployeeDetail {
 
   supervisor_name: string | null;
   supervisor_id: number | null;
+  supervisor_detail: SupervisorDetail | null;
+  supervisor_photo_url: string | null;
+
+  // ⚠️ поле нестабильное (иногда отсутствует)
+  supervisor_role_name?: string | null;
 
   email: string;
   phone: string;
 
   interests: string;
 
-  birthday: string;
-
-  /**
-   * ❗ неизвестный формат с бэка (в сваггере string, по факту объект)
-   */
-  role_description: unknown;
+  role_description: string[];
 
   department: number;
-
-  /**
-   * ❗ нет в сваггере
-   */
   department_id: number;
 
-  /**
-   * ❗ нет в сваггере
-   */
   crm_profile: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
   social_network: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
   resume_link: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
-  supervisor_detail: unknown | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
-  supervisor_photo_url: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
-  photo_original_url: string | null;
 
   created_at: string;
   updated_at: string;
 }
 
-export type EmployeeDetailAdminResponse = BaseEmployeeDetail;
-
-export type EmployeeDetailPublicResponse = BaseEmployeeDetail;
+export type EmployeeDetailPublicResponse = EmployeeDetailAdminResponse;

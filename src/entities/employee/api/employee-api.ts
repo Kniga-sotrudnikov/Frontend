@@ -74,3 +74,41 @@ export const patchEmployee = async (
 export const deleteEmployee = async (id: string | number) => {
   await apiClient.delete(`/admin/employees/${id}/`);
 };
+
+export const uploadEmployeePhoto = async (
+  id: number,
+  file: File,
+) => {
+  const formData = new FormData();
+  formData.append("photo", file);
+
+  const response = await apiClient.post(
+    `/admin/employees/${id}/photo/`,
+    formData,{
+    headers: {
+      "Content-Type" : undefined,
+    },
+    }
+  );
+
+  return response.data;
+};
+
+export const updateEmployeePhoto = async (
+  id: number,
+  file: File,
+) => {
+  const formData = new FormData();
+  formData.append("photo", file);
+
+  const response = await apiClient.patch(
+    `/admin/employees/${id}/photo/`,
+    formData,{
+    headers: {
+      "Content-Type" : undefined,
+    },
+    }
+  );
+
+  return response.data;
+};
