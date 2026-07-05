@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@ui/button";
 import {
   Dialog,
@@ -54,13 +54,6 @@ export const AddTagDialog = ({
 }: AddTagDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const preventDialogClose = usePreventDialogClose();
-
-  useEffect(() => {
-    if (open) {
-      console.log("AddTagDialog opened, employees count:", employees.length);
-      console.log("Employees sample:", employees.slice(0, 2));
-    }
-  }, [open, employees]);
 
   const groupOptions = groups.map((group) => ({
     value: group.key,

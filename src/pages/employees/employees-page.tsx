@@ -19,6 +19,7 @@ import { AppPagination } from "@ui/pagination";
 import { useGetVacancyDetail } from "@/entities/vacancy";
 import { useSelectionUnitStore } from "@/entities/org-structure";
 import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
+import { useAuthStore } from "@/entities/user";
 
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
 const DEFAULT_EMPLOYEE_LIMIT = 12;
@@ -58,6 +59,8 @@ const EmployeesPage = () => {
   useEffect(() => {
     return () => setSelectedUnit(null);
   }, [setSelectedUnit]);
+  const currentUser = useAuthStore((state) => state.user);
+  const currentEmployeeId = currentUser?.employee_id;
 
   //TODO: Добавить логику передачи роли в хук
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
@@ -70,7 +73,7 @@ const EmployeesPage = () => {
     vacancyIdFromUrl ?? 0,
   );
 
-  const totalCount = listData?.count ?? 0;
+  const totalCount = (listData?.count ?? 0) - (currentEmployeeId ? 1 : 0);
   const page = Math.floor(offset / limit) + 1;
 
   const employees = useMemo(() => {
