@@ -46,6 +46,7 @@ export function EditOrgStructureModal({
     headName: string;
     entityType: "direction" | "sis";
     departmentId?: number;
+    headId?: number | null;
   } | null>(null);
   const [creatingEntityType, setCreatingEntityType] = useState<
     "direction" | "sis" | null
@@ -71,13 +72,11 @@ export function EditOrgStructureModal({
 
       if (!targetNode?.items) return [];
 
-      return targetNode.items.map(
-        (item): Department => ({
-          id: String(item.id || ""),
-          name: item.name,
-          headName: "",
-        }),
-      );
+      return targetNode.items.map((item: OrgUnit): Department => ({
+        id: String(item.id || ''),
+        name: item.name,
+        headName: item.headName || '',
+      }));
     };
   }, [tree]);
 
@@ -121,22 +120,36 @@ export function EditOrgStructureModal({
   };
 
   const handleEditDirection = (item: OrgItemType) => {
-    setEditingDirection({
-      ...item,
+    let departmentId: number | undefined;
+    const directionNode = tree.find(u => u.name === "Направления");
+    if (directionNode?.items) {
+      const found = directionNode.items.find((u: OrgUnit) => String(u.id) === item.id);
+      if (found?.id) departmentId = found.id;
+    }
+
+    setEditingDirection({ 
+      ...item, 
       entityType: "direction",
-      departmentId: Number(item.id) || undefined,
+      departmentId 
     });
   };
 
   const handleEditSis = (item: OrgItemType) => {
-    setEditingDirection({
-      ...item,
+    let departmentId: number | undefined;
+    const sisNode = tree.find(u => u.name === "СИС");
+    if (sisNode?.items) {
+      const found = sisNode.items.find((u: OrgUnit) => String(u.id) === item.id);
+      if (found?.id) departmentId = found.id;
+    }
+
+    setEditingDirection({ 
+      ...item, 
       entityType: "sis",
-      departmentId: Number(item.id) || undefined,
+      departmentId 
     });
   };
 
-  const handleDeleteDirection = async (item: OrgItemType) => {
+  const handleDeleteDirection = (item: OrgItemType) => {
     if (onDeleteDirection) {
       onDeleteDirection(item);
       return;
@@ -154,20 +167,16 @@ export function EditOrgStructureModal({
       return;
     }
 
-    try {
-      await deleteDepartment.mutateAsync(departmentId);
-      setLocalDirections((items) => items.filter((i) => i.id !== item.id));
-      addNotification({
-        iconType: "success",
-        title: "Удалено",
-        message: `«${item.name}» удалено`,
-      });
-    } catch (error) {
-      console.error("Error deleting direction:", error);
-    }
+    deleteDepartment.mutate(departmentId);
+    setLocalDirections((items) => items.filter((i) => i.id !== item.id));
+    addNotification({
+      iconType: "success",
+      title: "Удалено",
+      message: `«${item.name}» удалено`,
+    });
   };
 
-  const handleDeleteSis = async (item: OrgItemType) => {
+  const handleDeleteSis = (item: OrgItemType) => {
     if (onDeleteSis) {
       onDeleteSis(item);
       return;
@@ -185,17 +194,13 @@ export function EditOrgStructureModal({
       return;
     }
 
-    try {
-      await deleteDepartment.mutateAsync(departmentId);
-      setLocalSisList((items) => items.filter((i) => i.id !== item.id));
-      addNotification({
-        iconType: "success",
-        title: "Удалено",
-        message: `«${item.name}» удалено`,
-      });
-    } catch (error) {
-      console.error("Error deleting sis:", error);
-    }
+    deleteDepartment.mutate(departmentId);
+    setLocalSisList((items) => items.filter((i) => i.id !== item.id));
+    addNotification({
+      iconType: "success",
+      title: "Удалено",
+      message: `«${item.name}» удалено`,
+    });
   };
 
   const handleDirectionSave = (values: DirectionFormValues) => {
@@ -300,6 +305,7 @@ export function EditOrgStructureModal({
         entityType={editingDirection?.entityType}
         initialName={editingDirection?.name ?? ""}
         initialHeadName={editingDirection?.headName ?? ""}
+        initialHeadId={editingDirection?.headId ?? null}
         departments={editingDepartments}
         departmentId={editingDirection?.departmentId}
         onSave={handleDirectionSave}

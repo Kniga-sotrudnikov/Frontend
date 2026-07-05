@@ -12,6 +12,8 @@ export type {
 } from "./model/types";
 export { getDirections, getSisList } from "./lib/derive-org-lists";
 export { useOrgStructure } from "./api/use-org-structure";
+export { useSummaryStats, summaryKeys } from "./model/summary-queries";
+export type { SummaryStats } from "./api/summary-api";
 export { 
   useCreateDepartment, 
   useUpdateDepartment,

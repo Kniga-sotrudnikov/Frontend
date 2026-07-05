@@ -3,6 +3,8 @@ export interface OrgUnit {
   name: string;
   type?: 'direction' | 'sis' | 'department';
   head?: boolean;
+  headId?: number | null;
+  headName?: string;
   employeeCount?: number;
   items?: OrgUnit[];
 }
@@ -10,6 +12,7 @@ export interface OrgUnit {
 export interface DepartmentCreateDTO {
   name: string;
   type: 'direction' | 'sis' | 'department';
+  head_id?: number | null;
   display_order?: number;
   parent?: number | null;
   description?: string;
@@ -19,11 +22,18 @@ export interface DepartmentCreateDTO {
 export interface DepartmentUpdateDTO {
   name?: string;
   type?: 'direction' | 'sis' | 'department';
+  head_id?: number | null;
   display_order?: number;
   parent?: number | null;
   description?: string;
   short_name?: string;
   is_active?: boolean;
+}
+
+export interface HeadInfo {
+  id: number;
+  full_name: string;
+  job_title: string;
 }
 
 export interface DepartmentResponse {
@@ -33,6 +43,8 @@ export interface DepartmentResponse {
   description: string | null;
   type: 'direction' | 'sis' | 'department';
   parent: number | null;
+  head: HeadInfo | null;
+  head_id: number | null;
   display_order: number;
   is_active: boolean;
   employee_count: number;
@@ -44,6 +56,7 @@ export interface DirectionFormValues {
   short_name?: string;
   description: string;
   type: 'direction' | 'sis';
+  head_id?: number | null;
   parent?: number | null;
   display_order?: number;
 }

@@ -57,7 +57,7 @@ export function EditDirectionModal({
     setOpen(isOpen);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!departmentId) {
       addNotification({
         type: "error",
@@ -78,23 +78,18 @@ export function EditDirectionModal({
       return;
     }
 
-    try {
-      await updateDepartment.mutateAsync({
-        id: departmentId,
-        data: {
-          name: name.trim(),
-          description: description.trim() || undefined,
-          // Если нужно обновлять руководителя
-          // head_id: headId,
-        },
-      });
+    updateDepartment.mutate({
+      id: departmentId,
+      data: {
+        name: name.trim(),
+        description: description.trim() || undefined,
+        head_id: headId,
+      },
+    });
 
-      handleOpenChange(false);
-      
-      onSave?.({ name, headName, description }, departments);
-    } catch (error) {
-      console.error("Error updating department:", error);
-    }
+    handleOpenChange(false);
+    
+    onSave?.({ name, headName, description }, departments);
   };
 
   const handleAddDepartment = () => {
