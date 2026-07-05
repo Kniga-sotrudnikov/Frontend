@@ -37,17 +37,17 @@ export const useOrgStructureStore = create<OrgStructureStore>()((set) => ({
   loadFromTree: (tree) => {
     const directionsNode = tree.find(u => u.name === "Направления");
     const sisNode = tree.find(u => u.name === "СИС");
-  
+
     const directions = directionsNode?.items?.map((item): OrgItemType => ({
       id: String(item.id || ''),
       name: item.name,
-      headName: '',
+      headName: item.headName || '',
     })) || [];
     
     const sisList = sisNode?.items?.map((item): OrgItemType => ({
       id: String(item.id || ''),
       name: item.name,
-      headName: '',
+      headName: item.headName || '',
     })) || [];
     
     set({ tree, directions, sisList });
