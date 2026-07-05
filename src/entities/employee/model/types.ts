@@ -122,6 +122,7 @@ export interface PatchEmployeeResponse extends BaseEmployeeRequestResponse {
 }
 
 export interface EmployeeShortResponse {
+  competencies?: string[];
   id: number;
 
   full_name: string;

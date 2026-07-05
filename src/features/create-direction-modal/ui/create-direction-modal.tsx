@@ -53,7 +53,7 @@ export function CreateDirectionModal({
     setOpen(isOpen);
   };
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!name.trim()) {
       addNotification({
         type: "error",
@@ -64,26 +64,21 @@ export function CreateDirectionModal({
       return;
     }
 
-    try {
-      await createDepartment.mutateAsync({
-        name: name.trim(),
-        type: isDirection ? "direction" : "sis",
-        description: description.trim() || undefined,
-        // Если нужно привязывать к руководителю, добавляем поле head_id
-        // head_id: headId,
-      });
+    createDepartment.mutate({
+      name: name.trim(),
+      type: isDirection ? "direction" : "sis",
+      description: description.trim() || undefined,
+      head_id: headId,
+    });
 
-      handleOpenChange(false);
-      
-      onCreate?.({
-        name,
-        headName,
-        headId,
-        description,
-      });
-    } catch (error) {
-      console.error("Error creating department:", error);
-    }
+    handleOpenChange(false);
+    
+    onCreate?.({
+      name,
+      headName,
+      headId,
+      description,
+    });
   };
 
   const handleNext = () => {

@@ -18,6 +18,9 @@ import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 import { useGetVacancyDetail } from "@/entities/vacancy";
 import { format } from "date-fns";
+import { useAuthStore } from "@/entities/user";
+import { useSummaryStats } from "@/entities/org-structure";
+import { pluralize } from "@/shared/lib";
 
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
 const DEFAULT_EMPLOYEE_LIMIT = 12;
@@ -39,7 +42,9 @@ const EmployeesPage = () => {
   const [offset, setOffset] = useState(0);
   const [vacancyIdFromUrl, setVacancyIdFromUrl] = useState<number | null>(null);
 
-  //TODO: Добавить логику передачи роли в хук
+  const currentUser = useAuthStore((state) => state.user);
+  const currentEmployeeId = currentUser?.employee_id;
+
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
     limit,
     offset,
@@ -47,13 +52,43 @@ const EmployeesPage = () => {
   const { data: vacancyDetailFromUrl } = useGetVacancyDetail(
     vacancyIdFromUrl ?? 0,
   );
+  const { data: summaryData, isLoading: isSummaryLoading } = useSummaryStats();
 
-  const totalCount = listData?.count ?? 0;
+  const totalCount = (listData?.count ?? 0) - (currentEmployeeId ? 1 : 0);
   const page = Math.floor(offset / limit) + 1;
 
   const employees = useMemo(() => {
     return listData?.results ?? [];
   }, [listData?.results]);
+
+  const statsText = useMemo(() => {
+    if (isSummaryLoading) return "Загрузка...";
+    if (!summaryData) return "Нет данных";
+
+    // TODO: #45 Заменить "вакансий" на "СИС" после добавления соответствующего поля в API
+    // Сейчас API возвращает vacancies_count, но в дизайне отображается "СИС"
+    // Нужно будет обновить после доработки бекенда
+    const employees = pluralize(
+      summaryData.employees_count,
+      "сотрудник",
+      "сотрудника",
+      "сотрудников",
+    );
+    const directions = pluralize(
+      summaryData.directions_count,
+      "направление",
+      "направления",
+      "направлений",
+    );
+    const vacancies = pluralize(
+      summaryData.vacancies_count,
+      "вакансия",
+      "вакансии",
+      "вакансий",
+    );
+
+    return `${summaryData.employees_count} ${employees}, ${summaryData.directions_count} ${directions}, ${summaryData.vacancies_count} ${vacancies}`;
+  }, [summaryData, isSummaryLoading]);
 
   //TODO: Обработать сценарий если при редактировании происходит ошибка
   const { mutate: patchEmployee } = usePatchEmployee();
@@ -110,7 +145,7 @@ const EmployeesPage = () => {
       <div className="flex h-full min-h-0 flex-col bg-gray-50">
         <PageHeader
           title="Книга сотрудников"
-          stats={<span>144 сотрудников, 4 направления, 7 СИС</span>}
+          stats={<span>{statsText}</span>}
           search={
             <SearchInput placeholder="Поиск по ФИО, должности, тегам..." />
           }

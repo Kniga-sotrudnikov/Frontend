@@ -12,6 +12,8 @@ export type {
 } from "./model/types";
 export { useOrgStructureStore } from "./model/use-org-structure-store";
 export { useOrgStructure } from "./api/use-org-structure";
+export { useSummaryStats, summaryKeys } from "./model/summary-queries";
+export type { SummaryStats } from "./api/summary-api";
 export { 
   useCreateDepartment, 
   useUpdateDepartment,
