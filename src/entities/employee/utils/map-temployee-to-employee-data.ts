@@ -1,27 +1,11 @@
 import type {
   TEmployee,
   EmployeeData,
-  /* EmployeeStatus, */
   EmployeeShortResponse,
   EmployeeDetailAdminResponse,
   EmployeeDetailPublicResponse,
   TEmployeeStatus,
 } from "../model/types";
-
-/* const mapStatus = (status: TEmployee["status"]): EmployeeStatus => {
-  switch (status) {
-    case "working":
-      return "working";
-    case "vacation":
-      return "vacation";
-    case "sick_leave":
-      return "sick";
-    case "business_trip":
-      return "bizTrip"
-    default:
-      return "working";
-  }
-}; */
 
 export const mapTEmployeeToEmployeeData = (
   employee: TEmployee,
@@ -66,29 +50,6 @@ export const mapEmployeeListResponse = (
     competencies: data.tags?.map((t) => t.name) ?? [],
   };
 };
-
-/* export const mapEmployeeDetail = (
-  data: EmployeeDetailAdminResponse | EmployeeDetailPublicResponse,
-): EmployeeData => {
-  return {
-    id: data.id,
-    name: data.full_name,
-    position: data.job_title,
-    department: data.department_name,
-    franchise: data.direction_name ?? "",
-    status: data.employment_status,
-    photo: data.photo_url ?? undefined,
-    city: data.city ?? "",
-    linearManager: "",
-    isArchived: false,
-    emailCorporate: data.email,
-    emailPersonal: undefined,
-    phoneCorporate: data.phone,
-    phonePersonal: undefined,
-    birthday: data.birthday,
-    competencies: data.tags.map((t) => t.name),
-  };
-}; */
 
 export const mapEmployeeDetail = (
   data: EmployeeDetailAdminResponse | EmployeeDetailPublicResponse,

@@ -22,7 +22,7 @@ export const CreateEmployeeWrapper = ({
   const { mutateAsync: uploadPhoto } = useUploadEmployeePhoto();
   const addNotification = useNotificationStore((state) => state.add);
 
-  //TODO: разобраться с недостающими полями и с несоответствием типов!
+  //TODO: разобраться с недостающими полями
   const handleSubmit = async (data: CreateEmployeeFormValues) => {
     try {
       const createdEmployee = await mutateAsync({

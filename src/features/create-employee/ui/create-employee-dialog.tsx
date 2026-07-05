@@ -136,8 +136,6 @@ export const CreateEmployeeDialog = ({
 
       setIsSubmitting(true);
       try {
-        // TODO: Уточнить у бэкенда структуру API для создания сотрудника
-        // и передавать новые поля: resumeLink, crmProfileLink, socialNetworkLink, aboutMe
         await onSubmit?.(values);
         addNotification({
           type: "success",

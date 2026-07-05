@@ -32,8 +32,6 @@ interface EditEmployeeDialogProps {
   onSuccess?: (updatedEmployee: EmployeeData) => void;
 }
 
-
-
 const buildPatchPayload = (
   current: CreateEmployeeFormValues,
   initial: CreateEmployeeFormValues,

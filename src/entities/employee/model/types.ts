@@ -1,8 +1,3 @@
-/**
- * Устаревший тип статуса, вместо него следует использовать `EmploymentStatus`
- */
-//export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
-
 export type TEmployeeStatus =
   | "working"
   | "vacation"
@@ -167,88 +162,6 @@ export interface SupervisorDetail {
   department_name: string;
   department_id: number;
 }
-
-// interface BaseEmployeeDetail {
-//   id: number;
-
-//   full_name: string;
-//   job_title: string;
-
-//   department_name: string;
-//   direction_name: string | null;
-
-//   photo_url: string | null;
-
-//   status: StatusEnum;
-
-//   birthday_display: string | null;
-
-//   tags: TTag[];
-
-//   city: string | null;
-
-//   employment_status: TEmployeeStatus;
-//   employment_status_display: string;
-
-//   supervisor_name: string | null;
-//   supervisor_id: number | null;
-
-//   email: string;
-//   phone: string;
-
-//   interests: string;
-
-//   birthday: string;
-
-//   /**
-//    * ❗ неизвестный формат с бэка (в сваггере string, по факту объект)
-//    */
-//   role_description: unknown;
-
-//   department: number;
-
-//   /**
-//    * ❗ нет в сваггере
-//    */
-//   department_id: number;
-
-//   /**
-//    * ❗ нет в сваггере
-//    */
-//   crm_profile: string | null;
-
-//   /**
-//    * ❗ нет в сваггере
-//    */
-//   social_network: string | null;
-
-//   /**
-//    * ❗ нет в сваггере
-//    */
-//   resume_link: string | null;
-
-//   /**
-//    * ❗ нет в сваггере
-//    */
-//   supervisor_detail: unknown | null;
-
-//   /**
-//    * ❗ нет в сваггере
-//    */
-//   supervisor_photo_url: string | null;
-
-//   /**
-//    * ❗ нет в сваггере
-//    */
-//   photo_original_url: string | null;
-
-//   created_at: string;
-//   updated_at: string;
-// }
-
-//export type EmployeeDetailAdminResponse = BaseEmployeeDetail;
-
-
 
 export interface EmployeeDetailAdminResponse {
   id: number;

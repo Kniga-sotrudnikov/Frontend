@@ -1,23 +1,6 @@
 import type { EmployeeData } from "@/entities/employee";
 import type { CreateEmployeeFormValues } from "../model/types";
 
-/* const mapStatus = (
-  status: EmployeeData["status"],
-): CreateEmployeeFormValues["status"] => {
-  switch (status) {
-    case "working":
-      return "working";
-    case "vacation":
-      return "vacation";
-    case "bizTrip":
-      return "business_trip";
-    case "sick":
-      return "sick_leave";
-    default:
-      return "working";
-  }
-}; */
-
 const parseDate = (date?: string | Date): Date | undefined => {
   if (!date) return undefined;
   if (date instanceof Date) return date;
