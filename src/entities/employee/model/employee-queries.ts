@@ -17,7 +17,7 @@ export const useEmployeesList = (
   filter: EmployeesListFilter = {},
 ) => {
   return useQuery({
-    queryKey: ["employees-list", limit, offset, role, filter],
+    queryKey: ["employees-list", limit, offset, role, JSON.stringify(filter)],
     queryFn: () => {
       if (role === "hr_admin") {
         return getEmployeesListAdmin({ limit, offset, ...filter });
