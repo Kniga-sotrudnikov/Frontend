@@ -1,6 +1,8 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@ui/dialog";
 import { Button } from "@ui/button";
 import { SelectedEmployeesList } from "./selected-employees-list";
+import { useBulkAddTags } from "@/entities/tags";
+import { useNotificationStore } from "@/shared/model/stores";
 
 type Employee = {
   id: string;
@@ -13,6 +15,7 @@ type AddEmployeesToTagDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tagLabel: string;
+  tagId: number;
   employees: Employee[];
   selectedEmployees: string[];
   onEmployeeToggle: (employeeId: string) => void;
@@ -24,12 +27,54 @@ export const AddEmployeesToTagDialog = ({
   open,
   onOpenChange,
   tagLabel,
+  tagId,
   employees,
   selectedEmployees,
   onEmployeeToggle,
   onClearEmployees,
   onAdd,
 }: AddEmployeesToTagDialogProps) => {
+  const addNotification = useNotificationStore((state) => state.add);
+  const bulkAddMutation = useBulkAddTags();
+
+  const handleAdd = () => {
+    if (selectedEmployees.length === 0) {
+      addNotification({
+        type: "error",
+        title: "Ошибка",
+        message: "Выберите хотя бы одного сотрудника",
+      });
+      return;
+    }
+
+    bulkAddMutation.mutate(
+      {
+        employee_ids: selectedEmployees.map((id) => Number(id)),
+        tag_ids: [tagId],
+      },
+      {
+        onSuccess: () => {
+          addNotification({
+            type: "success",
+            iconType: "success",
+            title: "Успешно",
+            message: `Сотрудники добавлены к тегу «${tagLabel}»`,
+          });
+          onAdd();
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          addNotification({
+            type: "error",
+            title: "Ошибка",
+            message: "Не удалось добавить сотрудников к тегу",
+          });
+          console.error("Error adding employees to tag:", error);
+        },
+      }
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="!w-[680px] !max-w-none !rounded-8 !border !border-gray-200 !bg-white !p-0">
@@ -51,8 +96,8 @@ export const AddEmployeesToTagDialog = ({
                 job: emp.position,
                 photo: emp.photo || "",
               }))}
-              selectedIds={selectedEmployees.map(id => Number(id))}
-              onToggle={onEmployeeToggle}
+              selectedIds={selectedEmployees.map((id) => Number(id))}
+              onToggle={(id) => onEmployeeToggle(String(id))}
               maxVisible={5}
             />
           ) : (
@@ -74,10 +119,11 @@ export const AddEmployeesToTagDialog = ({
             Отмена
           </Button>
           <Button
-            onClick={onAdd}
-            className="w-[98px] h-[33px] text-xs font-medium bg-purple-500 hover:bg-purple-600 text-white"
+            onClick={handleAdd}
+            disabled={bulkAddMutation.isPending || selectedEmployees.length === 0}
+            className="w-[98px] h-[33px] text-xs font-medium bg-purple-500 hover:bg-purple-600 text-white disabled:opacity-50"
           >
-            Добавить
+            {bulkAddMutation.isPending ? "Добавление..." : "Добавить"}
           </Button>
         </div>
       </DialogContent>
