@@ -4,12 +4,12 @@ import {
   statusLabelMap,
 } from "@/entities/employee/model/constants";
 import { cn } from "@/shared/lib";
-import type { EmployeeStatus } from "@/entities/employee/model/types";
+import type { /* EmployeeStatus, */ TEmployeeStatus } from "@/entities/employee/model/types";
 
 interface EmployeePrimaryInfoProps {
   photo?: string;
   isArchived?: boolean;
-  status: EmployeeStatus;
+  status: TEmployeeStatus;
   name: string;
   position: string;
   franchise: string;

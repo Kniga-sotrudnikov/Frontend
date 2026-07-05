@@ -8,8 +8,8 @@ import {
 } from "@ui/dialog";
 import { Button } from "@ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
-import type { EmployeeData } from "@/entities/employee";
-import type { CreateEmployeeFormValues } from "@/features/create-employee/model/types";
+import { /* usePatchEmployee, */ useEmployeeDetail, type EmployeeData } from "@/entities/employee";
+import { CreateEmptyEmployeeFormValues, type CreateEmployeeFormValues } from "@/features/create-employee/model/types";
 import {
   validateForm,
   type ValidationErrors,
@@ -18,7 +18,7 @@ import { EmployeeForm } from "@/features/create-employee/ui/employee-form";
 import { usePreventDialogClose } from "@/shared/lib/hooks/use-prevent-dialog-close"
 import {
   mapEmployeeToFormValues,
-  mapStatusBack,
+  /* mapStatusBack, */
 } from "@/features/create-employee/utils";
 
 interface EditEmployeeDialogProps {
@@ -34,9 +34,14 @@ export const EditEmployeeDialog = ({
   employee,
   onSuccess,
 }: EditEmployeeDialogProps) => {
-  const [values, setValues] = useState<CreateEmployeeFormValues>(() =>
-    mapEmployeeToFormValues(employee),
-  );
+  const {data} = useEmployeeDetail(Number(employee.id));
+  const currentEmployee = data ?? employee;
+
+/*   const [values, setValues] = useState<CreateEmployeeFormValues>(() =>
+    mapEmployeeToFormValues(data),
+  ); */
+  const [values, setValues] = useState<CreateEmployeeFormValues>(CreateEmptyEmployeeFormValues());
+
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -59,13 +64,19 @@ export const EditEmployeeDialog = ({
   }, [open]);
 
   useEffect(() => {
+    if(data) {
+      setValues(mapEmployeeToFormValues(data));
+    }
+  },[data])
+
+  useEffect(() => {
     if (open) {
-      setValues(mapEmployeeToFormValues(employee));
+      //setValues(mapEmployeeToFormValues(employee));
       setErrors({});
       setTouchedFields(new Set());
       setCalendarOpen(false);
     }
-  }, [open, employee]);
+  }, [open/* , employee */]);
 
   const isFormValid = useCallback(() => {
     return values.fullName.trim() !== "" && values.emailCorporate.trim() !== "";
@@ -127,15 +138,15 @@ export const EditEmployeeDialog = ({
       setIsSubmitting(true);
       try {
         const updatedEmployee: EmployeeData = {
-          ...employee,
+          ...currentEmployee,
           name: values.fullName,
           position: values.position,
           department: values.department,
           linearManager: values.leader,
           city: values.city,
-          status: mapStatusBack(values.status),
+          status: values.status,
           photo:
-            typeof values.photo === "string" ? values.photo : employee.photo,
+            typeof values.photo === "string" ? values.photo : currentEmployee.photo,
           emailCorporate: values.emailCorporate,
           emailPersonal: values.emailPersonal,
           phoneCorporate: values.phoneCorporate,
@@ -191,7 +202,8 @@ export const EditEmployeeDialog = ({
     [
       validate,
       values,
-      employee,
+      /* employee, */
+      currentEmployee,
       onOpenChange,
       errors,
       addNotification,

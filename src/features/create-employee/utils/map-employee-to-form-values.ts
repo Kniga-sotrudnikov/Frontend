@@ -1,7 +1,7 @@
 import type { EmployeeData } from "@/entities/employee";
 import type { CreateEmployeeFormValues } from "../model/types";
 
-const mapStatus = (
+/* const mapStatus = (
   status: EmployeeData["status"],
 ): CreateEmployeeFormValues["status"] => {
   switch (status) {
@@ -16,7 +16,7 @@ const mapStatus = (
     default:
       return "working";
   }
-};
+}; */
 
 const parseDate = (date?: string | Date): Date | undefined => {
   if (!date) return undefined;
@@ -39,7 +39,7 @@ export const mapEmployeeToFormValues = (
   phonePersonal: employee.phonePersonal || "",
   birthday: parseDate(employee.birthday),
   city: employee.city,
-  status: mapStatus(employee.status),
+  status: employee.status,
   competencies: employee.competencies || [],
  // Новые поля - требуют уточнения у бэкенда о наличии этих полей в API
   resumeLink: employee.resumeLink ?? "",

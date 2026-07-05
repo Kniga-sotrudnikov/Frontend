@@ -54,7 +54,7 @@ export interface EmployeeData {
   position: string;
   franchise: string;
   department: string;
-  status: EmployeeStatus;
+  status: TEmployeeStatus;
   photo?: string;
   isArchived?: boolean;
   emailCorporate?: string;
@@ -158,7 +158,41 @@ export interface EmployeesListResponse {
   previous: string | null;
   results: EmployeeShortResponse[];
 }
-
+// {
+//     "id": 37,
+//     "full_name": "04 тест 14",
+//     "job_title": "тест 14",
+//     "department_name": "Корневая соц. практика",
+//     "direction_name": "Трудоустройство",
+//     "photo_url": null,
+//     "status": "active",
+//     "birthday_display": "3 июля",
+//     "tags": [],
+//     "city": "Москва",
+//     "employment_status": "sick_leave",
+//     "employment_status_display": "На больничном",
+//     "supervisor_name": null,
+//     "supervisor_id": null,
+//     "email": "testcorp14@test.test",
+//     "phone": "+7 (843) 345-67-89",
+//     "interests": "urhgiusergius",
+//     "birthday": "2020-07-03",
+//     "role_description": [
+//         "рандомная роль 1",
+//         "рандомная роль 2"
+//     ],
+//     "department": 9,
+//     "department_id": 9,
+//     "crm_profile": "https://employeebook.rassokha.pro/crm",
+//     "social_network": "https://employeebook.rassokha.pro/social",
+//     "resume_link": "https://employeebook.rassokha.pro/resume",
+//     "supervisor_detail": null,
+//     "supervisor_photo_url": null,
+//     "photo_original_url": null,
+//     "created_at": "2026-07-04T23:16:07.428074Z",
+//     "updated_at": "2026-07-04T23:16:07.428094Z",
+//     "created_by": 1
+// }
 interface BaseEmployeeDetail {
   id: number;
 

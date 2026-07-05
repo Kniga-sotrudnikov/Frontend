@@ -1,6 +1,6 @@
-import type { EmployeeData } from "@/entities/employee";
+/* import type { EmployeeData } from "@/entities/employee"; */
 
-export const mapStatusBack = (status: string): EmployeeData["status"] => {
+/* export const mapStatusBack = (status: string): EmployeeData["status"] => {
   switch (status) {
     case "active":
       return "working";
@@ -11,4 +11,4 @@ export const mapStatusBack = (status: string): EmployeeData["status"] => {
     default:
       return "working";
   }
-};
+}; */
