@@ -17,10 +17,12 @@ import {
 import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 import { useGetVacancyDetail } from "@/entities/vacancy";
-import { useSelectionUnitStore } from "@/entities/org-structure";
+import {
+  useSelectionUnitStore,
+  useSummaryStats,
+} from "@/entities/org-structure";
 import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
 import { useAuthStore } from "@/entities/user";
-import { useSummaryStats } from "@/entities/org-structure";
 import { pluralize } from "@/shared/lib";
 
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];

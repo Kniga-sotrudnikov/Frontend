@@ -5,6 +5,7 @@ import {
   getSisList,
   OrgSection,
   type OrgItemType,
+  type OrgUnit,
   useDeleteDepartment,
 } from "@/entities/org-structure";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
