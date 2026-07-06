@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   useOrgStructure,
   getDirections,
@@ -59,13 +59,21 @@ export function EditOrgStructureModal({
 
   const deleteDepartment = useDeleteDepartment();
 
-  useEffect(() => {
-    setLocalDirections(directions);
-  }, [directions]);
+  const prevDirectionsRef = useRef<OrgItemType[]>(directions);
+  const prevSisListRef = useRef<OrgItemType[]>(sisList);
 
   useEffect(() => {
-    setLocalSisList(sisList);
-  }, [sisList]);
+    if (open) {
+      if (JSON.stringify(prevDirectionsRef.current) !== JSON.stringify(directions)) {
+        setLocalDirections(directions);
+        prevDirectionsRef.current = directions;
+      }
+      if (JSON.stringify(prevSisListRef.current) !== JSON.stringify(sisList)) {
+        setLocalSisList(sisList);
+        prevSisListRef.current = sisList;
+      }
+    }
+  }, [open, directions, sisList]);
 
   const getDepartmentsForEntity = useMemo(() => {
     return (entityId?: string): Department[] => {
