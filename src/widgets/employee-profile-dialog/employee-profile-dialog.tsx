@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import {
   Dialog,
   DialogClose,
@@ -23,6 +23,7 @@ import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/repor
 import { Button } from "@/shared/ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
 import { useExportPdf } from "@/shared/lib/hooks";
+import { useTags } from "@/entities/tags";
 import { EmployeePdfContent } from "./employee-pdf-content";
 import type { ReactElement, ReactNode } from "react";
 
@@ -42,7 +43,7 @@ interface EmployeeProfileDialogProps {
   linkCV: string;
   linkProfile: string;
   aboutMe: string;
-  tags: string[];
+  tags: string[]; // Массив ID тегов
   onExportPDF: () => void;
 }
 
@@ -66,13 +67,30 @@ export const EmployeeProfileDialog = ({
   onExportPDF,
 }: EmployeeProfileDialogProps) => {
   const addNotification = useNotificationStore((state) => state.add);
-
   const { exportToPdf } = useExportPdf();
   const contentRef = useRef<HTMLDivElement>(null);
+  
+  // Получаем список всех тегов для маппинга ID в имена
+  const { data: tagsData } = useTags({ limit: 100 });
+  
+  // Создаем маппинг ID -> имя
+  const tagNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (tagsData?.results) {
+      tagsData.results.forEach((tag) => {
+        map.set(String(tag.id), tag.name);
+      });
+    }
+    return map;
+  }, [tagsData]);
+  
+  // Преобразуем ID тегов в имена
+  const tagNames = useMemo(() => {
+    return tags.map((id) => tagNameMap.get(String(id)) || String(id));
+  }, [tags, tagNameMap]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
-
     addNotification({
       iconType: "success",
       title: "Ссылка на сотрудника скопирована",
@@ -95,7 +113,7 @@ export const EmployeeProfileDialog = ({
   };
 
   const hasRoles = roles && roles.length > 0;
-  const hasTags = tags && tags.length > 0;
+  const hasTags = tagNames && tagNames.length > 0;
   const hasAboutMe = aboutMe && aboutMe.trim().length > 0;
   const hasCity = city && city.trim().length > 0;
   const hasBirthday = formattedBirthday !== null && !isNaN(new Date(birthday).getTime());
@@ -123,7 +141,7 @@ export const EmployeeProfileDialog = ({
             linkCV={linkCV}
             linkProfile={linkProfile}
             aboutMe={aboutMe}
-            tags={tags}
+            tags={tagNames} // Передаем имена, а не ID
           />
         </div>
 
@@ -174,7 +192,7 @@ export const EmployeeProfileDialog = ({
           <InfoSection icon={TagIcon} title="Компетенции">
             <CollapsibleBadgeList
               visibleCount={3}
-              items={tags}
+              items={tagNames}
               badgeClassName="bg-purple-50 text-purple-500 border-purple-500"
             />
           </InfoSection>

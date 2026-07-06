@@ -40,7 +40,7 @@ export const mapEmployeeToFormValues = (
   birthday: parseDate(employee.birthday),
   city: employee.city,
   status: mapStatus(employee.status),
-  competencies: employee.competencies || [],
+  competencies: (employee.competencies || []).map(String),
  // Новые поля - требуют уточнения у бэкенда о наличии этих полей в API
   resumeLink: employee.resumeLink ?? "",
   crmProfileLink: employee.crmProfile ?? "",

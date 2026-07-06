@@ -7,7 +7,7 @@ import {
   bulkAddTagsApi,
   bulkRemoveTagsApi,
 } from "../api/tags-api";
-import type { UpdateTagPayload } from "./types";
+import type { UpdateTagPayload, TagsListResponse } from "./types";
 
 export const tagsKeys = {
   all: ["tags"] as const,
@@ -31,8 +31,22 @@ export const useCreateTag = () => {
 
   return useMutation({
     mutationFn: createTagApi,
-    onSuccess: () => {
+    onSuccess: (newTag) => {
       queryClient.invalidateQueries({ queryKey: tagsKeys.lists() });
+      
+      queryClient.setQueryData<TagsListResponse>(
+        tagsKeys.list({ limit: 100 }),
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            results: [...oldData.results, newTag],
+            count: oldData.count + 1,
+          };
+        },
+      );
+      
+      return newTag;
     },
   });
 };

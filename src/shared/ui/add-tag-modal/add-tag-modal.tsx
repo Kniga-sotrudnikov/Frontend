@@ -5,13 +5,15 @@ import { Button } from "@/shared/ui/button";
 interface AddTagModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAddTag: (tagName: string, color?: string) => void;
+  onAddTag: (tagName: string) => void;
+  isLoading?: boolean;
 }
 
 export const AddTagModal = ({
   open,
   onOpenChange,
   onAddTag,
+  isLoading = false,
 }: AddTagModalProps) => {
   const [tagName, setTagName] = useState("");
 
@@ -27,9 +29,11 @@ export const AddTagModal = ({
   };
 
   const handleAdd = () => {
-    onAddTag(tagName.trim());
-    resetForm();
-    onOpenChange(false);
+    if (tagName.trim()) {
+      onAddTag(tagName.trim());
+      resetForm();
+      onOpenChange(false);
+    }
   };
 
   return (
@@ -47,8 +51,10 @@ export const AddTagModal = ({
             value={tagName}
             onChange={(e) => setTagName(e.target.value)}
             placeholder="Введите тег"
+            disabled={isLoading}
             className="px-4 py-2.5 body-m text-black placeholder:text-gray-600 border border-gray-200 rounded-8 
-                     focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500"
+                     focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500
+                     disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
 
@@ -60,6 +66,7 @@ export const AddTagModal = ({
               variant="outline"
               size="plain"
               className="button-small px-3.5 h-8"
+              disabled={isLoading}
             >
               Отменить
             </Button>
@@ -69,9 +76,9 @@ export const AddTagModal = ({
             size="plain"
             className="button-small px-5.75 h-8"
             onClick={handleAdd}
-            disabled={!tagName.trim()}
+            disabled={!tagName.trim() || isLoading}
           >
-            Добавить
+            {isLoading ? "Добавление..." : "Добавить"}
           </Button>
         </div>
       </DialogContent>

@@ -5,7 +5,6 @@ import { Checkbox } from "@ui/checkbox";
 import { AddTagModal } from "@ui/add-tag-modal";
 import SearchIcon from "@/shared/assets/icons/search.svg?react";
 import PlusIcon from "@/shared/assets/icons/plus.svg?react";
-import type { CompetencyOption } from "../model/types";
 import { cn } from "@/shared/lib";
 
 interface CompetenciesContentProps {
@@ -13,7 +12,7 @@ interface CompetenciesContentProps {
   onSearchChange: (value: string) => void;
   tempValue: string[];
   onToggleCompetency: (id: string) => void;
-  options: CompetencyOption[];
+  options: Array<{ id: string; label: string }>;
   onClear: () => void;
   onApply: () => void;
   onShowAll?: () => void;
@@ -21,7 +20,7 @@ interface CompetenciesContentProps {
   showAll?: boolean;
   filteredCount?: number;
   variant?: "popover" | "dialog";
-  onAddTag: (tagName: string, color?: string) => void;
+  onAddTag: (tagName: string) => void;
 }
 
 export const CompetenciesContent = ({
