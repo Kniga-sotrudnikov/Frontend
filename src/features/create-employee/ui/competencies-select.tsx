@@ -30,14 +30,16 @@ export const CompetenciesSelect = ({
   const [fullDialogOpen, setFullDialogOpen] = useState(false);
   const [fullSearchQuery, setFullSearchQuery] = useState("");
   const [fullTempValue, setFullTempValue] = useState<string[]>(value);
-  
-  const [options, setOptions] = useState<Array<{ id: string; label: string }>>([]);
+
+  const [options, setOptions] = useState<Array<{ id: string; label: string }>>(
+    [],
+  );
 
   const addNotification = useNotificationStore((state) => state.add);
   const createTagMutation = useCreateTag();
-  
+
   const { data: tagsData, refetch } = useTags({ limit: 100 });
-  
+
   useEffect(() => {
     if (tagsData?.results) {
       const mappedOptions = tagsData.results.map((tag) => ({
@@ -123,7 +125,7 @@ export const CompetenciesSelect = ({
     const existingTag = options.find(
       (opt) => opt.label.toLowerCase() === trimmedName.toLowerCase(),
     );
-    
+
     if (existingTag) {
       addNotification({
         type: "warning",
@@ -146,16 +148,16 @@ export const CompetenciesSelect = ({
             title: "Успешно",
             message: `Тег «${trimmedName}» создан`,
           });
-          
+
           const newTagId = String(newTag.id);
-          
+
           setOptions((prev) => [...prev, { id: newTagId, label: trimmedName }]);
           setTempValue((prev) => [...prev, newTagId]);
-          
+
           if (fullDialogOpen) {
             setFullTempValue((prev) => [...prev, newTagId]);
           }
-          
+
           onChange([...value, newTagId]);
           setSearchQuery("");
           setFullSearchQuery("");
@@ -224,16 +226,23 @@ export const CompetenciesSelect = ({
                       className="gap-1 bg-purple-50 text-purple-500 text-overline py-0.5 px-2 shrink-0"
                     >
                       {label}
-                      <button
-                        type="button"
+                      <span
                         onClick={(e) => {
                           e.stopPropagation();
                           handleRemoveCompetency(id);
                         }}
-                        className="ml-1 rounded-full p-0.5 transition-all hover:bg-purple-100"
+                        className="ml-1 rounded-full p-0.5 transition-all cursor-pointer hover:bg-purple-100 inline-flex items-center justify-center"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            handleRemoveCompetency(id);
+                          }
+                        }}
                       >
                         <CloseIcon className="size-2.5 text-purple-500 hover:text-purple-700" />
-                      </button>
+                      </span>
                     </Badge>
                   );
                 })
