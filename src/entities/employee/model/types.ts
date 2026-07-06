@@ -161,12 +161,6 @@ export interface EmployeesListFilter {
   direction?: boolean;
 }
 
-export interface EmployeesListFilter {
-  direction_id?: number;
-  department_id?: number;
-  direction?: boolean;
-}
-
 export interface SupervisorDetail {
   id: number;
   full_name: string;
