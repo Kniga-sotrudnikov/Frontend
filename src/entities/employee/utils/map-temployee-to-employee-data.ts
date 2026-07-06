@@ -5,16 +5,23 @@ import type {
   EmployeeShortResponse,
   EmployeeDetailAdminResponse,
   EmployeeDetailPublicResponse,
+  EmploymentStatus,
 } from "../model/types";
 
-const mapStatus = (status: TEmployee["status"]): EmployeeStatus => {
-  switch (status) {
-    case "active":
+const mapStatus = (employmentStatus: EmploymentStatus): EmployeeStatus => {
+  switch (employmentStatus) {
+    case "working":
       return "working";
     case "vacation":
       return "vacation";
-    case "sick":
+    case "sick_leave":
       return "sick";
+    case "maternity_leave":
+      return "maternity";
+    case "business_trip":
+      return "bizTrip";
+    case "remote":
+      return "working";
     default:
       return "working";
   }
@@ -30,7 +37,7 @@ export const mapTEmployeeToEmployeeData = (
   position: employee.job_title,
   franchise: employee.direction_name,
   department: employee.department_name,
-  status: mapStatus(employee.status),
+  status: mapStatus(employee.employment_status || "working"),
   photo: employee.photo_url,
   isArchived: false,
   emailCorporate: employee.email_corporate,
@@ -50,7 +57,7 @@ export const mapEmployeeListResponse = (
     position: data.job_title,
     department: data.department_name,
     franchise: data.direction_name ?? "",
-    status: "working" as EmployeeStatus,
+    status: mapStatus(data.employment_status || "working"),
     photo: data.photo_url ?? undefined,
     city: "",
     linearManager: "",
@@ -73,7 +80,7 @@ export const mapEmployeeDetail = (
     position: data.job_title,
     department: data.department_name,
     franchise: data.direction_name ?? "",
-    status: "working" as EmployeeStatus,
+    status: mapStatus(data.employment_status || "working"),
     photo: data.photo_url ?? undefined,
     city: "",
     linearManager: "",
