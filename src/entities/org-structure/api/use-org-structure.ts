@@ -6,6 +6,7 @@ function mapDepartmentToOrgUnit(data: DepartmentResponse): OrgUnit {
   return {
     id: data.id,
     name: data.name,
+    type: data.type,
     headId: data.head_id,
     headName: data.head?.full_name || '',
     employeeCount: data.employee_count,

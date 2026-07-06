@@ -5,6 +5,7 @@ export type {
   TEmployeeStatus,
   EmployeeData,
   EmployeesListResponse,
+  EmployeesListFilter,
   CreateEmployeeRequest,
   CreateEmployeeResponse,
   EmployeeDetailAdminResponse,

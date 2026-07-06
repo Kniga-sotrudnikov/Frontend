@@ -8,19 +8,21 @@ import {
   mapEmployeeListResponse,
 } from "@/entities/employee";
 import type { UserRole } from "@/entities/user";
+import type { EmployeesListFilter } from "@/entities/employee";
 
 export const useEmployeesList = (
   limit = 20,
   offset = 0,
   role: UserRole = "employee",
+  filter: EmployeesListFilter = {},
 ) => {
   return useQuery({
-    queryKey: ["employees-list", limit, offset, role],
+    queryKey: ["employees-list", limit, offset, role, JSON.stringify(filter)],
     queryFn: () => {
       if (role === "hr_admin") {
-        return getEmployeesListAdmin({ limit, offset });
+        return getEmployeesListAdmin({ limit, offset, ...filter });
       }
-      return getEmployeesListPublic({ limit, offset });
+      return getEmployeesListPublic({ limit, offset, ...filter });
     },
     select: (data) => ({
       ...data,

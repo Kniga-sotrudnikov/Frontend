@@ -17,9 +17,13 @@ import {
 import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 import { useGetVacancyDetail } from "@/entities/vacancy";
+import {
+  useSelectionUnitStore,
+  useSummaryStats,
+} from "@/entities/org-structure";
+import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
 import { format } from "date-fns";
 import { useAuthStore } from "@/entities/user";
-import { useSummaryStats } from "@/entities/org-structure";
 import { pluralize } from "@/shared/lib";
 
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
@@ -42,12 +46,32 @@ const EmployeesPage = () => {
   const [offset, setOffset] = useState(0);
   const [vacancyIdFromUrl, setVacancyIdFromUrl] = useState<number | null>(null);
 
+  const selectedUnit = useSelectionUnitStore((state) => state.selectedUnit);
+  const setSelectedUnit = useSelectionUnitStore(
+    (state) => state.setSelectedUnit,
+  );
+  const filter = useMemo(
+    () => selectedUnitToFilter(selectedUnit),
+    [selectedUnit],
+  );
+
+  // при смене выбранного узла возвращаемся на первую страницу
+  useEffect(() => {
+    setOffset(0);
+  }, [selectedUnit]);
+
+  // сброс выбранного узла при уходе со страницы
+  useEffect(() => {
+    return () => setSelectedUnit(null);
+  }, [setSelectedUnit]);
   const currentUser = useAuthStore((state) => state.user);
   const currentEmployeeId = currentUser?.employee_id;
 
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
     limit,
     offset,
+    undefined,
+    filter,
   );
   const { data: vacancyDetailFromUrl } = useGetVacancyDetail(
     vacancyIdFromUrl ?? 0,

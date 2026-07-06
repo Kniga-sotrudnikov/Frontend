@@ -7,12 +7,17 @@ import type {
   EmployeeDetailAdminResponse,
   EmployeeDetailPublicResponse,
   EmployeesListResponse,
+  EmployeesListFilter,
 } from "@/entities/employee";
 
-export const getEmployeesListAdmin = async (params?: {
+type EmployeesListParams = {
   limit?: number;
   offset?: number;
-}): Promise<EmployeesListResponse> => {
+} & EmployeesListFilter;
+
+export const getEmployeesListAdmin = async (
+  params?: EmployeesListParams,
+): Promise<EmployeesListResponse> => {
   const response = await apiClient.get<EmployeesListResponse>(
     "/admin/employees/",
     { params },
@@ -20,10 +25,9 @@ export const getEmployeesListAdmin = async (params?: {
   return response.data;
 };
 
-export const getEmployeesListPublic = async (params?: {
-  limit?: number;
-  offset?: number;
-}): Promise<EmployeesListResponse> => {
+export const getEmployeesListPublic = async (
+  params?: EmployeesListParams,
+): Promise<EmployeesListResponse> => {
   const response = await apiClient.get<EmployeesListResponse>("/employees/", {
     params,
   });

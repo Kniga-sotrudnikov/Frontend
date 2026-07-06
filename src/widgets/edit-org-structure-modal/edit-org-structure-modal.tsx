@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import {
-  useOrgStructureStore,
+  useOrgStructure,
+  getDirections,
+  getSisList,
   OrgSection,
   type OrgItemType,
   type OrgUnit,
@@ -34,12 +36,9 @@ export function EditOrgStructureModal({
   onDeleteDirection,
   onDeleteSis,
 }: EditOrgStructureModalProps) {
-  const directions = useOrgStructureStore((state) => state.directions);
-  const sisList = useOrgStructureStore((state) => state.sisList);
-  const tree = useOrgStructureStore((state) => state.tree);
-  const updateItem = useOrgStructureStore((state) => state.updateItem);
-  const setDirections = useOrgStructureStore((state) => state.setDirections);
-  const setSisList = useOrgStructureStore((state) => state.setSisList);
+  const { data: tree = [] } = useOrgStructure();
+  const directions = useMemo(() => getDirections(tree), [tree]);
+  const sisList = useMemo(() => getSisList(tree), [tree]);
 
   const [open, setOpen] = useState(false);
   const [editingDirection, setEditingDirection] = useState<{
@@ -69,17 +68,8 @@ export function EditOrgStructureModal({
   }, [sisList]);
 
   const getDepartmentsForEntity = useMemo(() => {
-    return (entityType: "direction" | "sis", entityId?: string): Department[] => {
-      if (!tree || tree.length === 0) return [];
-
-      const parentNodeName = entityType === "direction" ? "Направления" : "СИС";
-      const parentNode = tree.find(u => u.name === parentNodeName);
-      
-      if (!parentNode?.items) return [];
-
-      const targetNode = parentNode.items.find(
-        (item: OrgUnit) => String(item.id) === entityId
-      );
+    return (entityId?: string): Department[] => {
+      const targetNode = tree.find((unit) => String(unit.id) === entityId);
 
       if (!targetNode?.items) return [];
 
@@ -132,43 +122,31 @@ export function EditOrgStructureModal({
 
   const handleEditDirection = (item: OrgItemType) => {
     let departmentId: number | undefined;
-    let headId: number | null = null;
-    
     const directionNode = tree.find(u => u.name === "Направления");
     if (directionNode?.items) {
       const found = directionNode.items.find((u: OrgUnit) => String(u.id) === item.id);
-      if (found) {
-        departmentId = found.id;
-        headId = found.headId ?? null;
-      }
+      if (found?.id) departmentId = found.id;
     }
 
     setEditingDirection({ 
       ...item, 
       entityType: "direction",
-      departmentId,
-      headId,
+      departmentId 
     });
   };
 
   const handleEditSis = (item: OrgItemType) => {
     let departmentId: number | undefined;
-    let headId: number | null = null;
-    
     const sisNode = tree.find(u => u.name === "СИС");
     if (sisNode?.items) {
       const found = sisNode.items.find((u: OrgUnit) => String(u.id) === item.id);
-      if (found) {
-        departmentId = found.id;
-        headId = found.headId ?? null;
-      }
+      if (found?.id) departmentId = found.id;
     }
 
     setEditingDirection({ 
       ...item, 
       entityType: "sis",
-      departmentId,
-      headId,
+      departmentId 
     });
   };
 
@@ -178,12 +156,7 @@ export function EditOrgStructureModal({
       return;
     }
 
-    const directionNode = tree.find(u => u.name === "Направления");
-    let departmentId: number | undefined;
-    if (directionNode?.items) {
-      const found = directionNode.items.find((u: OrgUnit) => String(u.id) === item.id);
-      if (found?.id) departmentId = found.id;
-    }
+    const departmentId = Number(item.id) || undefined;
 
     if (!departmentId) {
       addNotification({
@@ -210,12 +183,7 @@ export function EditOrgStructureModal({
       return;
     }
 
-    const sisNode = tree.find(u => u.name === "СИС");
-    let departmentId: number | undefined;
-    if (sisNode?.items) {
-      const found = sisNode.items.find((u: OrgUnit) => String(u.id) === item.id);
-      if (found?.id) departmentId = found.id;
-    }
+    const departmentId = Number(item.id) || undefined;
 
     if (!departmentId) {
       addNotification({
@@ -245,8 +213,6 @@ export function EditOrgStructureModal({
       headName: values.headName,
     };
 
-    updateItem(editingDirection.entityType, updated);
-
     const patch = (items: OrgItemType[]) =>
       items.map((i) => (i.id === updated.id ? updated : i));
     if (editingDirection.entityType === "direction") {
@@ -263,9 +229,8 @@ export function EditOrgStructureModal({
     });
   };
 
+  //TODO: отправлять display_order на сервер, чтобы перестановка (onReorder) сохранялась
   const handleSave = () => {
-    setDirections(localDirections);
-    setSisList(localSisList);
     setOpen(false);
   };
 
@@ -276,10 +241,7 @@ export function EditOrgStructureModal({
   const editingDepartments = useMemo(() => {
     if (!editingDirection) return [];
     
-    return getDepartmentsForEntity(
-      editingDirection.entityType, 
-      editingDirection.id
-    );
+    return getDepartmentsForEntity(editingDirection.id);
   }, [editingDirection, getDepartmentsForEntity]);
 
   return (

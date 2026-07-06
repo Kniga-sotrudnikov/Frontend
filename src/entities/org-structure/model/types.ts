@@ -1,6 +1,7 @@
 export interface OrgUnit {
   id?: number;
   name: string;
+  type?: 'direction' | 'sis' | 'department';
   head?: boolean;
   headId?: number | null;
   headName?: string;
@@ -58,6 +59,13 @@ export interface DirectionFormValues {
   head_id?: number | null;
   parent?: number | null;
   display_order?: number;
+}
+
+export interface SelectedOrgUnit {
+  id: number;
+  name: string;
+  head: boolean;
+  type?: 'direction' | 'department';
 }
 
 export interface DepartmentBrief {
