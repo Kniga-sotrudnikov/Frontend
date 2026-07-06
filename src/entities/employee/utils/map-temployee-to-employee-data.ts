@@ -8,7 +8,7 @@ import type {
   EmploymentStatus,
 } from "../model/types";
 
-const mapStatus = (employmentStatus: EmploymentStatus): EmployeeStatus => {
+export const mapStatus = (employmentStatus: EmploymentStatus): EmployeeStatus => {
   switch (employmentStatus) {
     case "working":
       return "working";
