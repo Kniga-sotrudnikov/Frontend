@@ -10,7 +10,7 @@ export type {
   DepartmentResponse,
   DirectionFormValues,
 } from "./model/types";
-export { useOrgStructureStore } from "./model/use-org-structure-store";
+export { getDirections, getSisList } from "./lib/derive-org-lists";
 export { useOrgStructure } from "./api/use-org-structure";
 export { useSummaryStats, summaryKeys } from "./model/summary-queries";
 export type { SummaryStats } from "./api/summary-api";
@@ -20,3 +20,5 @@ export {
   useDeleteDepartment,
 } from "./api/use-department-mutations";
 export { departmentApi } from "./api/department-api";
+export { useSelectionUnitStore } from "./model/use-selection-unit-store";
+export type { SelectedOrgUnit } from "./model/types";

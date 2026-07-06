@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { PageHeader } from "@/widgets/page-header";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { ZoomControl } from "@/shared/ui/zoom-control";
@@ -10,7 +10,6 @@ import { ClarifyingModal } from "@/features/upload-org-structure";
 import {
   OrgStructureChart,
   useOrgStructure,
-  useOrgStructureStore,
   type OrgUnit,
 } from "@/entities/org-structure";
 
@@ -21,13 +20,6 @@ const OrgStructurePage = () => {
   const isZoomabled = zoom > 100;
 
   const { data: treeData, isLoading } = useOrgStructure();
-  const setTree = useOrgStructureStore((state) => state.setTree);
-
-  useEffect(() => {
-    if (treeData) {
-      setTree(treeData);
-    }
-  }, [treeData, setTree]);
 
   const countEmployees = (units: OrgUnit[]): number => {
     return units.reduce((sum, unit) => {

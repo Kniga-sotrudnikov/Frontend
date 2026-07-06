@@ -12,24 +12,25 @@ import countEmployee from "@/widgets/navbar/assets/count-employee";
 
 interface RenderUnitProps {
   unit: OrgUnit;
-  selectedName: string | null;
-  onSelect: (name: string) => void;
+  selectedId: number | null;
+  onSelect: (unit: OrgUnit) => void;
 }
 
-function RenderUnit({ unit, selectedName, onSelect }: RenderUnitProps) {
+function RenderUnit({ unit, selectedId, onSelect }: RenderUnitProps) {
   const employeeCount = useMemo(() => countEmployee(unit), [unit]);
-  const isActive = selectedName === unit.name;
+  const isActive = selectedId === unit.id;
   if (unit.items && unit.items.length > 0) {
     return (
-      <Collapsible onOpenChange={() => onSelect(unit.name)}>
+      <Collapsible onOpenChange={() => onSelect(unit)}>
         <CollapsibleTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
             className={cn(
               "group w-full justify-start transition-none text-sm",
-              isActive &&
-                "bg-secondary hover:bg-secondary aria-expanded:bg-secondary",
+              isActive
+                ? "bg-secondary hover:bg-secondary aria-expanded:bg-secondary"
+                : "aria-expanded:not-hover:bg-transparent",
               unit.head && "mt-5",
             )}
           >
@@ -45,9 +46,9 @@ function RenderUnit({ unit, selectedName, onSelect }: RenderUnitProps) {
             {unit.items.map((item) => (
               <RenderUnit
                 unit={item}
-                selectedName={selectedName}
+                selectedId={selectedId}
                 onSelect={onSelect}
-                key={item.name}
+                key={item.id}
               />
             ))}
           </div>
@@ -59,7 +60,7 @@ function RenderUnit({ unit, selectedName, onSelect }: RenderUnitProps) {
     <Button
       variant="ghost"
       size="sm"
-      onClick={() => onSelect(unit.name)}
+      onClick={() => onSelect(unit)}
       className={cn(
         "w-full justify-start gap-2 text-foreground text-sm",
         isActive && "bg-secondary hover:bg-secondary",
