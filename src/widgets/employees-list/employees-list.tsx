@@ -19,33 +19,56 @@ import {
 } from "@/features/employee";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
 import { useIsAdmin, useAuthStore } from "@/entities/user";
-import { useVacancyModalStore } from "@/features/vacancy-respond";
 import { useGetFavorites, useToggleFavorite } from "@/entities/favorites";
 import { EmployeeCardsSkeleton } from "@/widgets/employee-card";
-import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
 import type { NormalizedVacancy } from "@/entities/vacancy";
+import type {
+  EmployeesListEntityTab,
+  EmployeesListTab,
+  EmployeesListType,
+} from "./types";
 
 interface EmployeesListProps {
   employees: EmployeeData[];
-
+  vacancies: NormalizedVacancy[];
+  favoriteItems: EmployeesListType[];
+  activeTab: EmployeesListTab;
+  onActiveTabChange: (tab: EmployeesListTab) => void;
+  activeEntityTab: EmployeesListEntityTab;
+  onActiveEntityTabChange: (tab: EmployeesListEntityTab) => void;
+  employeesCount?: number;
+  vacanciesCount?: number;
+  favoritesCount?: number;
   onUpdateEmployee?: (updatedEmployee: EmployeeData) => void;
+  onVacancyClick?: (vacancy: NormalizedVacancy) => void;
   isLoading?: boolean;
+  isVacanciesLoading?: boolean;
+  isFavoritesLoading?: boolean;
   skeletonCount?: number;
+  vacancySkeletonCount?: number;
+  favoriteSkeletonCount?: number;
 }
 
 export const EmployeesList = ({
   employees,
-
+  vacancies,
+  favoriteItems,
+  activeTab,
+  onActiveTabChange,
+  activeEntityTab,
+  onActiveEntityTabChange,
+  employeesCount,
+  vacanciesCount,
+  favoritesCount,
   onUpdateEmployee,
+  onVacancyClick,
   isLoading = false,
+  isVacanciesLoading = false,
+  isFavoritesLoading = false,
   skeletonCount = 6,
+  vacancySkeletonCount = skeletonCount,
+  favoriteSkeletonCount = skeletonCount,
 }: EmployeesListProps) => {
-  const [activeTab, setActiveTab] = useState<
-    "employees" | "vacancies" | "favorites" | "archive"
-  >("employees");
-  const [activeEntityTab, setActiveEntityTab] = useState<
-    "employees" | "vacancies"
-  >("employees");
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
   );
@@ -57,14 +80,11 @@ export const EmployeesList = ({
   const currentUser = useAuthStore((state) => state.user);
   const currentEmployeeId = currentUser?.employee_id;
 
-  const { data: vacanciesData } = useGetVacancies();
-  const vacancies = vacanciesData?.results ?? [];
-
   const { data: favoritesData } = useGetFavorites();
   const { toggleFavorite, isPending } = useToggleFavorite();
 
   const favoriteIds = useMemo(() => {
-    return favoritesData?.results.map((f) => f.employeeId) ?? [];
+    return favoritesData?.results.map((favorite) => favorite.id) ?? [];
   }, [favoritesData]);
 
   const filteredEmployees = useMemo(() => {
@@ -89,9 +109,9 @@ export const EmployeesList = ({
 
   useEffect(() => {
     if (!isAdmin && activeTab === "archive") {
-      setActiveTab("employees");
+      onActiveTabChange("employees");
     }
-  }, [activeTab, isAdmin]);
+  }, [activeTab, isAdmin, onActiveTabChange]);
 
   const handleEmployeeClick = (employee: EmployeeData) => {
     setSelectedEmployee(employee);
@@ -145,17 +165,17 @@ export const EmployeesList = ({
   }, [filteredEmployees, openEmployeeModal]);
 
   const handleVacancyClick = (vacancy: NormalizedVacancy) => {
-    setSelectedVacancyId(vacancy.id);
+    onVacancyClick?.(vacancy);
   };
 
-  const favoriteEmployees = filteredEmployees.filter(
-    (emp) => favoriteIds.includes(Number(emp.id)) && !emp.isArchived,
+  const favoriteEmployees = favoriteItems.filter(
+    (item): item is EmployeeData => "name" in item && "linearManager" in item,
   );
 
-  //  TODO: вакансии в избранном - ПОКА пустой массив (ждем API)
-  const favoriteVacancies: NormalizedVacancy[] = [];
-
-  const allFavorites = [...favoriteEmployees, ...favoriteVacancies];
+  const favoriteVacancies = favoriteItems.filter(
+    (item): item is NormalizedVacancy =>
+      "profession" in item && "position" in item,
+  );
 
   const archivedEmployees = filteredEmployees.filter(
     (emp) => emp.isArchived === true,
@@ -166,7 +186,7 @@ export const EmployeesList = ({
   const tabContentMap = {
     employees: filteredEmployees.filter((emp) => !emp.isArchived),
     vacancies: vacancies.filter((vac) => !vac.isArchived),
-    favorites: allFavorites,
+    favorites: favoriteItems,
     archive: allArchived,
   };
 
@@ -199,6 +219,40 @@ export const EmployeesList = ({
   };
 
   const hasNestedTabs = activeTab === "favorites" || activeTab === "archive";
+
+  useEffect(() => {
+    if (!hasNestedTabs) return;
+
+    const currentEmployees =
+      activeTab === "favorites" ? favoriteEmployees : archivedEmployees;
+    const currentVacancies =
+      activeTab === "favorites" ? favoriteVacancies : archivedVacancies;
+
+    if (
+      activeEntityTab === "vacancies" &&
+      currentVacancies.length === 0 &&
+      currentEmployees.length > 0
+    ) {
+      onActiveEntityTabChange("employees");
+    }
+
+    if (
+      activeEntityTab === "employees" &&
+      currentEmployees.length === 0 &&
+      currentVacancies.length > 0
+    ) {
+      onActiveEntityTabChange("vacancies");
+    }
+  }, [
+    activeEntityTab,
+    activeTab,
+    archivedEmployees,
+    archivedVacancies,
+    favoriteEmployees,
+    favoriteVacancies,
+    hasNestedTabs,
+    onActiveEntityTabChange,
+  ]);
 
   const itemsByTab = tabContentMap[activeTab];
 
@@ -233,6 +287,29 @@ export const EmployeesList = ({
     });
   };
 
+  const cardsLoading =
+    activeTab === "vacancies"
+      ? isVacanciesLoading
+      : activeTab === "favorites"
+        ? isFavoritesLoading
+      : activeTab === "archive"
+        ? isLoading || isVacanciesLoading
+        : isLoading;
+
+  const cardsSkeletonCount =
+    activeTab === "vacancies"
+      ? vacancySkeletonCount
+      : activeTab === "favorites"
+        ? favoriteSkeletonCount
+        : skeletonCount;
+
+  const nestedEmployeesLoading =
+    activeTab === "favorites" ? isFavoritesLoading : isLoading;
+  const nestedVacanciesLoading =
+    activeTab === "favorites" ? isFavoritesLoading : isVacanciesLoading;
+  const nestedSkeletonCount =
+    activeTab === "favorites" ? favoriteSkeletonCount : skeletonCount;
+
   return (
     <div>
       <div className="flex justify-between items-center mb-3">
@@ -245,7 +322,7 @@ export const EmployeesList = ({
               | "vacancies"
               | "favorites"
               | "archive";
-            setActiveTab(tab);
+            onActiveTabChange(tab);
           }}
         >
           <TabsList variant="line" className="gap-0 p-0 h-auto">
@@ -255,7 +332,7 @@ export const EmployeesList = ({
             >
               Сотрудники
               <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {tabContentMap.employees.length}
+                {employeesCount ?? tabContentMap.employees.length}
               </span>
             </TabsTrigger>
             <TabsTrigger
@@ -264,7 +341,7 @@ export const EmployeesList = ({
             >
               Вакансии
               <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {tabContentMap.vacancies.length}
+                {vacanciesCount ?? tabContentMap.vacancies.length}
               </span>
             </TabsTrigger>
             <TabsTrigger
@@ -273,7 +350,7 @@ export const EmployeesList = ({
             >
               Избранное
               <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
-                {tabContentMap.favorites.length}
+                {favoritesCount ?? tabContentMap.favorites.length}
               </span>
             </TabsTrigger>
             {isAdmin && (
@@ -327,7 +404,7 @@ export const EmployeesList = ({
           <Tabs
             value={activeEntityTab}
             onValueChange={(value) => {
-              setActiveEntityTab(value as "employees" | "vacancies");
+              onActiveEntityTabChange(value as "employees" | "vacancies");
             }}
           >
             <TabsList className="gap-1 p-0 bg-transparent">
@@ -378,8 +455,8 @@ export const EmployeesList = ({
             handleVacancyClick,
           )}
           data={tabContentMap.vacancies}
-          isLoading={isLoading}
-          skeletonRows={skeletonCount}
+          isLoading={isVacanciesLoading}
+          skeletonRows={vacancySkeletonCount}
         />
       ) : viewType === "list" &&
         hasNestedTabs &&
@@ -393,8 +470,8 @@ export const EmployeesList = ({
           data={nestedTabContentMap[activeTab].employees}
           onRowClick={handleEmployeeClick}
           containerClassName="rounded-tl-none"
-          isLoading={isLoading}
-          skeletonRows={skeletonCount}
+          isLoading={nestedEmployeesLoading}
+          skeletonRows={nestedSkeletonCount}
         />
       ) : viewType === "list" &&
         hasNestedTabs &&
@@ -407,11 +484,15 @@ export const EmployeesList = ({
             activeTab === "archive" ? "restore" : "respond",
           )}
           data={nestedTabContentMap[activeTab].vacancies}
-          isLoading={isLoading}
-          skeletonRows={skeletonCount}
+          isLoading={nestedVacanciesLoading}
+          skeletonRows={
+            activeTab === "favorites"
+              ? favoriteSkeletonCount
+              : vacancySkeletonCount
+          }
         />
-      ) : isLoading ? (
-        <EmployeeCardsSkeleton count={skeletonCount} />
+      ) : cardsLoading ? (
+        <EmployeeCardsSkeleton count={cardsSkeletonCount} />
       ) : (
         <RenderCards
           onEmployeeClick={handleEmployeeClick}

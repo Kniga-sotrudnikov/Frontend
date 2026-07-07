@@ -5,7 +5,11 @@ import { SearchInput } from "@/shared/ui/input";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { Navbar } from "@/widgets/navbar";
-import { EmployeesList } from "@/widgets/employees-list";
+import {
+  EmployeesList,
+  type EmployeesListEntityTab,
+  type EmployeesListTab,
+} from "@/widgets/employees-list";
 import { EmployeesFilterBar } from "@/widgets/employees-filter-bar";
 import { VacancyCard } from "@/widgets/vacancy-card";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
@@ -22,11 +26,17 @@ import {
   useSummaryStats,
 } from "@/entities/org-structure";
 import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
+import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
 import { useAuthStore } from "@/entities/user";
 import { pluralize } from "@/shared/lib";
+import { useGetFavorites } from "@/entities/favorites";
 
 const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
 const DEFAULT_EMPLOYEE_LIMIT = 12;
+const VACANCIES_LIMIT_OPTIONS = EMPLOYEES_LIMIT_OPTIONS;
+const DEFAULT_VACANCY_LIMIT = DEFAULT_EMPLOYEE_LIMIT;
+const FAVORITES_LIMIT_OPTIONS = EMPLOYEES_LIMIT_OPTIONS;
+const DEFAULT_FAVORITE_LIMIT = DEFAULT_EMPLOYEE_LIMIT;
 
 const EmployeesPage = () => {
   const { selectedVacancy, openVacancyModal, closeVacancyModal } =
@@ -41,9 +51,18 @@ const EmployeesPage = () => {
     (state) => state.openEmployeeModal,
   );
 
-  const [limit, setLimit] = useState(DEFAULT_EMPLOYEE_LIMIT);
-  const [offset, setOffset] = useState(0);
-  const [vacancyIdFromUrl, setVacancyIdFromUrl] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<EmployeesListTab>("employees");
+  const [activeEntityTab, setActiveEntityTab] =
+    useState<EmployeesListEntityTab>("employees");
+  const [employeeLimit, setEmployeeLimit] = useState(DEFAULT_EMPLOYEE_LIMIT);
+  const [employeeOffset, setEmployeeOffset] = useState(0);
+  const [vacancyLimit, setVacancyLimit] = useState(DEFAULT_VACANCY_LIMIT);
+  const [vacancyOffset, setVacancyOffset] = useState(0);
+  const [favoriteLimit, setFavoriteLimit] = useState(DEFAULT_FAVORITE_LIMIT);
+  const [favoriteOffset, setFavoriteOffset] = useState(0);
+  const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(
+    null,
+  );
 
   const selectedUnit = useSelectionUnitStore((state) => state.selectedUnit);
   const setSelectedUnit = useSelectionUnitStore(
@@ -74,15 +93,41 @@ const EmployeesPage = () => {
   );
   const { data: vacancyDetailFromUrl } = useGetVacancyDetail(
     vacancyIdFromUrl ?? 0,
+    employeeLimit,
+    employeeOffset,
   );
   const { data: summaryData, isLoading: isSummaryLoading } = useSummaryStats();
+  const { data: vacanciesData, isLoading: isVacanciesLoading } =
+    useGetVacancies({
+      limit: vacancyLimit,
+      offset: vacancyOffset,
+    });
+  const { data: favoritesData, isLoading: isFavoritesLoading } =
+    useGetFavorites({
+      limit: favoriteLimit,
+      offset: favoriteOffset,
+    });
+  const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
 
-  const totalCount = (listData?.count ?? 0) - (currentEmployeeId ? 1 : 0);
-  const page = Math.floor(offset / limit) + 1;
+  const employeeTotalCount = Math.max(
+    (listData?.count ?? 0) - (currentEmployeeId ? 1 : 0),
+    0,
+  );
+  const employeePage = Math.floor(employeeOffset / employeeLimit) + 1;
+  const vacancyTotalCount = vacanciesData?.count ?? 0;
+  const vacancyPage = Math.floor(vacancyOffset / vacancyLimit) + 1;
+  const favoriteTotalCount = favoritesData?.count ?? 0;
+  const favoritePage = Math.floor(favoriteOffset / favoriteLimit) + 1;
 
   const employees = useMemo(() => {
     return listData?.results ?? [];
   }, [listData?.results]);
+  const vacancies = useMemo(() => {
+    return vacanciesData?.results ?? [];
+  }, [vacanciesData?.results]);
+  const favoriteItems = useMemo(() => {
+    return favoritesData?.results ?? [];
+  }, [favoritesData?.results]);
 
   const statsText = useMemo(() => {
     if (isSummaryLoading) return "Загрузка...";
@@ -136,7 +181,7 @@ const EmployeesPage = () => {
     const employeeId = params.get("employee");
 
     if (vacancyId) {
-      setVacancyIdFromUrl(Number(vacancyId));
+      setSelectedVacancyId(Number(vacancyId));
     }
 
     if (employeeId) {
@@ -146,10 +191,10 @@ const EmployeesPage = () => {
   }, [employees, openEmployeeModal]);
 
   useEffect(() => {
-    if (vacancyDetailFromUrl) {
-      openVacancyModal(vacancyDetailFromUrl);
+    if (vacancyDetail) {
+      openVacancyModal(vacancyDetail);
     }
-  }, [vacancyDetailFromUrl, openVacancyModal]);
+  }, [vacancyDetail, openVacancyModal]);
 
   return (
     <>
@@ -171,23 +216,71 @@ const EmployeesPage = () => {
             <EmployeesFilterBar />
             {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
             <EmployeesList
+              activeTab={activeTab}
+              onActiveTabChange={setActiveTab}
+              activeEntityTab={activeEntityTab}
+              onActiveEntityTabChange={setActiveEntityTab}
               employees={employees}
+              vacancies={vacancies}
+              favoriteItems={favoriteItems}
+              employeesCount={employeeTotalCount}
+              vacanciesCount={vacancyTotalCount}
+              favoritesCount={favoriteTotalCount}
               onUpdateEmployee={handlePatchEmployee}
+              onVacancyClick={(vacancy) => setSelectedVacancyId(vacancy.id)}
               isLoading={isListLoading}
-              skeletonCount={limit}
+              isVacanciesLoading={isVacanciesLoading}
+              isFavoritesLoading={isFavoritesLoading}
+              skeletonCount={employeeLimit}
+              vacancySkeletonCount={vacancyLimit}
+              favoriteSkeletonCount={favoriteLimit}
             />
 
             <div>
-              {listData && (
+              {activeTab === "employees" && listData && (
                 <AppPagination
-                  page={page}
-                  limit={limit}
-                  totalCount={totalCount}
+                  page={employeePage}
+                  limit={employeeLimit}
+                  totalCount={employeeTotalCount}
                   limitOptions={EMPLOYEES_LIMIT_OPTIONS}
-                  onPageChange={(nextPage) => setOffset((nextPage - 1) * limit)}
+                  onPageChange={(nextPage) =>
+                    setEmployeeOffset((nextPage - 1) * employeeLimit)
+                  }
                   onLimitChange={(nextLimit) => {
-                    setLimit(nextLimit);
-                    setOffset(0);
+                    setEmployeeLimit(nextLimit);
+                    setEmployeeOffset(0);
+                  }}
+                />
+              )}
+
+              {activeTab === "vacancies" && vacanciesData && (
+                <AppPagination
+                  page={vacancyPage}
+                  limit={vacancyLimit}
+                  totalCount={vacancyTotalCount}
+                  limitOptions={VACANCIES_LIMIT_OPTIONS}
+                  onPageChange={(nextPage) =>
+                    setVacancyOffset((nextPage - 1) * vacancyLimit)
+                  }
+                  onLimitChange={(nextLimit) => {
+                    setVacancyLimit(nextLimit);
+                    setVacancyOffset(0);
+                  }}
+                />
+              )}
+
+              {activeTab === "favorites" && favoritesData && (
+                <AppPagination
+                  page={favoritePage}
+                  limit={favoriteLimit}
+                  totalCount={favoriteTotalCount}
+                  limitOptions={FAVORITES_LIMIT_OPTIONS}
+                  onPageChange={(nextPage) =>
+                    setFavoriteOffset((nextPage - 1) * favoriteLimit)
+                  }
+                  onLimitChange={(nextLimit) => {
+                    setFavoriteLimit(nextLimit);
+                    setFavoriteOffset(0);
                   }}
                 />
               )}
@@ -200,7 +293,10 @@ const EmployeesPage = () => {
         <VacancyCard
           open={true}
           onOpenChange={(open) => {
-            if (!open) closeVacancyModal();
+            if (!open) {
+              closeVacancyModal();
+              setSelectedVacancyId(null);
+            }
           }}
           vacancy={{
             id: selectedVacancy.id,
