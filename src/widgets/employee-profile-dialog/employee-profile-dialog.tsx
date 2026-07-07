@@ -58,10 +58,8 @@ export const EmployeeProfileDialog = ({
     isAdmin ? "hr_admin" : "employee"
   );
 
-  // Получаем список всех тегов для маппинга ID в имена
   const { data: tagsData } = useTags({ limit: 100 });
   
-  // Создаем маппинг ID -> имя
   const tagNameMap = useMemo(() => {
     const map = new Map<string, string>();
     if (tagsData?.results) {
@@ -72,20 +70,14 @@ export const EmployeeProfileDialog = ({
     return map;
   }, [tagsData]);
 
-  // Преобразуем ID тегов в имена
   const tagNames = useMemo(() => {
     if (!employee?.competencies || !employee.competencies.length) return [];
-    
-    // Если теги еще не загружены, показываем ID как fallback
-    if (tagNameMap.size === 0) {
-      return employee.competencies.map((id) => String(id));
-    }
     
     return employee.competencies.map((id) => {
       const idStr = String(id);
       return tagNameMap.get(idStr) || idStr;
     });
-  }, [employee, tagNameMap]); // <-- employee целиком
+  }, [employee, tagNameMap]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -149,7 +141,7 @@ export const EmployeeProfileDialog = ({
               linkCV={employee.resumeLink || ""}
               linkProfile={employee.crmProfile || ""}
               aboutMe={employee.aboutMe || ""}
-              tags={tagNames}
+              tags={tagNames} // Передаем имена, а не ID
             />
           )}
         </div>
