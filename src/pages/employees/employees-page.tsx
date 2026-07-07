@@ -20,7 +20,6 @@ import {
 } from "@/entities/employee";
 import { useEmployeeModalStore } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
-import { useGetVacancyDetail } from "@/entities/vacancy";
 import {
   useSelectionUnitStore,
   useSummaryStats,
@@ -75,7 +74,7 @@ const EmployeesPage = () => {
 
   // при смене выбранного узла возвращаемся на первую страницу
   useEffect(() => {
-    setOffset(0);
+    setEmployeeOffset(0);
   }, [selectedUnit]);
 
   // сброс выбранного узла при уходе со страницы
@@ -86,15 +85,10 @@ const EmployeesPage = () => {
   const currentEmployeeId = currentUser?.employee_id;
 
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
-    limit,
-    offset,
-    undefined,
-    filter,
-  );
-  const { data: vacancyDetailFromUrl } = useGetVacancyDetail(
-    vacancyIdFromUrl ?? 0,
     employeeLimit,
     employeeOffset,
+    undefined,
+    filter,
   );
   const { data: summaryData, isLoading: isSummaryLoading } = useSummaryStats();
   const { data: vacanciesData, isLoading: isVacanciesLoading } =
