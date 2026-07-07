@@ -1,6 +1,3 @@
-/**
- * Устаревший тип статуса, вместо него следует использовать `EmploymentStatus`
- */
 export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
 
 export type TEmployee = {
@@ -10,7 +7,9 @@ export type TEmployee = {
   department_name: string;
   direction_name: string;
   photo_url: string;
-  status: TEmployeeStatus;
+  status: StatusEnum;
+  employment_status: EmploymentStatus;
+  employment_status_display: string;
   birthday_display: string;
   city: string;
   tags: string[];
@@ -30,7 +29,7 @@ export type TShortEmployee = {
   photo: string;
 };
 
-export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
+export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick" | "maternity";
 
 export interface EmployeeSupervisor {
   name: string;
