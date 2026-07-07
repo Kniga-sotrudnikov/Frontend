@@ -1,6 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import type { TEmployee } from "@/entities/employee";
 import { EmployeeStatus } from "./employee-status.tsx";
+import { mapStatus } from "../utils/map-temployee-to-employee-data";
 
 export const employeeTableColumns: ColumnDef<TEmployee>[] = [
   {
@@ -33,7 +34,7 @@ export const employeeTableColumns: ColumnDef<TEmployee>[] = [
     header: "Статус",
     enableSorting: true,
     cell: ({ row }) => {
-      return <EmployeeStatus status={row.original.status} />;
+      return <EmployeeStatus status={mapStatus(row.original.employment_status || "working")} />;
     },
   },
   {

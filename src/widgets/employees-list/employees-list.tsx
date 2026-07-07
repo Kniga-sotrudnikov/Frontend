@@ -18,9 +18,6 @@ import {
   useEmployeeModalStore,
 } from "@/features/employee";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
-import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info.tsx";
-import { EmployeeContacts } from "@/entities/employee/ui/employee-contacts.tsx";
-import { LeaderPrimaryInfo } from "@/entities/employee/ui/leader-primary-info.tsx";
 import { useIsAdmin, useAuthStore } from "@/entities/user";
 import { useVacancyModalStore } from "@/features/vacancy-respond";
 import { useGetFavorites, useToggleFavorite } from "@/entities/favorites";
@@ -56,7 +53,7 @@ export const EmployeesList = ({
     useState<EmployeeData | null>(null);
 
   const isAdmin = useIsAdmin();
-  
+
   const currentUser = useAuthStore((state) => state.user);
   const currentEmployeeId = currentUser?.employee_id;
 
@@ -140,7 +137,9 @@ export const EmployeesList = ({
     }
 
     if (employeeId) {
-      const employee = filteredEmployees.find((e) => String(e.id) === employeeId);
+      const employee = filteredEmployees.find(
+        (e) => String(e.id) === employeeId,
+      );
       if (employee) openEmployeeModal(employee);
     }
   }, [filteredEmployees, openEmployeeModal]);
@@ -158,7 +157,9 @@ export const EmployeesList = ({
 
   const allFavorites = [...favoriteEmployees, ...favoriteVacancies];
 
-  const archivedEmployees = filteredEmployees.filter((emp) => emp.isArchived === true);
+  const archivedEmployees = filteredEmployees.filter(
+    (emp) => emp.isArchived === true,
+  );
   const archivedVacancies = vacancies.filter((vac) => vac.isArchived === true);
   const allArchived = [...archivedEmployees, ...archivedVacancies];
 
@@ -435,50 +436,7 @@ export const EmployeesList = ({
               handleCloseModal();
             }
           }}
-          primaryInfo={
-            <EmployeePrimaryInfo
-              name={selectedEmployee.name}
-              position={selectedEmployee.position}
-              franchise={selectedEmployee.franchise}
-              department={selectedEmployee.department}
-              status={selectedEmployee.status}
-              photo={selectedEmployee.photo}
-              isArchived={selectedEmployee.isArchived}
-            />
-          }
-          emailInfo={
-            <EmployeeContacts
-              type="email"
-              corpContact={selectedEmployee.emailCorporate ?? ""}
-              persContact={selectedEmployee.emailPersonal ?? ""}
-            />
-          }
-          phoneInfo={
-            <EmployeeContacts
-              type="phone"
-              corpContact={selectedEmployee.phoneCorporate ?? ""}
-              persContact={selectedEmployee.phonePersonal ?? ""}
-            />
-          }
-          leader={
-            <LeaderPrimaryInfo
-              leaderName={
-                selectedEmployee.supervisor?.name ??
-                selectedEmployee.linearManager
-              }
-              leaderPosition={selectedEmployee.supervisor?.position ?? ""}
-              leaderPhoto={selectedEmployee.supervisor?.photo}
-            />
-          }
-          roles={selectedEmployee.roles ?? []}
-          tags={selectedEmployee.competencies ?? []}
-          city={selectedEmployee.city}
-          birthday={String(selectedEmployee.birthday)}
-          linkSocialNetwork={selectedEmployee.socialNetwork ?? ""}
-          linkCV={selectedEmployee.resumeLink ?? ""}
-          linkProfile={selectedEmployee.crmProfile ?? ""}
-          aboutMe={selectedEmployee.aboutMe ?? ""}
-          onExportPDF={() => {}}
+          employeeId={Number(selectedEmployee.id)}
           editButton={
             isAdmin ? (
               <EditEmployeeButton

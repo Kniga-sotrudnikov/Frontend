@@ -1,14 +1,11 @@
-import type { TEmployeeStatus } from "@/entities/employee/";
+import type { EmployeeStatus as EmployeeStatusType } from "../model/types";
 import { Badge } from "@ui/badge";
 
 const employeeStatusConfig: Record<
-  TEmployeeStatus,
-  {
-    label: string;
-    className: string;
-  }
+  EmployeeStatusType,
+  { label: string; className: string }
 > = {
-  active: {
+  working: {
     label: "В работе",
     className:
       "border-[var(--color-green-700)] bg-[var(--color-green-100)] text-[var(--color-green-700)]",
@@ -28,14 +25,18 @@ const employeeStatusConfig: Record<
     className:
       "border-[var(--color-purple-500)] bg-[var(--color-purple-100)] text-[var(--color-purple-500)]",
   },
+  bizTrip: {
+    label: "Командировка",
+    className:
+      "border-[var(--color-purple-500)] bg-[var(--color-purple-100)] text-[var(--color-purple-500)]",
+  },
 };
 
 type TEmployeeStatusProps = {
-  status: TEmployeeStatus;
+  status: EmployeeStatusType;
 };
 
 export const EmployeeStatus = ({ status }: TEmployeeStatusProps) => {
   const config = employeeStatusConfig[status];
-
   return <Badge className={config.className}>{config.label}</Badge>;
 };
