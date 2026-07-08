@@ -7,7 +7,7 @@ import {
   bulkAddTagsApi,
   bulkRemoveTagsApi,
 } from "../api/tags-api";
-import type { UpdateTagPayload } from "./types";
+import type { UpdateTagPayload, TagsListResponse } from "./types";
 
 export const tagsKeys = {
   all: ["tags"] as const,
@@ -31,8 +31,29 @@ export const useCreateTag = () => {
 
   return useMutation({
     mutationFn: createTagApi,
-    onSuccess: () => {
+    onSuccess: (newTag) => {
+      // Инвалидируем все списки тегов, чтобы обновить все компоненты
       queryClient.invalidateQueries({ queryKey: tagsKeys.lists() });
+      
+      // Оптимистично обновляем все кэши с тегами
+      // Проходим по всем ключам и обновляем те, которые начинаются с tags
+      queryClient.setQueriesData<TagsListResponse>(
+        { queryKey: tagsKeys.lists(), exact: false },
+        (oldData) => {
+          if (!oldData) return oldData;
+          // Проверяем, есть ли уже такой тег в кэше (избегаем дублей)
+          const exists = oldData.results.some(tag => tag.id === newTag.id);
+          if (exists) return oldData;
+          
+          return {
+            ...oldData,
+            results: [...oldData.results, newTag],
+            count: oldData.count + 1,
+          };
+        }
+      );
+      
+      return newTag;
     },
   });
 };
@@ -43,11 +64,26 @@ export const useUpdateTag = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateTagPayload }) =>
       updateTagApi(id, data),
-    onSuccess: (_, variables) => {
+    onSuccess: (updatedTag, variables) => {
+      // Инвалидируем списки
       queryClient.invalidateQueries({ queryKey: tagsKeys.lists() });
       queryClient.invalidateQueries({
         queryKey: tagsKeys.detail(variables.id),
       });
+      
+      // Оптимистично обновляем все кэши
+      queryClient.setQueriesData<TagsListResponse>(
+        { queryKey: tagsKeys.lists(), exact: false },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            results: oldData.results.map((tag) =>
+              tag.id === variables.id ? { ...tag, ...updatedTag } : tag
+            ),
+          };
+        }
+      );
     },
   });
 };
@@ -57,8 +93,22 @@ export const useDeleteTag = () => {
 
   return useMutation({
     mutationFn: deleteTagApi,
-    onSuccess: () => {
+    onSuccess: (_, deletedId) => {
+      // Инвалидируем списки
       queryClient.invalidateQueries({ queryKey: tagsKeys.lists() });
+      
+      // Оптимистично удаляем из всех кэшей
+      queryClient.setQueriesData<TagsListResponse>(
+        { queryKey: tagsKeys.lists(), exact: false },
+        (oldData) => {
+          if (!oldData) return oldData;
+          return {
+            ...oldData,
+            results: oldData.results.filter((tag) => tag.id !== deletedId),
+            count: oldData.count - 1,
+          };
+        }
+      );
     },
   });
 };

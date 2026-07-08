@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 import {
   Dialog,
   DialogClose,
@@ -23,9 +23,10 @@ import { ReportInaccuracyModal } from "@/shared/ui/report-inaccuracy-modal/repor
 import { Button } from "@/shared/ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
 import { useExportPdf } from "@/shared/lib/hooks";
+import { useTags } from "@/entities/tags";
 import { EmployeePdfContent } from "./employee-pdf-content";
 import type { ReactNode } from "react";
-import { useEmployeeDetail } from "@/entities/employee";
+import { useEmployeeDetail, useEmployeesList } from "@/entities/employee";
 import { useIsAdmin } from "@/entities/user";
 import { Skeleton } from "@ui/skeleton";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
@@ -52,10 +53,62 @@ export const EmployeeProfileDialog = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const isAdmin = useIsAdmin();
 
-  const { data: employee, isLoading } = useEmployeeDetail(
+  const { data: employeeDetail, isLoading: isDetailLoading } = useEmployeeDetail(
     employeeId || undefined,
     isAdmin ? "hr_admin" : "employee"
   );
+
+  const { data: employeesList } = useEmployeesList(100, 0, isAdmin ? "hr_admin" : "employee");
+
+  const employeeFromList = useMemo(() => {
+    if (!employeesList?.results || !employeeId) return null;
+    return employeesList.results.find((emp) => Number(emp.id) === Number(employeeId));
+  }, [employeesList, employeeId]);
+
+  const employee = useMemo(() => {
+    if (!employeeDetail) return null;
+    
+    const competencies = employeeFromList?.competencies || [];
+    
+    return {
+      ...employeeDetail,
+      competencies,
+    };
+  }, [employeeDetail, employeeFromList]);
+
+  const isLoading = isDetailLoading || !employee;
+
+  const { data: tagsData } = useTags({ limit: 100 });
+  
+  const tagNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    if (tagsData?.results) {
+      tagsData.results.forEach((tag) => {
+        map.set(String(tag.id), tag.name);
+      });
+    }
+    return map;
+  }, [tagsData]);
+
+  const tagNames = useMemo(() => {
+    const ids = employee?.competencies || [];
+    
+    if (!ids.length) return [];
+    
+    if (tagNameMap.size === 0) {
+      return ids.map(String);
+    }
+    
+    return ids.map((id) => {
+      const idStr = String(id);
+      return tagNameMap.get(idStr) || idStr;
+    });
+  }, [employee?.competencies, tagNameMap]);
+
+  console.log('🔍 tagNameMap size:', tagNameMap.size);
+console.log('🔍 tagNameMap keys:', Array.from(tagNameMap.keys()));
+console.log('🔍 ids:', employee?.competencies);
+console.log('🔍 tagNames result:', tagNames);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -119,7 +172,7 @@ export const EmployeeProfileDialog = ({
               linkCV={employee.resumeLink || ""}
               linkProfile={employee.crmProfile || ""}
               aboutMe={employee.aboutMe || ""}
-              tags={employee.competencies || []}
+              tags={tagNames}
             />
           )}
         </div>
@@ -182,11 +235,11 @@ export const EmployeeProfileDialog = ({
               </div>
             )}
 
-            {employee.competencies && employee.competencies.length > 0 && (
+            {tagNames.length > 0 && (
               <InfoSection icon={TagIcon} title="Компетенции">
                 <CollapsibleBadgeList
                   visibleCount={3}
-                  items={employee.competencies}
+                  items={tagNames}
                   badgeClassName="bg-purple-50 text-purple-500 border-purple-500"
                 />
               </InfoSection>

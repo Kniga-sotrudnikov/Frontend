@@ -68,15 +68,18 @@ export function HeaderUserCard() {
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={8}>
         <EmployeeProfileDialog employeeId={employeeId || null}>
-          <DropdownMenuItem
-            disabled={!employee}
-            onSelect={(event) => {
-              event.preventDefault();
-            }}
-          >
-            <UserIcon className="size-5 text-current" />
-            Мой профиль
-          </DropdownMenuItem>
+          <div className="w-full">
+            <DropdownMenuItem
+              disabled={!employee}
+              onSelect={(event) => {
+                event.preventDefault();
+              }}
+              className="w-full"
+            >
+              <UserIcon className="size-5 text-current" />
+              Мой профиль
+            </DropdownMenuItem>
+          </div>
         </EmployeeProfileDialog>
 
         <DropdownMenuSeparator />

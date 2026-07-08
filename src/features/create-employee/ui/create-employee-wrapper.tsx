@@ -28,6 +28,7 @@ export const CreateEmployeeWrapper = ({
       phone: data.phoneCorporate,
       birthday: "0001-01-01",
       department: 1,
+      tags: data.competencies.map(String),
     });
   };
 

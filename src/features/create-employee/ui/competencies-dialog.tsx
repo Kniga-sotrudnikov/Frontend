@@ -1,6 +1,5 @@
 import { Dialog, DialogContent } from "@ui/dialog";
 import { CompetenciesContent } from "./competencies-content";
-import type { CompetencyOption } from "../model/types";
 
 interface CompetenciesDialogContentProps {
   open: boolean;
@@ -9,10 +8,10 @@ interface CompetenciesDialogContentProps {
   onSearchChange: (value: string) => void;
   tempValue: string[];
   onToggleCompetency: (id: string) => void;
-  filteredOptions: CompetencyOption[];
+  filteredOptions: Array<{ id: string; label: string }>;
   onClear: () => void;
   onApply: () => void;
-  onAddTag: (tagName: string, color?: string) => void;
+  onAddTag: (tagName: string) => void;
 }
 
 export const CompetenciesDialogContent = ({
