@@ -131,39 +131,6 @@ export const EmployeesList = ({
   );
   const addNotification = useNotificationStore((state) => state.add);
 
-  const openVacancyModal = useVacancyModalStore(
-    (state) => state.openVacancyModal,
-  );
-
-  const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(
-    null,
-  );
-
-  const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
-
-  useEffect(() => {
-    if (vacancyDetail) {
-      openVacancyModal(vacancyDetail);
-    }
-  }, [vacancyDetail, openVacancyModal]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const vacancyId = params.get("vacancy");
-    const employeeId = params.get("employee");
-
-    if (vacancyId) {
-      setSelectedVacancyId(Number(vacancyId));
-    }
-
-    if (employeeId) {
-      const employee = filteredEmployees.find(
-        (e) => String(e.id) === employeeId,
-      );
-      if (employee) openEmployeeModal(employee);
-    }
-  }, [filteredEmployees, openEmployeeModal]);
-
   const handleVacancyClick = (vacancy: NormalizedVacancy) => {
     onVacancyClick?.(vacancy);
   };
