@@ -27,7 +27,7 @@ import {
 import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
 import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
 import { useAuthStore } from "@/entities/user";
-import { pluralize } from "@/shared/lib";
+import { pluralize, useLastDefinedValue } from "@/shared/lib";
 import { useGetFavorites } from "@/entities/favorites";
 
 const PAGINATION_LIMIT_OPTIONS = [6, 12, 24, 50];
@@ -97,12 +97,12 @@ const EmployeesPage = () => {
     });
   const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
 
-  const employeeTotalCount = Math.max(
-    (listData?.count ?? 0) - (currentEmployeeId ? 1 : 0),
-    0,
-  );
-  const vacancyTotalCount = vacanciesData?.count ?? 0;
-  const favoriteTotalCount = favoritesData?.count ?? 0;
+  const employeeCountFromData = listData
+    ? Math.max(listData.count - (currentEmployeeId ? 1 : 0), 0)
+    : undefined;
+  const employeeTotalCount = useLastDefinedValue(employeeCountFromData, 0);
+  const vacancyTotalCount = useLastDefinedValue(vacanciesData?.count, 0);
+  const favoriteTotalCount = useLastDefinedValue(favoritesData?.count, 0);
   const paginationPage = Math.floor(paginationOffset / paginationLimit) + 1;
   const getActivePagination = () => {
     switch (activeTab) {

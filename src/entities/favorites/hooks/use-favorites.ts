@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
 import { favoritesApi } from "../api/favorites-api";
 import { mapEmployeeListResponse } from "@/entities/employee";
 import { useNotificationStore } from "@/shared/model/stores";
@@ -15,6 +20,23 @@ export const favoritesKeys = {
     params
       ? ([...favoritesKeys.all, params] as const)
       : favoritesKeys.all,
+};
+
+const updateFavoritesCountInCache = (
+  queryClient: QueryClient,
+  countDelta: number,
+) => {
+  queryClient.setQueriesData<FavoritesListResponse>(
+    { queryKey: favoritesKeys.all },
+    (data) => {
+      if (!data) return data;
+
+      return {
+        ...data,
+        count: Math.max(data.count + countDelta, 0),
+      };
+    },
+  );
 };
 
 export const useGetFavorites = (params?: FavoritesListParams) => {
@@ -41,6 +63,7 @@ export const useAddFavorite = () => {
       employeeId,
     }: AddFavoriteRequest): Promise<void> => favoritesApi.addFavorite(employeeId),
     onSuccess: () => {
+      updateFavoritesCountInCache(queryClient, 1);
       queryClient.invalidateQueries({ queryKey: favoritesKeys.all });
 
       addNotification({
@@ -69,6 +92,7 @@ export const useRemoveFavorite = () => {
   return useMutation({
     mutationFn: favoritesApi.removeFavorite,
     onSuccess: () => {
+      updateFavoritesCountInCache(queryClient, -1);
       queryClient.invalidateQueries({ queryKey: favoritesKeys.all });
 
       addNotification({
