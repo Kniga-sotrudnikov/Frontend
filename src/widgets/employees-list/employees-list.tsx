@@ -220,39 +220,39 @@ export const EmployeesList = ({
 
   const hasNestedTabs = activeTab === "favorites" || activeTab === "archive";
 
-  useEffect(() => {
-    if (!hasNestedTabs) return;
-
-    const currentEmployees =
-      activeTab === "favorites" ? favoriteEmployees : archivedEmployees;
-    const currentVacancies =
-      activeTab === "favorites" ? favoriteVacancies : archivedVacancies;
-
-    if (
-      activeEntityTab === "vacancies" &&
-      currentVacancies.length === 0 &&
-      currentEmployees.length > 0
-    ) {
-      onActiveEntityTabChange("employees");
-    }
-
-    if (
-      activeEntityTab === "employees" &&
-      currentEmployees.length === 0 &&
-      currentVacancies.length > 0
-    ) {
-      onActiveEntityTabChange("vacancies");
-    }
-  }, [
-    activeEntityTab,
-    activeTab,
-    archivedEmployees,
-    archivedVacancies,
-    favoriteEmployees,
-    favoriteVacancies,
-    hasNestedTabs,
-    onActiveEntityTabChange,
-  ]);
+  // useEffect(() => {
+  //   if (!hasNestedTabs) return;
+  //
+  //   const currentEmployees =
+  //     activeTab === "favorites" ? favoriteEmployees : archivedEmployees;
+  //   const currentVacancies =
+  //     activeTab === "favorites" ? favoriteVacancies : archivedVacancies;
+  //
+  //   if (
+  //     activeEntityTab === "vacancies" &&
+  //     currentVacancies.length === 0 &&
+  //     currentEmployees.length > 0
+  //   ) {
+  //     onActiveEntityTabChange("employees");
+  //   }
+  //
+  //   if (
+  //     activeEntityTab === "employees" &&
+  //     currentEmployees.length === 0 &&
+  //     currentVacancies.length > 0
+  //   ) {
+  //     onActiveEntityTabChange("vacancies");
+  //   }
+  // }, [
+  //   activeEntityTab,
+  //   activeTab,
+  //   archivedEmployees,
+  //   archivedVacancies,
+  //   favoriteEmployees,
+  //   favoriteVacancies,
+  //   hasNestedTabs,
+  //   onActiveEntityTabChange,
+  // ]);
 
   const itemsByTab = tabContentMap[activeTab];
 
@@ -292,9 +292,9 @@ export const EmployeesList = ({
       ? isVacanciesLoading
       : activeTab === "favorites"
         ? isFavoritesLoading
-      : activeTab === "archive"
-        ? isLoading || isVacanciesLoading
-        : isLoading;
+        : activeTab === "archive"
+          ? isLoading || isVacanciesLoading
+          : isLoading;
 
   const cardsSkeletonCount =
     activeTab === "vacancies"

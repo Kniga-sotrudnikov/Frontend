@@ -30,12 +30,8 @@ import { useAuthStore } from "@/entities/user";
 import { pluralize } from "@/shared/lib";
 import { useGetFavorites } from "@/entities/favorites";
 
-const EMPLOYEES_LIMIT_OPTIONS = [6, 12, 24, 50];
-const DEFAULT_EMPLOYEE_LIMIT = 12;
-const VACANCIES_LIMIT_OPTIONS = EMPLOYEES_LIMIT_OPTIONS;
-const DEFAULT_VACANCY_LIMIT = DEFAULT_EMPLOYEE_LIMIT;
-const FAVORITES_LIMIT_OPTIONS = EMPLOYEES_LIMIT_OPTIONS;
-const DEFAULT_FAVORITE_LIMIT = DEFAULT_EMPLOYEE_LIMIT;
+const PAGINATION_LIMIT_OPTIONS = [6, 12, 24, 50];
+const DEFAULT_PAGINATION_LIMIT = 12;
 
 const EmployeesPage = () => {
   const { selectedVacancy, openVacancyModal, closeVacancyModal } =
@@ -53,12 +49,10 @@ const EmployeesPage = () => {
   const [activeTab, setActiveTab] = useState<EmployeesListTab>("employees");
   const [activeEntityTab, setActiveEntityTab] =
     useState<EmployeesListEntityTab>("employees");
-  const [employeeLimit, setEmployeeLimit] = useState(DEFAULT_EMPLOYEE_LIMIT);
-  const [employeeOffset, setEmployeeOffset] = useState(0);
-  const [vacancyLimit, setVacancyLimit] = useState(DEFAULT_VACANCY_LIMIT);
-  const [vacancyOffset, setVacancyOffset] = useState(0);
-  const [favoriteLimit, setFavoriteLimit] = useState(DEFAULT_FAVORITE_LIMIT);
-  const [favoriteOffset, setFavoriteOffset] = useState(0);
+  const [paginationLimit, setPaginationLimit] = useState(
+    DEFAULT_PAGINATION_LIMIT,
+  );
+  const [paginationOffset, setPaginationOffset] = useState(0);
   const [selectedVacancyId, setSelectedVacancyId] = useState<number | null>(
     null,
   );
@@ -74,7 +68,7 @@ const EmployeesPage = () => {
 
   // при смене выбранного узла возвращаемся на первую страницу
   useEffect(() => {
-    setEmployeeOffset(0);
+    setPaginationOffset(0);
   }, [selectedUnit]);
 
   // сброс выбранного узла при уходе со страницы
@@ -85,21 +79,21 @@ const EmployeesPage = () => {
   const currentEmployeeId = currentUser?.employee_id;
 
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
-    employeeLimit,
-    employeeOffset,
+    paginationLimit,
+    paginationOffset,
     undefined,
     filter,
   );
   const { data: summaryData, isLoading: isSummaryLoading } = useSummaryStats();
   const { data: vacanciesData, isLoading: isVacanciesLoading } =
     useGetVacancies({
-      limit: vacancyLimit,
-      offset: vacancyOffset,
+      limit: paginationLimit,
+      offset: paginationOffset,
     });
   const { data: favoritesData, isLoading: isFavoritesLoading } =
     useGetFavorites({
-      limit: favoriteLimit,
-      offset: favoriteOffset,
+      limit: paginationLimit,
+      offset: paginationOffset,
     });
   const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
 
@@ -107,11 +101,22 @@ const EmployeesPage = () => {
     (listData?.count ?? 0) - (currentEmployeeId ? 1 : 0),
     0,
   );
-  const employeePage = Math.floor(employeeOffset / employeeLimit) + 1;
   const vacancyTotalCount = vacanciesData?.count ?? 0;
-  const vacancyPage = Math.floor(vacancyOffset / vacancyLimit) + 1;
   const favoriteTotalCount = favoritesData?.count ?? 0;
-  const favoritePage = Math.floor(favoriteOffset / favoriteLimit) + 1;
+  const paginationPage = Math.floor(paginationOffset / paginationLimit) + 1;
+  const getActivePagination = () => {
+    switch (activeTab) {
+      case "employees":
+        return { totalCount: employeeTotalCount, hasData: !!listData };
+      case "vacancies":
+        return { totalCount: vacancyTotalCount, hasData: !!vacanciesData };
+      case "favorites":
+        return { totalCount: favoriteTotalCount, hasData: !!favoritesData };
+      case "archive":
+        return { totalCount: 0, hasData: false };
+    }
+  };
+  const activePagination = getActivePagination();
 
   const employees = useMemo(() => {
     return listData?.results ?? [];
@@ -169,6 +174,14 @@ const EmployeesPage = () => {
     });
   };
 
+  const handleActiveTabChange = (tab: EmployeesListTab) => {
+    if (tab === activeTab) return;
+
+    setActiveTab(tab);
+    setPaginationLimit(DEFAULT_PAGINATION_LIMIT);
+    setPaginationOffset(0);
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const vacancyId = params.get("vacancy");
@@ -211,7 +224,7 @@ const EmployeesPage = () => {
             {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
             <EmployeesList
               activeTab={activeTab}
-              onActiveTabChange={setActiveTab}
+              onActiveTabChange={handleActiveTabChange}
               activeEntityTab={activeEntityTab}
               onActiveEntityTabChange={setActiveEntityTab}
               employees={employees}
@@ -225,56 +238,23 @@ const EmployeesPage = () => {
               isLoading={isListLoading}
               isVacanciesLoading={isVacanciesLoading}
               isFavoritesLoading={isFavoritesLoading}
-              skeletonCount={employeeLimit}
-              vacancySkeletonCount={vacancyLimit}
-              favoriteSkeletonCount={favoriteLimit}
+              skeletonCount={paginationLimit}
+              vacancySkeletonCount={paginationLimit}
+              favoriteSkeletonCount={paginationLimit}
             />
-
-            <div>
-              {activeTab === "employees" && listData && (
+            <div className="min-h-11">
+              {activePagination.hasData && (
                 <AppPagination
-                  page={employeePage}
-                  limit={employeeLimit}
-                  totalCount={employeeTotalCount}
-                  limitOptions={EMPLOYEES_LIMIT_OPTIONS}
+                  page={paginationPage}
+                  limit={paginationLimit}
+                  totalCount={activePagination.totalCount}
+                  limitOptions={PAGINATION_LIMIT_OPTIONS}
                   onPageChange={(nextPage) =>
-                    setEmployeeOffset((nextPage - 1) * employeeLimit)
+                    setPaginationOffset((nextPage - 1) * paginationLimit)
                   }
                   onLimitChange={(nextLimit) => {
-                    setEmployeeLimit(nextLimit);
-                    setEmployeeOffset(0);
-                  }}
-                />
-              )}
-
-              {activeTab === "vacancies" && vacanciesData && (
-                <AppPagination
-                  page={vacancyPage}
-                  limit={vacancyLimit}
-                  totalCount={vacancyTotalCount}
-                  limitOptions={VACANCIES_LIMIT_OPTIONS}
-                  onPageChange={(nextPage) =>
-                    setVacancyOffset((nextPage - 1) * vacancyLimit)
-                  }
-                  onLimitChange={(nextLimit) => {
-                    setVacancyLimit(nextLimit);
-                    setVacancyOffset(0);
-                  }}
-                />
-              )}
-
-              {activeTab === "favorites" && favoritesData && (
-                <AppPagination
-                  page={favoritePage}
-                  limit={favoriteLimit}
-                  totalCount={favoriteTotalCount}
-                  limitOptions={FAVORITES_LIMIT_OPTIONS}
-                  onPageChange={(nextPage) =>
-                    setFavoriteOffset((nextPage - 1) * favoriteLimit)
-                  }
-                  onLimitChange={(nextLimit) => {
-                    setFavoriteLimit(nextLimit);
-                    setFavoriteOffset(0);
+                    setPaginationLimit(nextLimit);
+                    setPaginationOffset(0);
                   }}
                 />
               )}
