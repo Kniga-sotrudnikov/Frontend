@@ -54,6 +54,7 @@ export interface EmployeeData {
   phonePersonal?: string;
   birthday?: string;
   competencies?: string[];
+  tags?: string[];
   roles?: string[];
   supervisor?: EmployeeSupervisor;
   socialNetwork?: string;
@@ -110,7 +111,7 @@ export interface BaseEmployeeRequestResponse {
 }
 
 export interface CreateEmployeeRequest extends BaseEmployeeRequestResponse {
-  tags?: number[];
+  tags?: string[];
 }
 
 export interface CreateEmployeeResponse extends BaseEmployeeRequestResponse {

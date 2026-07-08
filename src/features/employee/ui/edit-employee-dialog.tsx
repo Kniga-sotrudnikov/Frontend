@@ -20,6 +20,7 @@ import {
   mapEmployeeToFormValues,
   mapStatusBack,
 } from "@/features/create-employee/utils";
+import { usePatchEmployee } from "@/entities/employee";
 
 interface EditEmployeeDialogProps {
   open: boolean;
@@ -48,6 +49,7 @@ export const EditEmployeeDialog = ({
   const submitButtonRef = useRef<HTMLButtonElement>(null);
   const preventDialogClose = usePreventDialogClose();
   const addNotification = useNotificationStore((state) => state.add);
+  const patchEmployee = usePatchEmployee();
 
   useEffect(() => {
     if (open) {
@@ -126,6 +128,23 @@ export const EditEmployeeDialog = ({
 
       setIsSubmitting(true);
       try {
+        await patchEmployee.mutateAsync({
+          id: employee.id,
+          data: {
+            full_name: values.fullName,
+            job_title: values.position,
+            department: Number(values.department) || 1,
+            email: values.emailCorporate,
+            phone: values.phoneCorporate,
+            ...(values.birthday && { birthday: values.birthday.toISOString().split('T')[0] }),
+            tags: values.competencies.map(String),
+            ...(values.resumeLink && { resume_link: values.resumeLink }),
+            ...(values.crmProfileLink && { crm_profile: values.crmProfileLink }),
+            ...(values.socialNetworkLink && { social_network: values.socialNetworkLink }),
+            ...(values.aboutMe && { interests: values.aboutMe }),
+          }
+        });
+
         const updatedEmployee: EmployeeData = {
           ...employee,
           name: values.fullName,
@@ -134,36 +153,20 @@ export const EditEmployeeDialog = ({
           linearManager: values.leader,
           city: values.city,
           status: mapStatusBack(values.status),
-          photo:
-            typeof values.photo === "string" ? values.photo : employee.photo,
+          photo: typeof values.photo === "string" ? values.photo : employee.photo,
           emailCorporate: values.emailCorporate,
           emailPersonal: values.emailPersonal,
           phoneCorporate: values.phoneCorporate,
           phonePersonal: values.phonePersonal,
           birthday: values.birthday?.toISOString(),
           competencies: values.competencies,
-          // Новые поля - требуют уточнения у бэкенда
-          // Добавляем только если они есть (не пустые строки)
+          tags: values.competencies.map(String),
           ...(values.resumeLink && { resumeLink: values.resumeLink }),
-          ...(values.crmProfileLink && {
-            crmProfileLink: values.crmProfileLink,
-          }),
-          ...(values.socialNetworkLink && {
-            socialNetworkLink: values.socialNetworkLink,
-          }),
+          ...(values.crmProfileLink && { crmProfileLink: values.crmProfileLink }),
+          ...(values.socialNetworkLink && { socialNetworkLink: values.socialNetworkLink }),
           ...(values.aboutMe && { aboutMe: values.aboutMe }),
           ...(values.role && { role: values.role }),
         };
-
-        // Здесь вызываем API для обновления
-        // await updateEmployee(updatedEmployee);
-
-        addNotification({
-          type: "success",
-          iconType: "success",
-          title: "Успешно",
-          message: "Карточка сотрудника успешно обновлена",
-        });
 
         onOpenChange(false);
         onSuccess?.(updatedEmployee);
@@ -172,31 +175,21 @@ export const EditEmployeeDialog = ({
         addNotification({
           type: "error",
           title: "Ошибка",
-          message:
-            error instanceof Error
-              ? error.message
-              : "Не удалось обновить карточку сотрудника",
+          message: error instanceof Error
+            ? error.message
+            : "Не удалось обновить карточку сотрудника",
         });
         setErrors((prev) => ({
           ...prev,
-          general:
-            error instanceof Error
-              ? error.message
-              : "Ошибка при обновлении сотрудника",
+          general: error instanceof Error
+            ? error.message
+            : "Ошибка при обновлении сотрудника",
         }));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [
-      validate,
-      values,
-      employee,
-      onOpenChange,
-      errors,
-      addNotification,
-      onSuccess,
-    ],
+    [validate, values, employee, onOpenChange, errors, addNotification, onSuccess, patchEmployee],
   );
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {

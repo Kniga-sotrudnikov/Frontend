@@ -26,7 +26,7 @@ import { useExportPdf } from "@/shared/lib/hooks";
 import { useTags } from "@/entities/tags";
 import { EmployeePdfContent } from "./employee-pdf-content";
 import type { ReactNode } from "react";
-import { useEmployeeDetail } from "@/entities/employee";
+import { useEmployeeDetail, useEmployeesList } from "@/entities/employee";
 import { useIsAdmin } from "@/entities/user";
 import { Skeleton } from "@ui/skeleton";
 import { EmployeePrimaryInfo } from "@/entities/employee/ui/employee-primary-info";
@@ -53,10 +53,30 @@ export const EmployeeProfileDialog = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const isAdmin = useIsAdmin();
 
-  const { data: employee, isLoading } = useEmployeeDetail(
+  const { data: employeeDetail, isLoading: isDetailLoading } = useEmployeeDetail(
     employeeId || undefined,
     isAdmin ? "hr_admin" : "employee"
   );
+
+  const { data: employeesList } = useEmployeesList(100, 0, isAdmin ? "hr_admin" : "employee");
+
+  const employeeFromList = useMemo(() => {
+    if (!employeesList?.results || !employeeId) return null;
+    return employeesList.results.find((emp) => Number(emp.id) === Number(employeeId));
+  }, [employeesList, employeeId]);
+
+  const employee = useMemo(() => {
+    if (!employeeDetail) return null;
+    
+    const competencies = employeeFromList?.competencies || [];
+    
+    return {
+      ...employeeDetail,
+      competencies,
+    };
+  }, [employeeDetail, employeeFromList]);
+
+  const isLoading = isDetailLoading || !employee;
 
   const { data: tagsData } = useTags({ limit: 100 });
   
@@ -71,13 +91,24 @@ export const EmployeeProfileDialog = ({
   }, [tagsData]);
 
   const tagNames = useMemo(() => {
-    if (!employee?.competencies || !employee.competencies.length) return [];
+    const ids = employee?.competencies || [];
     
-    return employee.competencies.map((id) => {
+    if (!ids.length) return [];
+    
+    if (tagNameMap.size === 0) {
+      return ids.map(String);
+    }
+    
+    return ids.map((id) => {
       const idStr = String(id);
       return tagNameMap.get(idStr) || idStr;
     });
-  }, [employee, tagNameMap]);
+  }, [employee?.competencies, tagNameMap]);
+
+  console.log('🔍 tagNameMap size:', tagNameMap.size);
+console.log('🔍 tagNameMap keys:', Array.from(tagNameMap.keys()));
+console.log('🔍 ids:', employee?.competencies);
+console.log('🔍 tagNames result:', tagNames);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -141,7 +172,7 @@ export const EmployeeProfileDialog = ({
               linkCV={employee.resumeLink || ""}
               linkProfile={employee.crmProfile || ""}
               aboutMe={employee.aboutMe || ""}
-              tags={tagNames} // Передаем имена, а не ID
+              tags={tagNames}
             />
           )}
         </div>

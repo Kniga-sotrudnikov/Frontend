@@ -68,7 +68,7 @@ export function HeaderUserCard() {
       </DropdownMenuTrigger>
       <DropdownMenuContent sideOffset={8}>
         <EmployeeProfileDialog employeeId={employeeId || null}>
-          <div className="w-full"> {/* <-- Оборачиваем в div */}
+          <div className="w-full">
             <DropdownMenuItem
               disabled={!employee}
               onSelect={(event) => {

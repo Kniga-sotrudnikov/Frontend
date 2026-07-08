@@ -6,6 +6,7 @@ import type {
   EmployeeDetailAdminResponse,
   EmployeeDetailPublicResponse,
   EmploymentStatus,
+  TTag,
 } from "../model/types";
 
 export const mapStatus = (employmentStatus: EmploymentStatus): EmployeeStatus => {
@@ -67,7 +68,7 @@ export const mapEmployeeListResponse = (
     phoneCorporate: undefined,
     phonePersonal: undefined,
     birthday: undefined,
-    competencies: data.tags?.map((t) => t.name) ?? [],
+    competencies: data.tags?.map((t: TTag) => t.name) ?? [],
   };
 };
 
@@ -90,6 +91,6 @@ export const mapEmployeeDetail = (
     phoneCorporate: data.phone,
     phonePersonal: undefined,
     birthday: data.birthday,
-    competencies: data.tags.map((t) => t.name),
+    competencies: data.tags?.map((t: TTag) => t.name) ?? [],
   };
 };
