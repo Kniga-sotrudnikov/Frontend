@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { departmentApi } from "./department-api";
-import type { DepartmentListParams, PaginatedDepartmentBrief } from "../model/types";
+import type { PaginatedDepartmentBrief } from "../model/types";
 
-export const useDepartmentsList = (params?: DepartmentListParams) => {
+export const useDepartmentsList = (limit?: number, offset?: number) => {
   return useQuery<PaginatedDepartmentBrief>({
-    queryKey: ["departments-list", params],
+    queryKey: ["departments-list", limit, offset],
     queryFn: async () => {
-      const response = await departmentApi.getList(params);
+      const response = await departmentApi.getList({limit, offset});
       return response.data;
     },
   });
