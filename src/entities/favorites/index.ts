@@ -1,8 +1,9 @@
 export { favoritesApi } from "./api/favorites-api";
 
 export type {
-  NormalizedFavorite,
-  NormalizedFavoritesResponse,
+  FavoriteItem,
+  FavoritesListResponse,
+  FavoritesListParams,
   AddFavoriteRequest,
   UseToggleFavoriteReturn,
 } from "./model/types";
