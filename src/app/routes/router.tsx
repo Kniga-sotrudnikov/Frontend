@@ -8,13 +8,13 @@ import { GuestOnlyRoute } from "@/app/routes/guest-only-route";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <ProvidersLayout />, // необходим для того чтобы использовать providers для всех страниц
+    element: <ProvidersLayout />,
     children: [
       {
         element: <ProtectedRoute />,
         children: [
           {
-            element: <App />, // тут размещается sidebar
+            element: <App />,
             children: [
               {
                 index: true,
@@ -41,29 +41,10 @@ export const router = createBrowserRouter([
                 path: ROUTES.HELP,
                 lazy: () => import("@/pages/help/help-page.tsx"),
               },
-              /*
-               * Пример навигации по страницам:
-               * - Страницы находятся в папке src/pages/[name_page]/[name_page]-page.tsx
-               * - Имя страницы должно совпадать с именем папки
-               * - Имя страницы должно быть в kebab-case
-               *
-               *
-               * { path: '/[name_page]', lazy: () => import('@/pages/[name_page]/[name_page]-page') }
-               */
             ],
           },
         ],
       },
-
-      /*
-       * Пример навигации по страницам:
-       * - те же правила что и в примере выше
-       * - нет sidebar
-       *
-       * { path: '/login', lazy: () => import('@/pages/login/login-page') },
-       * { path: '*', lazy: () => import('@/pages/404/404-page') },
-       */
-
       {
         element: <GuestOnlyRoute />,
         children: [
