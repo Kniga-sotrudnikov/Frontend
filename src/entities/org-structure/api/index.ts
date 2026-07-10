@@ -1,4 +1,3 @@
-export { departmentApi } from "./department-api";
 export {
   useCreateDepartment,
   useUpdateDepartment,
