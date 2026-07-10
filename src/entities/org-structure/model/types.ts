@@ -67,3 +67,23 @@ export interface SelectedOrgUnit {
   head: boolean;
   type?: 'direction' | 'department';
 }
+
+export interface DepartmentBrief {
+  id: number;
+  name: string;
+  type: 'direction' | 'department';
+  display_order?: number;
+  employee_count: number;
+}
+
+export interface PaginatedDepartmentBrief {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: DepartmentBrief[];
+}
+
+export interface DepartmentListParams {
+  limit?: number;
+  offset?: number;
+}

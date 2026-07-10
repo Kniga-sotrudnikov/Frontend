@@ -31,7 +31,7 @@ const initialValues: CreateEmployeeFormValues = {
   phonePersonal: "",
   birthday: undefined,
   city: "",
-  status: "active",
+  status: "working",
   competencies: [],
   resumeLink: "",
   crmProfileLink: "",
@@ -136,8 +136,6 @@ export const CreateEmployeeDialog = ({
 
       setIsSubmitting(true);
       try {
-        // TODO: Уточнить у бэкенда структуру API для создания сотрудника
-        // и передавать новые поля: resumeLink, crmProfileLink, socialNetworkLink, aboutMe
         await onSubmit?.(values);
         addNotification({
           type: "success",

@@ -1,32 +1,11 @@
 import type {
   TEmployee,
   EmployeeData,
-  EmployeeStatus,
   EmployeeShortResponse,
   EmployeeDetailAdminResponse,
   EmployeeDetailPublicResponse,
-  EmploymentStatus,
   TTag,
 } from "../model/types";
-
-export const mapStatus = (employmentStatus: EmploymentStatus): EmployeeStatus => {
-  switch (employmentStatus) {
-    case "working":
-      return "working";
-    case "vacation":
-      return "vacation";
-    case "sick_leave":
-      return "sick";
-    case "maternity_leave":
-      return "maternity";
-    case "business_trip":
-      return "bizTrip";
-    case "remote":
-      return "working";
-    default:
-      return "working";
-  }
-};
 
 export const mapTEmployeeToEmployeeData = (
   employee: TEmployee,
@@ -38,7 +17,7 @@ export const mapTEmployeeToEmployeeData = (
   position: employee.job_title,
   franchise: employee.direction_name,
   department: employee.department_name,
-  status: mapStatus(employee.employment_status || "working"),
+  status: employee.employment_status || "working",
   photo: employee.photo_url,
   isArchived: false,
   emailCorporate: employee.email_corporate,
@@ -58,7 +37,7 @@ export const mapEmployeeListResponse = (
     position: data.job_title,
     department: data.department_name,
     franchise: data.direction_name ?? "",
-    status: mapStatus(data.employment_status || "working"),
+    status: data.employment_status || "working",
     photo: data.photo_url ?? undefined,
     city: "",
     linearManager: "",
@@ -77,20 +56,57 @@ export const mapEmployeeDetail = (
 ): EmployeeData => {
   return {
     id: data.id,
+
     name: data.full_name,
     position: data.job_title,
-    department: data.department_name,
+
+    department: String(data.department_id),
     franchise: data.direction_name ?? "",
-    status: mapStatus(data.employment_status || "working"),
+    status: data.employment_status || "working",
     photo: data.photo_url ?? undefined,
-    city: "",
-    linearManager: "",
-    isArchived: false,
-    emailCorporate: data.email,
-    emailPersonal: undefined,
-    phoneCorporate: data.phone,
-    phonePersonal: undefined,
+
+    city: data.city ?? "",
+
+    // 👇 руководитель
+    linearManager:
+      data.supervisor_name ??
+      data.supervisor_detail?.full_name ??
+      "",
+
+    supervisor: data.supervisor_detail
+      ? {
+          name: data.supervisor_detail.full_name,
+          position: data.supervisor_detail.job_title,
+          photo: data.supervisor_detail.photo_url ?? undefined,
+        }
+      : undefined,
+
+    // 👇 контакты
+    emailCorporate: data.email ?? undefined,
+    phoneCorporate: data.phone ?? undefined,
+
+    // 👇 дата
     birthday: data.birthday,
+
+    // 👇 компетенции
     competencies: data.tags?.map((t: TTag) => t.name) ?? [],
+
+    // 👇 роли / описание роли
+    //roles: data.role_description ?? [],
+    role: data.role_description?.join(", ") ?? "",
+
+    // 👇 доп поля
+    socialNetwork: data.social_network ?? undefined,
+    resumeLink: data.resume_link ?? undefined,
+    crmProfile: data.crm_profile ?? undefined,
+
+    aboutMe: data.interests ?? undefined,
+
+    // 👇 пока нет в API — оставляем как есть
+    emailPersonal: undefined,
+    phonePersonal: undefined,
+
+    // 👇 архив (если появится статус — можно расширить)
+    isArchived: false,
   };
 };

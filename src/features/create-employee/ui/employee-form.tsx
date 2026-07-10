@@ -12,20 +12,16 @@ import type { TEmployeeStatus } from "@/entities/employee";
 import { PhotoUpload } from "./photo-upload";
 import { CompetenciesSelect } from "./competencies-select";
 import { FormSelect } from "./form-select";
-import {
-  DEPARTMENT_OPTIONS,
-  LEADER_OPTIONS,
-  CITY_OPTIONS,
-} from "../model/constants";
 import type { CreateEmployeeFormValues } from "../model/types";
 import type { ValidationErrors } from "../model/validation";
+import { useDepartmentsList } from "@/entities/org-structure/api/use-department-list";
 
 const statusOptions = [
-  { value: "active", label: "В работе" },
-  { value: "vacation", label: "В отпуске" },
-  { value: "sick", label: "На больничном" },
-  { value: "maternity", label: "В декрете" },
-];
+  {value: "working", label: "В работе"},
+  {value: "vacation", label: "В отпуске"},
+  {value: "sick_leave", label: "На больничном"},
+  {value: "business_trip", label: "В командировке"},
+] satisfies {value: TEmployeeStatus; label: string}[];
 
 const minDate = new Date(1950, 0, 1);
 const maxDate = new Date(new Date().getFullYear() + 10, 11, 31);
@@ -59,6 +55,16 @@ export const EmployeeForm = memo(function EmployeeForm({
   };
 
   const RequiredMark = () => <span className="text-red-600 ml-0.5">*</span>;
+
+  const { data } = useDepartmentsList();
+
+  const departmentOptions =
+    data?.results
+      ?.filter((dep) => dep.type === "department")
+      ?.map((dep) => ({
+        value: dep.id.toString(),
+        label: dep.name,
+      })) ?? [];
 
   return (
     <>
@@ -100,10 +106,7 @@ export const EmployeeForm = memo(function EmployeeForm({
             <FormSelect
               value={values.department}
               onValueChange={(value) => onUpdate("department", value)}
-              options={DEPARTMENT_OPTIONS.map((dept) => ({
-                value: dept.value,
-                label: dept.value,
-              }))}
+              options={departmentOptions}
               placeholder="Выберите отдел"
               error={!!showError("department")}
             />
@@ -283,21 +286,6 @@ export const EmployeeForm = memo(function EmployeeForm({
           </div>
 
           <div className="space-y-2">
-            <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
-              Руководитель
-            </Label.Root>
-            <FormSelect
-              value={values.leader}
-              onValueChange={(value) => onUpdate("leader", value)}
-              options={LEADER_OPTIONS.map((leader) => ({
-                value: leader.value,
-                label: leader.value,
-              }))}
-              placeholder="Выберите руководителя"
-            />
-          </div>
-
-          <div className="space-y-2">
             <Label.Root
               htmlFor="emailPersonal"
               className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
@@ -342,17 +330,19 @@ export const EmployeeForm = memo(function EmployeeForm({
             )}
           </div>
 
-          <div className="space-y-2 -mb-3">
-            <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
+          <div className="space-y-2">
+            <Label.Root
+              htmlFor="city"
+              className="text-xs font-normal text-black leading-5 tracking-[-0.5px]"
+            >
               Город
             </Label.Root>
-            <FormSelect
+            <FormInput
+              id="city"
+              ref={firstInputRef}
               value={values.city}
-              onValueChange={(value) => onUpdate("city", value)}
-              options={CITY_OPTIONS.map((city) => ({
-                value: city.value,
-                label: city.value,
-              }))}
+              onChange={(e) => onUpdate("city", e.target.value)}
+              onBlur={() => onBlur("city")}
               placeholder="Выберите город"
               error={!!showError("city")}
             />

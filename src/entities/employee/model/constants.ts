@@ -2,21 +2,21 @@ import WorkingIcon from "@/shared/assets/icons/working.svg";
 import BizTripIcon from "@/shared/assets/icons/biz-trip.svg";
 import VacationIcon from "@/shared/assets/icons/vacation.svg";
 import SickIcon from "@/shared/assets/icons/sick.svg";
+import type { TEmployeeStatus } from "./types";
 import MaternityIcon from "@/shared/assets/icons/support.svg";
-import type { EmployeeStatus } from "./types";
 
-export const statusIconMap: Record<EmployeeStatus, string> = {
+export const statusIconMap: Record<TEmployeeStatus, string> = {
   working: WorkingIcon,
-  bizTrip: BizTripIcon,
+  business_trip: BizTripIcon,
   vacation: VacationIcon,
-  sick: SickIcon,
-  maternity: MaternityIcon,
+  sick_leave: SickIcon,
+  maternity_leave: MaternityIcon,
 };
 
-export const statusLabelMap: Record<EmployeeStatus, string> = {
+export const statusLabelMap: Record<TEmployeeStatus, string> = {
   working: "Работает",
-  bizTrip: "В командировке",
+  business_trip: "В командировке",
   vacation: "В отпуске",
-  sick: "На больничном",
-  maternity: "В декрете",
+  sick_leave: "На больничном",
+  maternity_leave: "В декрете",
 };

@@ -4,13 +4,13 @@ import {
   statusLabelMap,
 } from "@/entities/employee/model/constants";
 import { cn } from "@/shared/lib";
-import type { EmployeeStatus } from "@/entities/employee/model/types";
+import type { TEmployeeStatus } from "@/entities/employee/model/types";
 
 export type Employee = {
   id: string;
   name: string;
   position?: string;
-  status?: EmployeeStatus;
+  status?: TEmployeeStatus;
   photo?: string;
   isArchived?: boolean;
   franchise?: string;

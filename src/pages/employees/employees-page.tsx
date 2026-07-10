@@ -25,6 +25,7 @@ import {
   useSummaryStats,
 } from "@/entities/org-structure";
 import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
+import { format } from "date-fns";
 import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
 import { useAuthStore } from "@/entities/user";
 import { pluralize, useLastDefinedValue } from "@/shared/lib";
@@ -162,14 +163,26 @@ const EmployeesPage = () => {
 
   //TODO: разобраться с недостающими полями и с несоответствием типов!
   // Согласовать обязательные поля с бекендом
-  const handlePatchEmployee = (employee: EmployeeData) => {
+  const handlePatchEmployee = async (employee: EmployeeData) => {
     patchEmployee({
       id: employee.id,
       data: {
-        full_name: employee.name,
-        job_title: employee.position,
-        email: employee.emailCorporate,
-        phone: employee.phoneCorporate,
+      full_name: employee.name,
+      job_title: employee.position,
+      role_description: employee.role!.split(",").map(item => item.trim()).filter(Boolean),
+      email: employee.emailCorporate,
+      personal_email: employee.emailPersonal,
+      phone: employee.phoneCorporate,
+      personal_phone: employee.phonePersonal,
+      interests: employee.aboutMe,
+      birthday: format(employee.birthday!, "yyyy-MM-dd"),
+      department: Number(employee.department),
+      city: employee.city,
+      employment_status : employee.status,
+      crm_profile: employee.crmProfile,
+      resume_link: employee.resumeLink,
+      social_network: employee.socialNetwork,
+      tags: employee.competencies,
       },
     });
   };

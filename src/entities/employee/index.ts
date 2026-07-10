@@ -1,7 +1,6 @@
 export type {
   TEmployee,
   TShortEmployee,
-  EmployeeStatus,
   TEmployeeStatus,
   EmployeeData,
   EmployeesListResponse,

@@ -2,10 +2,17 @@ import { apiClient } from "@/shared/api/client";
 import type { 
   DepartmentCreateDTO, 
   DepartmentUpdateDTO, 
-  DepartmentResponse 
+  DepartmentResponse, 
+  DepartmentListParams,
+  PaginatedDepartmentBrief
 } from "../model/types";
 
 export const departmentApi = {
+    getList: (params?: DepartmentListParams) =>
+    apiClient.get<PaginatedDepartmentBrief>('/departments/', {
+      params,
+    }),
+    
   create: (data: DepartmentCreateDTO) => 
     apiClient.post<DepartmentResponse>('/departments/', data),
   

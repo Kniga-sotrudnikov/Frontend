@@ -25,3 +25,24 @@ export type CompetencyOption = {
   id: string;
   label: string;
 };
+
+export const CreateEmptyEmployeeFormValues = (): CreateEmployeeFormValues => ({
+  photo: "",
+  fullName: "",
+  position: "",
+  department: "",
+  leader: "",
+  emailCorporate: "",
+  emailPersonal: "",
+  phoneCorporate: "",
+  phonePersonal: "",
+  birthday: undefined,
+  city: "",
+  status: "working",
+  competencies: [],
+  resumeLink: "",
+  crmProfileLink: "",
+  socialNetworkLink: "",
+  aboutMe: "",
+  role: "",
+})

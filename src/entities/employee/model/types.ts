@@ -1,4 +1,9 @@
-export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
+export type TEmployeeStatus =
+  | "working"
+  | "vacation"
+  | "sick_leave"
+  | "maternity_leave"
+  | "business_trip";
 
 export type TEmployee = {
   id: number;
@@ -8,7 +13,7 @@ export type TEmployee = {
   direction_name: string;
   photo_url: string;
   status: StatusEnum;
-  employment_status: EmploymentStatus;
+  employment_status: TEmployeeStatus;
   employment_status_display: string;
   birthday_display: string;
   city: string;
@@ -29,8 +34,6 @@ export type TShortEmployee = {
   photo: string;
 };
 
-export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick" | "maternity";
-
 export interface EmployeeSupervisor {
   name: string;
   position: string;
@@ -45,7 +48,7 @@ export interface EmployeeData {
   position: string;
   franchise: string;
   department: string;
-  status: EmployeeStatus;
+  status: TEmployeeStatus;
   photo?: string;
   isArchived?: boolean;
   emailCorporate?: string;
@@ -64,13 +67,7 @@ export interface EmployeeData {
   role?: string;
 }
 
-export type EmploymentStatus =
-  | "working"
-  | "vacation"
-  | "sick_leave"
-  | "maternity_leave"
-  | "business_trip"
-  | "remote";
+
 
 export type StatusEnum = "active" | "archived";
 
@@ -82,7 +79,7 @@ export type TTag = {
 export interface BaseEmployeeRequestResponse {
   full_name: string;
   job_title: string;
-  role_description?: string;
+  role_description?: string[];
 
   email: string;
   phone?: string;
@@ -103,7 +100,7 @@ export interface BaseEmployeeRequestResponse {
 
   city?: string | null;
 
-  employment_status?: EmploymentStatus;
+  employment_status?: TEmployeeStatus;
 
   crm_profile?: string | null;
   social_network?: string | null;
@@ -144,7 +141,7 @@ export interface EmployeeShortResponse {
 
   city: string | null;
 
-  employment_status: EmploymentStatus;
+  employment_status: TEmployeeStatus;
   employment_status_display: string;
 
   supervisor_name: string | null;
@@ -164,7 +161,16 @@ export interface EmployeesListFilter {
   direction?: boolean;
 }
 
-interface BaseEmployeeDetail {
+export interface SupervisorDetail {
+  id: number;
+  full_name: string;
+  job_title: string;
+  photo_url: string | null;
+  department_name: string;
+  department_id: number;
+}
+
+export interface EmployeeDetailAdminResponse {
   id: number;
 
   full_name: string;
@@ -174,77 +180,47 @@ interface BaseEmployeeDetail {
   direction_name: string | null;
 
   photo_url: string | null;
+  photo_original_url: string | null;
 
   status: StatusEnum;
 
   birthday_display: string | null;
+  birthday: string;
 
   tags: TTag[];
 
   city: string | null;
 
-  employment_status: EmploymentStatus;
+  employment_status: TEmployeeStatus;
   employment_status_display: string;
 
   supervisor_name: string | null;
   supervisor_id: number | null;
+  supervisor_detail: SupervisorDetail | null;
+  supervisor_photo_url: string | null;
+
+  // ⚠️ поле нестабильное (иногда отсутствует)
+  supervisor_role_name?: string | null;
 
   email: string;
   phone: string;
 
   interests: string;
 
-  birthday: string;
-
-  /**
-   * ❗ неизвестный формат с бэка (в сваггере string, по факту объект)
-   */
-  role_description: unknown;
+  role_description: string[];
 
   department: number;
-
-  /**
-   * ❗ нет в сваггере
-   */
   department_id: number;
 
-  /**
-   * ❗ нет в сваггере
-   */
   crm_profile: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
   social_network: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
   resume_link: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
-  supervisor_detail: unknown | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
-  supervisor_photo_url: string | null;
-
-  /**
-   * ❗ нет в сваггере
-   */
-  photo_original_url: string | null;
 
   created_at: string;
   updated_at: string;
 }
 
-export type EmployeeDetailAdminResponse = BaseEmployeeDetail;
-
-export type EmployeeDetailPublicResponse = BaseEmployeeDetail;
+export type EmployeeDetailPublicResponse = EmployeeDetailAdminResponse;
 
 export interface BirthdayPerson {
   name: string;
