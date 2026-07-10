@@ -1,5 +1,6 @@
 import { Button } from "@ui/button";
 import NotFoundImage from "@/shared/assets/images/search-employee-not-found.svg";
+import { useNotificationStore } from "@/shared/model/stores";
 
 interface EmployeeNotFoundProps {
   searchQuery?: string;
@@ -12,8 +13,14 @@ export const EmployeeNotFound = ({
   onClearSearch,
   onShowAll,
 }: EmployeeNotFoundProps) => {
+  const addNotification = useNotificationStore((state) => state.add);
+
   const handleNotification = () => {
-    console.log("Функция в разработке");
+    addNotification({
+      type: "info",
+      title: "Функция в разработке",
+      message: "Функция в разработке",
+    });
   };
 
   return (

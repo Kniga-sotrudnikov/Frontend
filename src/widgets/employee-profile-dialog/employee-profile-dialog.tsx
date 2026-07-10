@@ -67,9 +67,9 @@ export const EmployeeProfileDialog = ({
 
   const employee = useMemo(() => {
     if (!employeeDetail) return null;
-    
+
     const competencies = employeeFromList?.competencies || [];
-    
+
     return {
       ...employeeDetail,
       competencies,
@@ -79,7 +79,7 @@ export const EmployeeProfileDialog = ({
   const isLoading = isDetailLoading || !employee;
 
   const { data: tagsData } = useTags({ limit: 100 });
-  
+
   const tagNameMap = useMemo(() => {
     const map = new Map<string, string>();
     if (tagsData?.results) {
@@ -92,23 +92,18 @@ export const EmployeeProfileDialog = ({
 
   const tagNames = useMemo(() => {
     const ids = employee?.competencies || [];
-    
+
     if (!ids.length) return [];
-    
+
     if (tagNameMap.size === 0) {
       return ids.map(String);
     }
-    
+
     return ids.map((id) => {
       const idStr = String(id);
       return tagNameMap.get(idStr) || idStr;
     });
   }, [employee?.competencies, tagNameMap]);
-
-  console.log('🔍 tagNameMap size:', tagNameMap.size);
-console.log('🔍 tagNameMap keys:', Array.from(tagNameMap.keys()));
-console.log('🔍 ids:', employee?.competencies);
-console.log('🔍 tagNames result:', tagNames);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
