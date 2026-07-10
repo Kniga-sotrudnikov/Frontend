@@ -4,7 +4,6 @@ import VacationIcon from "@/shared/assets/icons/vacation.svg";
 import SickIcon from "@/shared/assets/icons/sick.svg";
 import type { TEmployeeStatus } from "./types";
 import MaternityIcon from "@/shared/assets/icons/support.svg";
-//import type { EmployeeStatus } from "./types";
 
 export const statusIconMap: Record<TEmployeeStatus, string> = {
   working: WorkingIcon,

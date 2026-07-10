@@ -3,10 +3,7 @@ export type TEmployeeStatus =
   | "vacation"
   | "sick_leave"
   | "maternity_leave"
-  | "business_trip"
-  /* | "remote" */;
-
-//export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
+  | "business_trip";
 
 export type TEmployee = {
   id: number;
@@ -36,8 +33,6 @@ export type TShortEmployee = {
   job: string;
   photo: string;
 };
-
-export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick" | "maternity";
 
 export interface EmployeeSupervisor {
   name: string;

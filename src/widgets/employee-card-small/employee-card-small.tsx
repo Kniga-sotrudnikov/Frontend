@@ -4,7 +4,7 @@ import {
   statusLabelMap,
 } from "@/entities/employee/model/constants";
 import { cn } from "@/shared/lib";
-import type { /* EmployeeStatus, */ TEmployeeStatus } from "@/entities/employee/model/types";
+import type { TEmployeeStatus } from "@/entities/employee/model/types";
 
 export type Employee = {
   id: string;

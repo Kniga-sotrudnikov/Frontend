@@ -16,13 +16,6 @@ import type { CreateEmployeeFormValues } from "../model/types";
 import type { ValidationErrors } from "../model/validation";
 import { useDepartmentsList } from "@/entities/org-structure/api/use-department-list";
 
-/* const statusOptions = [
-  { value: "active", label: "В работе" },
-  { value: "vacation", label: "В отпуске" },
-  { value: "sick", label: "На больничном" },
-  { value: "maternity", label: "В декрете" },
-]; */
-
 const statusOptions = [
   {value: "working", label: "В работе"},
   {value: "vacation", label: "В отпуске"},
@@ -291,21 +284,6 @@ export const EmployeeForm = memo(function EmployeeForm({
               <p className="text-xs text-red-600 mt-1">{errors.position}</p>
             )}
           </div>
-
-          {/* <div className="space-y-2">
-            <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
-              Руководитель
-            </Label.Root>
-            <FormSelect
-              value={values.leader}
-              onValueChange={(value) => onUpdate("leader", value)}
-              options={LEADER_OPTIONS.map((leader) => ({
-                value: leader.value,
-                label: leader.value,
-              }))}
-              placeholder="Выберите руководителя"
-            />
-          </div> */}
 
           <div className="space-y-2">
             <Label.Root

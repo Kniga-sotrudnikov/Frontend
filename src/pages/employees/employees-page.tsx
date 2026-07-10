@@ -182,7 +182,7 @@ const EmployeesPage = () => {
       crm_profile: employee.crmProfile,
       resume_link: employee.resumeLink,
       social_network: employee.socialNetwork,
-      //tags: employee.competencies,
+      tags: employee.competencies,
       },
     });
   };

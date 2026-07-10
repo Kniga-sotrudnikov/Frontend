@@ -4,28 +4,8 @@ import type {
   EmployeeShortResponse,
   EmployeeDetailAdminResponse,
   EmployeeDetailPublicResponse,
-  /* TEmployeeStatus, */
   TTag,
 } from "../model/types";
-
-// export const mapStatus = (employmentStatus: EmploymentStatus): TEmployeeStatus => {
-//   switch (employmentStatus) {
-//     case "working":
-//       return "working";
-//     case "vacation":
-//       return "vacation";
-//     case "sick_leave":
-//       return "sick";
-//     case "maternity_leave":
-//       return "maternity";
-//     case "business_trip":
-//       return "bizTrip";
-//     case "remote":
-//       return "working";
-//     default:
-//       return "working";
-//   }
-// };
 
 export const mapTEmployeeToEmployeeData = (
   employee: TEmployee,
@@ -37,8 +17,6 @@ export const mapTEmployeeToEmployeeData = (
   position: employee.job_title,
   franchise: employee.direction_name,
   department: employee.department_name,
-  //status: employee.status,
-  //status: mapStatus(employee.employment_status || "working"),
   status: employee.employment_status || "working",
   photo: employee.photo_url,
   isArchived: false,
@@ -130,7 +108,5 @@ export const mapEmployeeDetail = (
 
     // 👇 архив (если появится статус — можно расширить)
     isArchived: false,
-    //birthday: data.birthday,
-    //competencies: data.tags?.map((t: TTag) => t.name) ?? [],
   };
 };
