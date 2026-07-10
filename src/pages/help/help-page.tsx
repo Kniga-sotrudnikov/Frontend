@@ -1,4 +1,3 @@
-import { SearchInput } from "@/shared/ui/input";
 import { PageHeader } from "@/widgets/page-header";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
@@ -8,7 +7,6 @@ const HelpPage = () => {
     <div>
       <PageHeader
         title="Помощь"
-        search={<SearchInput placeholder="Поиск по ФИО, должности, тегам..." />}
         birthday={<BirthdaysPopover />}
         user={<HeaderUserCard />}
       />
