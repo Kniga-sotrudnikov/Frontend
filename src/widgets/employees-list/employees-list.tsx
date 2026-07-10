@@ -8,7 +8,7 @@ import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import { Button } from "@/shared/ui/button";
 import type { EmployeeData } from "@/entities/employee";
 import { RenderCards } from "./render-cards";
-import { DataTable } from "@/shared/ui/table/data-table";
+import { DataTable } from "@/shared/ui/table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
 import { useNotificationStore } from "@/shared/model/stores";
 import {
