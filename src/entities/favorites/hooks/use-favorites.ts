@@ -49,8 +49,6 @@ export const useGetFavorites = (params?: FavoritesListParams) => {
         results: response.results.map(mapEmployeeListResponse),
       };
     },
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
   });
 };
 

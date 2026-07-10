@@ -34,7 +34,6 @@ export const useGetVacancies = (params?: {
         results: normalizeVacancies(data.results),
       };
     },
-    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -46,6 +45,5 @@ export const useGetVacancyDetail = (id: number) => {
       return normalizeVacancyDetail(data);
     },
     enabled: !!id,
-    staleTime: 5 * 60 * 1000,
   });
 };

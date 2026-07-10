@@ -42,7 +42,6 @@ export const EmployeesFilterBar = () => {
   const { data: employeesData } = useQuery({
     queryKey: ["employees-raw", 100, 0],
     queryFn: () => getEmployeesListPublic({ limit: 100, offset: 0 }),
-    staleTime: 5 * 60 * 1000,
   });
 
   const employees = employeesData?.results || [];

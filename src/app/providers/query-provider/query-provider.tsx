@@ -5,6 +5,8 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false, // чтобы не перезапрашивать данные при фокусе на окне
     },
     mutations: {
       retry: false,

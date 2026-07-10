@@ -9,6 +9,5 @@ export const useSummaryStats = () => {
   return useQuery({
     queryKey: summaryKeys.all,
     queryFn: getSummaryStats,
-    staleTime: 5 * 60 * 1000,
   });
 };

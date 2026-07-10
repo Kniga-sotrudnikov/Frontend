@@ -20,7 +20,6 @@ export const usePublicBirthdays = () => {
   return useQuery({
     queryKey: birthdayKeys.public(),
     queryFn: getPublicBirthdaysApi,
-    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -28,7 +27,6 @@ export const useTodayBirthdays = () => {
   return useQuery({
     queryKey: birthdayKeys.today(),
     queryFn: getTodayBirthdaysApi,
-    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -36,7 +34,6 @@ export const useCurrentMonthBirthdays = () => {
   return useQuery({
     queryKey: birthdayKeys.currentMonth(),
     queryFn: getCurrentMonthBirthdaysApi,
-    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -44,7 +41,6 @@ export const useUpcomingBirthdaysAdmin = () => {
   return useQuery({
     queryKey: birthdayKeys.upcoming(),
     queryFn: getUpcomingBirthdaysAdminApi,
-    staleTime: 5 * 60 * 1000,
     enabled: false,
   });
 };
@@ -53,6 +49,5 @@ export const useBirthdaysSettings = () => {
   return useQuery({
     queryKey: birthdayKeys.settings(),
     queryFn: getBirthdaysSettingsApi,
-    staleTime: 5 * 60 * 1000,
   });
 };

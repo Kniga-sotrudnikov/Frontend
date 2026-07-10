@@ -22,7 +22,6 @@ export const useTags = (params?: { limit?: number; offset?: number }) => {
   return useQuery({
     queryKey: tagsKeys.list(params),
     queryFn: () => getTagsApi(params),
-    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -141,7 +140,6 @@ export const useTagsWithEmployees = () => {
   return useQuery({
     queryKey: tagsKeys.lists(),
     queryFn: () => getTagsApi({ limit: 100 }),
-    staleTime: 5 * 60 * 1000,
     select: (data) => data.results || [],
   });
 };
