@@ -16,7 +16,6 @@ export type {
 } from "./model/types";
 export type { BirthdayPerson } from "./model/types";
 export { shortEmployees } from "./model/mock";
-export { employeeTableColumns } from "./ui/employee-table-columns";
 export { SelectedEmployee } from "./ui/selected-employee";
 export { EmployeeSelect } from "./ui/employee-select";
 export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-data";
