@@ -1,5 +1,5 @@
 import { apiClient } from "@/shared/api/client";
-import type { BirthdayPerson } from "../model/mock";
+import type { BirthdayPerson } from "../model/types";
 
 interface PublicBirthdayResponse {
   id: number;
@@ -42,21 +42,21 @@ const mapApiToBirthday = (data: PublicBirthdayResponse | AdminBirthdayResponse):
     if (parts.length !== 2) {
       return null;
     }
-    
+
     const day = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1;
-    
+
     if (isNaN(day) || isNaN(month) || day < 1 || day > 31 || month < 0 || month > 11) {
       return null;
     }
-    
+
     const currentYear = new Date().getFullYear();
     const date = new Date(currentYear, month, day);
-    
+
     if (isNaN(date.getTime())) {
       return null;
     }
-    
+
     return {
       name: data.full_name,
       date: `${day} ${monthNames[month]}`,
@@ -86,8 +86,8 @@ export const getTodayBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
   const todayMonth = today.getMonth();
   const todayDay = today.getDate();
   return allBirthdays.filter((birthday) => {
-    return birthday.fullDate.getMonth() === todayMonth && 
-           birthday.fullDate.getDate() === todayDay;
+    return birthday.fullDate.getMonth() === todayMonth &&
+      birthday.fullDate.getDate() === todayDay;
   });
 };
 

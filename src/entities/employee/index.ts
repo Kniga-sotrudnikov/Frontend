@@ -14,18 +14,11 @@ export type {
   EmployeeDetailPublicResponse,
   EmployeeShortResponse,
 } from "./model/types";
-export type { BirthdayPerson } from "./model/mock";
-export { employees } from "./model/mock";
+export type { BirthdayPerson } from "./model/types";
 export { shortEmployees } from "./model/mock";
 export { SelectedEmployee } from "./ui/selected-employee";
 export { EmployeeSelect } from "./ui/employee-select";
 export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-data";
-export {
-  MOCK_BIRTHDAYS,
-  getCurrentMonthBirthdays,
-  getTodayBirthdays,
-  getUpcomingBirthdays,
-} from "./model/mock";
 
 export {
   birthdayKeys,

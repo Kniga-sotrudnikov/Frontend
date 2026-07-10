@@ -10,8 +10,6 @@ export type {
 
 export {
   useGetFavorites,
-  useAddFavorite,
-  useRemoveFavorite,
   useToggleFavorite,
   favoritesKeys,
 } from "./hooks/use-favorites";
