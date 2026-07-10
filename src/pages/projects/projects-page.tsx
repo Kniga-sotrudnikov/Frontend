@@ -1,4 +1,3 @@
-import { SearchInput } from "@/shared/ui/input";
 import { PageHeader } from "@/widgets/page-header";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
@@ -8,7 +7,6 @@ const ProjectsPage = () => {
     <div>
       <PageHeader
         title="Проекты"
-        search={<SearchInput placeholder="Найти проект" />}
         birthday={<BirthdaysPopover />}
         user={<HeaderUserCard />}
       />
