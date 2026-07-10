@@ -44,7 +44,7 @@ export const CreateEmployeeWrapper = ({
         crm_profile: data.crmProfileLink,
         resume_link: data.resumeLink,
         social_network: data.socialNetworkLink,
-        //tags: data.competencies,
+        tags: data.competencies.map(String),
       });
 
       if (data.photo instanceof File) {

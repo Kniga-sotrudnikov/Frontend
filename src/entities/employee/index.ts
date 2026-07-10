@@ -12,6 +12,7 @@ export type {
   PatchEmployeeRequest,
   PatchEmployeeResponse,
   EmployeeDetailPublicResponse,
+  EmployeeShortResponse,
 } from "./model/types";
 export type { BirthdayPerson } from "./model/mock";
 export { employees } from "./model/mock";

@@ -1,34 +1,53 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { favoritesApi } from "../api/favorites-api";
 import {
-  normalizeFavorite,
-  normalizeFavoritesResponse,
-} from "../lib/normalize";
-import { useIsAdmin } from "@/entities/user";
+  useQuery,
+  useMutation,
+  useQueryClient,
+  type QueryClient,
+} from "@tanstack/react-query";
+import { favoritesApi } from "../api/favorites-api";
+import { mapEmployeeListResponse } from "@/entities/employee";
 import { useNotificationStore } from "@/shared/model/stores";
 import type {
-  NormalizedFavorite,
-  NormalizedFavoritesResponse,
   AddFavoriteRequest,
+  FavoritesListResponse,
+  FavoritesListParams,
   UseToggleFavoriteReturn,
 } from "../model/types";
 
 export const favoritesKeys = {
-  all: ["favorites"] as const,
-  list: () => [...favoritesKeys.all, "list"] as const,
+  all: ["favorites", "list"] as const,
+  list: (params?: FavoritesListParams) =>
+    params
+      ? ([...favoritesKeys.all, params] as const)
+      : favoritesKeys.all,
 };
 
-export const useGetFavorites = () => {
-  const isAdmin = useIsAdmin();
+const updateFavoritesCountInCache = (
+  queryClient: QueryClient,
+  countDelta: number,
+) => {
+  queryClient.setQueriesData<FavoritesListResponse>(
+    { queryKey: favoritesKeys.all },
+    (data) => {
+      if (!data) return data;
 
-  return useQuery<NormalizedFavoritesResponse>({
-    queryKey: favoritesKeys.list(),
+      return {
+        ...data,
+        count: Math.max(data.count + countDelta, 0),
+      };
+    },
+  );
+};
+
+export const useGetFavorites = (params?: FavoritesListParams) => {
+  return useQuery<FavoritesListResponse>({
+    queryKey: favoritesKeys.list(params),
     queryFn: async () => {
-      const response = isAdmin
-        ? await favoritesApi.getAdminFavorites()
-        : await favoritesApi.getUserFavorites();
-
-      return normalizeFavoritesResponse(response);
+      const response = await favoritesApi.getFavorites(params);
+      return {
+        ...response,
+        results: response.results.map(mapEmployeeListResponse),
+      };
     },
     staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
@@ -38,25 +57,14 @@ export const useGetFavorites = () => {
 export const useAddFavorite = () => {
   const queryClient = useQueryClient();
   const addNotification = useNotificationStore((state) => state.add);
-  const isAdmin = useIsAdmin();
 
   return useMutation({
     mutationFn: async ({
       employeeId,
-      note,
-    }: AddFavoriteRequest): Promise<NormalizedFavorite> => {
-      let rawResult;
-
-      if (isAdmin) {
-        rawResult = await favoritesApi.addAdminFavorite(employeeId, note);
-      } else {
-        rawResult = await favoritesApi.addUserFavorite(employeeId);
-      }
-
-      return normalizeFavorite(rawResult);
-    },
+    }: AddFavoriteRequest): Promise<void> => favoritesApi.addFavorite(employeeId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: favoritesKeys.list() });
+      updateFavoritesCountInCache(queryClient, 1);
+      queryClient.invalidateQueries({ queryKey: favoritesKeys.all });
 
       addNotification({
         iconType: "success",
@@ -80,18 +88,12 @@ export const useAddFavorite = () => {
 export const useRemoveFavorite = () => {
   const queryClient = useQueryClient();
   const addNotification = useNotificationStore((state) => state.add);
-  const isAdmin = useIsAdmin();
 
   return useMutation({
-    mutationFn: async (employeeId: number): Promise<void> => {
-      if (isAdmin) {
-        await favoritesApi.removeAdminFavorite(employeeId);
-      } else {
-        await favoritesApi.removeUserFavorite(employeeId);
-      }
-    },
+    mutationFn: favoritesApi.removeFavorite,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: favoritesKeys.list() });
+      updateFavoritesCountInCache(queryClient, -1);
+      queryClient.invalidateQueries({ queryKey: favoritesKeys.all });
 
       addNotification({
         iconType: "success",
@@ -121,14 +123,14 @@ export const useToggleFavorite = (): UseToggleFavoriteReturn => {
   const favorites = favoritesData?.results ?? [];
 
   const isFavorite = (employeeId: number): boolean => {
-    return favorites.some((fav) => fav.employeeId === employeeId);
+    return favorites.some((favorite) => Number(favorite.id) === employeeId);
   };
 
-  const toggleFavorite = (employeeId: number, note?: string) => {
+  const toggleFavorite = (employeeId: number) => {
     if (isFavorite(employeeId)) {
       removeFavorite(employeeId);
     } else {
-      addFavorite({ employeeId, note });
+      addFavorite({ employeeId });
     }
   };
 

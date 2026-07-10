@@ -4,8 +4,28 @@ import type {
   EmployeeShortResponse,
   EmployeeDetailAdminResponse,
   EmployeeDetailPublicResponse,
-  TEmployeeStatus,
+  /* TEmployeeStatus, */
+  TTag,
 } from "../model/types";
+
+// export const mapStatus = (employmentStatus: EmploymentStatus): TEmployeeStatus => {
+//   switch (employmentStatus) {
+//     case "working":
+//       return "working";
+//     case "vacation":
+//       return "vacation";
+//     case "sick_leave":
+//       return "sick";
+//     case "maternity_leave":
+//       return "maternity";
+//     case "business_trip":
+//       return "bizTrip";
+//     case "remote":
+//       return "working";
+//     default:
+//       return "working";
+//   }
+// };
 
 export const mapTEmployeeToEmployeeData = (
   employee: TEmployee,
@@ -17,7 +37,9 @@ export const mapTEmployeeToEmployeeData = (
   position: employee.job_title,
   franchise: employee.direction_name,
   department: employee.department_name,
-  status: employee.status,
+  //status: employee.status,
+  //status: mapStatus(employee.employment_status || "working"),
+  status: employee.employment_status || "working",
   photo: employee.photo_url,
   isArchived: false,
   emailCorporate: employee.email_corporate,
@@ -37,7 +59,7 @@ export const mapEmployeeListResponse = (
     position: data.job_title,
     department: data.department_name,
     franchise: data.direction_name ?? "",
-    status: "working" as TEmployeeStatus,
+    status: data.employment_status || "working",
     photo: data.photo_url ?? undefined,
     city: "",
     linearManager: "",
@@ -47,7 +69,7 @@ export const mapEmployeeListResponse = (
     phoneCorporate: undefined,
     phonePersonal: undefined,
     birthday: undefined,
-    competencies: data.tags?.map((t) => t.name) ?? [],
+    competencies: data.tags?.map((t: TTag) => t.name) ?? [],
   };
 };
 
@@ -62,9 +84,7 @@ export const mapEmployeeDetail = (
 
     department: String(data.department_id),
     franchise: data.direction_name ?? "",
-
-    status: data.employment_status,
-
+    status: data.employment_status || "working",
     photo: data.photo_url ?? undefined,
 
     city: data.city ?? "",
@@ -88,10 +108,10 @@ export const mapEmployeeDetail = (
     phoneCorporate: data.phone ?? undefined,
 
     // 👇 дата
-    birthday: data.birthday ?? undefined,
+    birthday: data.birthday,
 
     // 👇 компетенции
-    competencies: data.tags?.map((t) => t.name) ?? [],
+    competencies: data.tags?.map((t: TTag) => t.name) ?? [],
 
     // 👇 роли / описание роли
     //roles: data.role_description ?? [],
@@ -110,5 +130,7 @@ export const mapEmployeeDetail = (
 
     // 👇 архив (если появится статус — можно расширить)
     isArchived: false,
+    //birthday: data.birthday,
+    //competencies: data.tags?.map((t: TTag) => t.name) ?? [],
   };
 };

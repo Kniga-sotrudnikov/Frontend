@@ -2,9 +2,11 @@ export type TEmployeeStatus =
   | "working"
   | "vacation"
   | "sick_leave"
-  /* | "maternity_leave" */
+  | "maternity_leave"
   | "business_trip"
- /*  | "remote" */;
+  /* | "remote" */;
+
+//export type TEmployeeStatus = "active" | "vacation" | "sick" | "maternity";
 
 export type TEmployee = {
   id: number;
@@ -13,7 +15,9 @@ export type TEmployee = {
   department_name: string;
   direction_name: string;
   photo_url: string;
-  status: TEmployeeStatus;
+  status: StatusEnum;
+  employment_status: TEmployeeStatus;
+  employment_status_display: string;
   birthday_display: string;
   city: string;
   tags: string[];
@@ -33,7 +37,7 @@ export type TShortEmployee = {
   photo: string;
 };
 
-export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick";
+export type EmployeeStatus = "working" | "bizTrip" | "vacation" | "sick" | "maternity";
 
 export interface EmployeeSupervisor {
   name: string;
@@ -58,6 +62,7 @@ export interface EmployeeData {
   phonePersonal?: string;
   birthday?: string;
   competencies?: string[];
+  tags?: string[];
   roles?: string[];
   supervisor?: EmployeeSupervisor;
   socialNetwork?: string;
@@ -108,7 +113,7 @@ export interface BaseEmployeeRequestResponse {
 }
 
 export interface CreateEmployeeRequest extends BaseEmployeeRequestResponse {
-  tags?: number[];
+  tags?: string[];
 }
 
 export interface CreateEmployeeResponse extends BaseEmployeeRequestResponse {

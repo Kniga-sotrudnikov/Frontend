@@ -1,19 +1,18 @@
 import { CompetenciesContent } from "./competencies-content";
-import type { CompetencyOption } from "../model/types";
 
 interface CompetenciesPopoverContentProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   tempValue: string[];
   onToggleCompetency: (id: string) => void;
-  displayedOptions: CompetencyOption[];
+  displayedOptions: Array<{ id: string; label: string }>;
   onClear: () => void;
   onApply: () => void;
   onShowAll: () => void;
   hasMore: boolean;
   showAll: boolean;
   filteredCount: number;
-  onAddTag: (tagName: string, color?: string) => void;
+  onAddTag: (tagName: string) => void;
 }
 
 export const CompetenciesPopoverContent = ({
