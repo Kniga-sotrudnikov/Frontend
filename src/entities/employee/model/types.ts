@@ -245,3 +245,9 @@ interface BaseEmployeeDetail {
 export type EmployeeDetailAdminResponse = BaseEmployeeDetail;
 
 export type EmployeeDetailPublicResponse = BaseEmployeeDetail;
+
+export interface BirthdayPerson {
+  name: string;
+  date: string;
+  fullDate: Date;
+}
