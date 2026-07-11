@@ -10,14 +10,12 @@ interface BirthdaysModalProps {
   isOpen: boolean;
   onClose: () => void;
   birthdays: BirthdayPerson[];
-  isLoading?: boolean;
 }
 
 export const BirthdaysModal = ({
   isOpen,
   onClose,
   birthdays,
-  isLoading = false,
 }: BirthdaysModalProps) => {
   const hasBirthdays = birthdays.length > 0;
 
@@ -48,11 +46,7 @@ export const BirthdaysModal = ({
           </DialogTitle>
 
           <div className="max-h-[300px] overflow-y-auto">
-            {isLoading ? (
-              <div className="flex justify-center py-8">
-                <span className="text-gray-500">Загрузка...</span>
-              </div>
-            ) : hasBirthdays ? (
+            {hasBirthdays ? (
               <div className="flex flex-col gap-1">
                 {birthdays.map((birthday, index) => (
                   <div

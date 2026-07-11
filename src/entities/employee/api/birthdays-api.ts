@@ -74,22 +74,6 @@ export const getPublicBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
     .filter((item): item is BirthdayPerson => item !== null);
 };
 
-export const getCurrentMonthBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
-  const allBirthdays = await getPublicBirthdaysApi();
-  const currentMonth = new Date().getMonth();
-  return allBirthdays.filter((birthday) => birthday.fullDate.getMonth() === currentMonth);
-};
-
-export const getTodayBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
-  const allBirthdays = await getPublicBirthdaysApi();
-  const today = new Date();
-  const todayMonth = today.getMonth();
-  const todayDay = today.getDate();
-  return allBirthdays.filter((birthday) => {
-    return birthday.fullDate.getMonth() === todayMonth &&
-      birthday.fullDate.getDate() === todayDay;
-  });
-};
 
 export const getUpcomingBirthdaysAdminApi = async (): Promise<BirthdayPerson[]> => {
   const response = await apiClient.get<AdminBirthdayResponse[]>('/admin/birthdays/upcoming/');

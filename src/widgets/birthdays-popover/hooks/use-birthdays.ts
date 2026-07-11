@@ -1,4 +1,4 @@
-import { useTodayBirthdays, useCurrentMonthBirthdays } from "@/entities/employee";
+import { usePublicBirthdays } from "@/entities/employee";
 import type { BirthdayPerson } from "@/entities/employee";
 
 interface UseBirthdaysReturn {
@@ -6,39 +6,29 @@ interface UseBirthdaysReturn {
   currentMonthBirthdays: BirthdayPerson[];
   isLoading: boolean;
   error: string | null;
-  refetch: () => void;
   hasBirthdaysToday: boolean;
 }
 
 export const useBirthdays = (): UseBirthdaysReturn => {
-  const {
-    data: todayBirthdays = [],
-    isLoading: isLoadingToday,
-    error: errorToday,
-    refetch: refetchToday,
-  } = useTodayBirthdays();
+  const { data: allBirthdays = [], isLoading, error } = usePublicBirthdays();
 
-  const {
-    data: currentMonthBirthdays = [],
-    isLoading: isLoadingMonth,
-    error: errorMonth,
-    refetch: refetchMonth,
-  } = useCurrentMonthBirthdays();
+  const today = new Date();
+  const todayMonth = today.getMonth();
+  const todayDay = today.getDate();
 
-  const isLoading = isLoadingToday || isLoadingMonth;
-  const error = errorToday?.message || errorMonth?.message || null;
+  const todayBirthdays = allBirthdays.filter(
+    (b) => b.fullDate.getMonth() === todayMonth && b.fullDate.getDate() === todayDay,
+  );
 
-  const refetch = () => {
-    refetchToday();
-    refetchMonth();
-  };
+  const currentMonthBirthdays = allBirthdays.filter(
+    (b) => b.fullDate.getMonth() === todayMonth,
+  );
 
   return {
     todayBirthdays,
     currentMonthBirthdays,
     isLoading,
-    error,
-    refetch,
+    error: error?.message ?? null,
     hasBirthdaysToday: todayBirthdays.length > 0,
   };
 };

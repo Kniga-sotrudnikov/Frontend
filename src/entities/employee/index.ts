@@ -22,16 +22,12 @@ export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-da
 export {
   birthdayKeys,
   usePublicBirthdays,
-  useTodayBirthdays,
-  useCurrentMonthBirthdays,
   useUpcomingBirthdaysAdmin,
   useBirthdaysSettings,
 } from "./model/birthday-queries";
 
 export {
   getPublicBirthdaysApi,
-  getCurrentMonthBirthdaysApi,
-  getTodayBirthdaysApi,
   getUpcomingBirthdaysAdminApi,
   getBirthdaysSettingsApi,
   updateBirthdaysSettingsApi,

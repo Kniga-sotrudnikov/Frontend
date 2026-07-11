@@ -16,7 +16,6 @@ export const BirthdaysPopover = () => {
     isLoading,
     error,
     hasBirthdaysToday,
-    refetch,
   } = useBirthdays();
 
   const handleOpenModal = () => {
@@ -30,9 +29,6 @@ export const BirthdaysPopover = () => {
 
   const handlePopoverOpenChange = (open: boolean) => {
     setIsPopoverOpen(open);
-    if (open) {
-      refetch();
-    }
   };
 
   return (
@@ -69,7 +65,6 @@ export const BirthdaysPopover = () => {
             <BirthdaysPopoverContent
               todayBirthdays={todayBirthdays}
               onOpenModal={handleOpenModal}
-              hasBirthdays={todayBirthdays.length > 0}
             />
           )}
         </PopoverContent>
@@ -79,7 +74,6 @@ export const BirthdaysPopover = () => {
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         birthdays={currentMonthBirthdays}
-        isLoading={isLoading && currentMonthBirthdays.length === 0}
       />
     </>
   );
