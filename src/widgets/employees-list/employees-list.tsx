@@ -8,7 +8,7 @@ import EditIcon from "@/shared/assets/icons/edit.svg?react";
 import { Button } from "@/shared/ui/button";
 import type { EmployeeData } from "@/entities/employee";
 import { RenderCards } from "./render-cards";
-import { DataTable } from "@/shared/ui/table";
+import { DataTable } from "@/shared/ui/table/data-table";
 import { getEmployeeColumns, getVacancyColumns } from "./employee-columns";
 import { useNotificationStore } from "@/shared/model/stores";
 import {
@@ -34,8 +34,6 @@ interface EmployeesListProps {
   favoriteItems: EmployeesListType[];
   activeTab: EmployeesListTab;
   onActiveTabChange: (tab: EmployeesListTab) => void;
-  activeEntityTab: EmployeesListEntityTab;
-  onActiveEntityTabChange: (tab: EmployeesListEntityTab) => void;
   employeesCount?: number;
   vacanciesCount?: number;
   favoritesCount?: number;
@@ -55,8 +53,6 @@ export const EmployeesList = ({
   favoriteItems,
   activeTab,
   onActiveTabChange,
-  activeEntityTab,
-  onActiveEntityTabChange,
   employeesCount,
   vacanciesCount,
   favoritesCount,
@@ -69,6 +65,7 @@ export const EmployeesList = ({
   vacancySkeletonCount = skeletonCount,
   favoriteSkeletonCount = skeletonCount,
 }: EmployeesListProps) => {
+  const [activeEntityTab, setActiveEntityTab] = useState<EmployeesListEntityTab>("employees");
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
   );
@@ -337,7 +334,7 @@ export const EmployeesList = ({
           <Tabs
             value={activeEntityTab}
             onValueChange={(value) => {
-              onActiveEntityTabChange(value as "employees" | "vacancies");
+              setActiveEntityTab(value as "employees" | "vacancies");
             }}
           >
             <TabsList className="gap-1 p-0 bg-transparent">
