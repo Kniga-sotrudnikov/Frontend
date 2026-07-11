@@ -20,17 +20,6 @@ interface AdminBirthdayResponse {
   phone?: string;
 }
 
-interface BirthdaySettings {
-  id?: number;
-  is_enabled?: boolean;
-  notification_days_before?: number;
-}
-
-interface BirthdaySettingsUpdate {
-  is_enabled?: boolean;
-  notification_days_before?: number;
-}
-
 const monthNames = [
   "января", "февраля", "марта", "апреля", "мая", "июня",
   "июля", "августа", "сентября", "октября", "ноября", "декабря"
@@ -72,24 +61,4 @@ export const getPublicBirthdaysApi = async (): Promise<BirthdayPerson[]> => {
   return response.data
     .map(mapApiToBirthday)
     .filter((item): item is BirthdayPerson => item !== null);
-};
-
-
-export const getUpcomingBirthdaysAdminApi = async (): Promise<BirthdayPerson[]> => {
-  const response = await apiClient.get<AdminBirthdayResponse[]>('/admin/birthdays/upcoming/');
-  return response.data
-    .map(mapApiToBirthday)
-    .filter((item): item is BirthdayPerson => item !== null);
-};
-
-export const getBirthdaysSettingsApi = async (): Promise<BirthdaySettings> => {
-  const response = await apiClient.get<BirthdaySettings>('/admin/birthdays/settings/');
-  return response.data;
-};
-
-export const updateBirthdaysSettingsApi = async (
-  data: BirthdaySettingsUpdate
-): Promise<BirthdaySettings> => {
-  const response = await apiClient.patch<BirthdaySettings>('/admin/birthdays/settings/', data);
-  return response.data;
 };

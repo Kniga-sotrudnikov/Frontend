@@ -20,17 +20,11 @@ export { EmployeeSelect } from "./ui/employee-select";
 export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-data";
 
 export {
-  birthdayKeys,
   usePublicBirthdays,
-  useUpcomingBirthdaysAdmin,
-  useBirthdaysSettings,
 } from "./model/birthday-queries";
 
 export {
   getPublicBirthdaysApi,
-  getUpcomingBirthdaysAdminApi,
-  getBirthdaysSettingsApi,
-  updateBirthdaysSettingsApi,
 } from "./api/birthdays-api";
 
 export {
