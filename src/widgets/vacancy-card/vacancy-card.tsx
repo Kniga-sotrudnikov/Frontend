@@ -33,7 +33,6 @@ function VacancyCard({
   children,
   vacancy,
   onExportPDF,
-  onRespond,
   open,
   onOpenChange,
 }: VacancyCardProps) {
@@ -56,6 +55,14 @@ function VacancyCard({
       iconType: "success",
       title: "Ссылка на вакансию скопирована",
       message: "Ссылка скопирована в буфер обмена",
+    });
+  };
+
+  const handleRespond = () => {
+    addNotification({
+      iconType: "success",
+      title: "В разработке",
+      message: "Функция отклика на вакансию находится в разработке",
     });
   };
 
@@ -184,7 +191,7 @@ function VacancyCard({
           <Button
             variant="outline"
             className="h-8 px-4 bg-purple-500 border-purple-500 text-white hover:bg-purple-400 hover:text-white"
-            onClick={onRespond}
+            onClick={handleRespond}
           >
             Откликнуться
           </Button>
