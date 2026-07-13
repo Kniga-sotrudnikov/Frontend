@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ZoomableImageProps {
   src: string;
@@ -8,6 +8,12 @@ interface ZoomableImageProps {
 
 export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
   const [offset, setOffset] = useState({ x: 0.5, y: 0.5 });
+  const [naturalSize, setNaturalSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
   const dragStart = useRef<{
     mouseX: number;
     mouseY: number;
@@ -20,6 +26,52 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
   const insetX = offset.x * (1 - size);
   const insetY = offset.y * (1 - size);
   const objectViewBox = `inset(${insetY * 100}% ${(1 - insetX - size) * 100}% ${(1 - insetY - size) * 100}% ${insetX * 100}%)`;
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const updateContainerSize = () => {
+      setContainerSize({
+        width: el.clientWidth,
+        height: el.clientHeight,
+      });
+    };
+
+    updateContainerSize();
+
+    const resizeObserver = new ResizeObserver(updateContainerSize);
+    resizeObserver.observe(el);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  const frameSize =
+    naturalSize && containerSize.width > 0 && containerSize.height > 0
+      ? (() => {
+          const imageRatio = naturalSize.width / naturalSize.height;
+          const containerRatio = containerSize.width / containerSize.height;
+
+          if (containerRatio > imageRatio) {
+            return {
+              width: containerSize.height * imageRatio,
+              height: containerSize.height,
+            };
+          }
+
+          return {
+            width: containerSize.width,
+            height: containerSize.width / imageRatio,
+          };
+        })()
+      : null;
+
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    setNaturalSize({
+      width: e.currentTarget.naturalWidth,
+      height: e.currentTarget.naturalHeight,
+    });
+  };
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (zoom <= 100) return;
@@ -50,21 +102,33 @@ export const ZoomableImage = ({ src, alt, zoom }: ZoomableImageProps) => {
   };
 
   return (
-    <img
-      src={src}
-      alt={alt}
-      draggable={false}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      className="block h-auto max-h-full w-full select-none rounded-2xl border border-border min-[1600px]:mx-auto min-[1600px]:h-full min-[1600px]:w-auto min-[1600px]:max-w-full"
-      style={{
-        objectFit: zoom > 100 ? "cover" : "contain",
-        objectPosition: "top left",
-        objectViewBox,
-        cursor: zoom > 100 ? "grab" : "default",
-      }}
-    />
+    <div ref={containerRef} className="h-full w-full overflow-hidden">
+      <div
+        className="relative overflow-hidden rounded-12"
+        style={{
+          width: frameSize?.width ?? "100%",
+          height: frameSize?.height ?? "100%",
+        }}
+      >
+        <img
+          src={src}
+          alt={alt}
+          draggable={false}
+          onLoad={handleImageLoad}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          className="h-full w-full"
+          style={{
+            objectFit: "contain",
+            objectPosition: "top left",
+            objectViewBox,
+            cursor: zoom > 100 ? "grab" : "default",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 rounded-12 border-2" />
+      </div>
+    </div>
   );
 };

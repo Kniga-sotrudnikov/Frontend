@@ -17,7 +17,10 @@ import {
   usePatchEmployee,
   type EmployeeData,
 } from "@/entities/employee";
-import { useEmployeeModalStore } from "@/features/employee";
+import {
+  useEmployeeModalStore,
+  useEmployeesPageStore,
+} from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 import {
   useSelectionUnitStore,
@@ -45,6 +48,7 @@ const EmployeesPage = () => {
   const openEmployeeModal = useEmployeeModalStore(
     (state) => state.openEmployeeModal,
   );
+  const viewType = useEmployeesPageStore((state) => state.viewType);
 
   const [activeTab, setActiveTab] = useState<EmployeesListTab>("employees");
 
@@ -110,6 +114,10 @@ const EmployeesPage = () => {
       case "vacancies":
         return { totalCount: vacancyTotalCount, hasData: !!vacanciesData };
       case "favorites":
+        if (viewType === "list" && activeEntityTab === "vacancies") {
+          return { totalCount: 0, hasData: false };
+        }
+
         return { totalCount: favoriteTotalCount, hasData: !!favoritesData };
       case "archive":
         return { totalCount: 0, hasData: false };

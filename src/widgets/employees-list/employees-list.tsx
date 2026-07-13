@@ -140,6 +140,7 @@ export const EmployeesList = ({
     (item): item is NormalizedVacancy =>
       "profession" in item && "position" in item,
   );
+  const favoriteEmployeesCount = favoritesCount ?? favoriteEmployees.length;
 
   const archivedEmployees = filteredEmployees.filter(
     (emp) => emp.isArchived === true,
@@ -345,7 +346,7 @@ export const EmployeesList = ({
                 Сотрудники
                 <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
                   {activeTab === "favorites"
-                    ? favoriteEmployees.length
+                    ? favoriteEmployeesCount
                     : archivedEmployees.length}
                 </span>
               </TabsTrigger>
