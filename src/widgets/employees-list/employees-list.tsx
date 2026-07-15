@@ -34,6 +34,8 @@ interface EmployeesListProps {
   favoriteItems: EmployeesListType[];
   activeTab: EmployeesListTab;
   onActiveTabChange: (tab: EmployeesListTab) => void;
+  activeEntityTab: EmployeesListEntityTab;
+  onActiveEntityTabChange: (tab: EmployeesListEntityTab) => void;
   employeesCount?: number;
   vacanciesCount?: number;
   favoritesCount?: number;
@@ -53,6 +55,8 @@ export const EmployeesList = ({
   favoriteItems,
   activeTab,
   onActiveTabChange,
+  activeEntityTab,
+  onActiveEntityTabChange,
   employeesCount,
   vacanciesCount,
   favoritesCount,
@@ -65,7 +69,6 @@ export const EmployeesList = ({
   vacancySkeletonCount = skeletonCount,
   favoriteSkeletonCount = skeletonCount,
 }: EmployeesListProps) => {
-  const [activeEntityTab, setActiveEntityTab] = useState<EmployeesListEntityTab>("employees");
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
   );
@@ -335,7 +338,7 @@ export const EmployeesList = ({
           <Tabs
             value={activeEntityTab}
             onValueChange={(value) => {
-              setActiveEntityTab(value as "employees" | "vacancies");
+              onActiveEntityTabChange(value as EmployeesListEntityTab);
             }}
           >
             <TabsList className="gap-1 p-0 bg-transparent">
