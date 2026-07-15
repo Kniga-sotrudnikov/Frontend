@@ -7,6 +7,7 @@ import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { Navbar } from "@/widgets/navbar";
 import {
   EmployeesList,
+  type EmployeesListEntityTab,
   type EmployeesListTab,
 } from "@/widgets/employees-list";
 import { EmployeesFilterBar } from "@/widgets/employees-filter-bar";
@@ -51,6 +52,8 @@ const EmployeesPage = () => {
   const viewType = useEmployeesPageStore((state) => state.viewType);
 
   const [activeTab, setActiveTab] = useState<EmployeesListTab>("employees");
+  const [activeEntityTab, setActiveEntityTab] =
+    useState<EmployeesListEntityTab>("employees");
 
   const [paginationLimit, setPaginationLimit] = useState(
     DEFAULT_PAGINATION_LIMIT,
@@ -244,6 +247,8 @@ const EmployeesPage = () => {
             <EmployeesList
               activeTab={activeTab}
               onActiveTabChange={handleActiveTabChange}
+              activeEntityTab={activeEntityTab}
+              onActiveEntityTabChange={setActiveEntityTab}
               employees={employees}
               vacancies={vacancies}
               favoriteItems={favoriteItems}
