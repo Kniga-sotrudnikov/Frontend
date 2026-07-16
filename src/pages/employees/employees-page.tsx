@@ -50,10 +50,15 @@ const EmployeesPage = () => {
   const openEmployeeModal = useEmployeeModalStore(
     (state) => state.openEmployeeModal,
   );
-  const viewType = useEmployeesPageStore((state) => state.viewType);
-  const searchQuery = useEmployeesPageStore((state) => state.searchQuery);
-  const setSearchQuery = useEmployeesPageStore((state) => state.setSearchQuery);
-
+  const { viewType, searchQuery, setSearchQuery } =
+    useEmployeesPageStore(
+      useShallow((state) => ({
+        viewType: state.viewType,
+        searchQuery: state.searchQuery,
+        setSearchQuery: state.setSearchQuery,
+      }))
+    );
+  
   const [activeTab, setActiveTab] = useState<EmployeesListTab>("employees");
   const [activeEntityTab, setActiveEntityTab] =
     useState<EmployeesListEntityTab>("employees");
@@ -123,7 +128,7 @@ const EmployeesPage = () => {
   const getActivePagination = () => {
     switch (activeTab) {
       case "employees":
-        return { totalCount: employeeTotalCount, hasData: !!listData };
+        return { totalCount: employeeTotalCount, hasData: !!listData && employeeTotalCount > 0};
       case "vacancies":
         return { totalCount: vacancyTotalCount, hasData: !!vacanciesData };
       case "favorites":
@@ -147,8 +152,6 @@ const EmployeesPage = () => {
   const favoriteItems = useMemo(() => {
     return favoritesData?.results ?? [];
   }, [favoritesData?.results]);
-
-  const showNotFound = activeTab === "employees" && !isListLoading && employees.length === 0
 
   const statsText = useMemo(() => {
     if (isSummaryLoading) return "Загрузка...";
@@ -259,17 +262,6 @@ const EmployeesPage = () => {
 
           <div className="space-y-3">
             <EmployeesFilterBar />
-            {showNotFound ? (
-              <EmployeeNotFound
-                searchQuery={debouncedSearch.trim()}
-                onClearSearch={() => setSearchQuery("")}
-                onShowAll={() => {
-                  setSearchQuery("");
-                  setSelectedUnit(null);
-                }}
-              />
-            ) : (
-              <>
                 {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
                 <EmployeesList
                   activeTab={activeTab}
@@ -290,6 +282,18 @@ const EmployeesPage = () => {
                   skeletonCount={paginationLimit}
                   vacancySkeletonCount={paginationLimit}
                   favoriteSkeletonCount={paginationLimit}
+                  employeesEmptyState={
+                    debouncedSearch.trim() ? (
+                      <EmployeeNotFound
+                        searchQuery={debouncedSearch.trim()}
+                        onClearSearch={() => setSearchQuery("")}
+                        onShowAll={() => {
+                          setSearchQuery("");
+                          setSelectedUnit(null);
+                        }}
+                      />
+                    ) : undefined
+                  }
                 />
                 <div className="min-h-11">
                   {activePagination.hasData && (
@@ -308,8 +312,6 @@ const EmployeesPage = () => {
                     />
                   )}
                 </div>
-              </>
-            )}
           </div>
         </div>
       </div>

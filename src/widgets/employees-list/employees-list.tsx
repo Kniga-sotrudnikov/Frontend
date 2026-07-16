@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type ReactNode } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
 import { useShallow } from "zustand/react/shallow";
@@ -47,6 +47,7 @@ interface EmployeesListProps {
   skeletonCount?: number;
   vacancySkeletonCount?: number;
   favoriteSkeletonCount?: number;
+  employeesEmptyState?: ReactNode;
 }
 
 export const EmployeesList = ({
@@ -68,6 +69,7 @@ export const EmployeesList = ({
   skeletonCount = 6,
   vacancySkeletonCount = skeletonCount,
   favoriteSkeletonCount = skeletonCount,
+  employeesEmptyState,
 }: EmployeesListProps) => {
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
@@ -157,6 +159,12 @@ export const EmployeesList = ({
     favorites: favoriteItems,
     archive: allArchived,
   };
+
+  const showEmployeesEmptyState =
+    !!employeesEmptyState &&
+    activeTab === "employees" &&
+    !isLoading &&
+    tabContentMap.employees.length === 0;
 
   const nestedTabContentMap = {
     favorites: {
@@ -369,7 +377,8 @@ export const EmployeesList = ({
           </Tabs>
         )}
 
-      {viewType === "list" && activeTab === "employees" ? (
+      { showEmployeesEmptyState ? ( employeesEmptyState )
+      : viewType === "list" && activeTab === "employees" ? (
         <DataTable
           columns={getEmployeeColumns(
             favoriteIds,
