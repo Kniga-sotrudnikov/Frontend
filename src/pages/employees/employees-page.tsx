@@ -31,8 +31,9 @@ import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
 import { format } from "date-fns";
 import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
 import { useAuthStore } from "@/entities/user";
-import { pluralize, useLastDefinedValue } from "@/shared/lib";
+import { pluralize, useLastDefinedValue, useDebounce } from "@/shared/lib";
 import { useGetFavorites } from "@/entities/favorites";
+import { EmployeeNotFound } from "@/widgets/employee-not-found";
 
 const PAGINATION_LIMIT_OPTIONS = [6, 12, 24, 50];
 const DEFAULT_PAGINATION_LIMIT = 12;
@@ -49,8 +50,15 @@ const EmployeesPage = () => {
   const openEmployeeModal = useEmployeeModalStore(
     (state) => state.openEmployeeModal,
   );
-  const viewType = useEmployeesPageStore((state) => state.viewType);
-
+  const { viewType, searchQuery, setSearchQuery } =
+    useEmployeesPageStore(
+      useShallow((state) => ({
+        viewType: state.viewType,
+        searchQuery: state.searchQuery,
+        setSearchQuery: state.setSearchQuery,
+      }))
+    );
+  
   const [activeTab, setActiveTab] = useState<EmployeesListTab>("employees");
   const [activeEntityTab, setActiveEntityTab] =
     useState<EmployeesListEntityTab>("employees");
@@ -67,20 +75,26 @@ const EmployeesPage = () => {
   const setSelectedUnit = useSelectionUnitStore(
     (state) => state.setSelectedUnit,
   );
-  const filter = useMemo(
-    () => selectedUnitToFilter(selectedUnit),
-    [selectedUnit],
-  );
+
+  const debouncedSearch = useDebounce(searchQuery);
+  const filter = useMemo(() => {
+    const unitFilter = selectedUnitToFilter(selectedUnit);
+    const search = debouncedSearch.trim();
+    return search ? { ...unitFilter, search } : unitFilter;
+  }, [selectedUnit, debouncedSearch]);
 
   // при смене выбранного узла возвращаемся на первую страницу
   useEffect(() => {
     setPaginationOffset(0);
-  }, [selectedUnit]);
-
+  }, [filter]);
   // сброс выбранного узла при уходе со страницы
   useEffect(() => {
-    return () => setSelectedUnit(null);
-  }, [setSelectedUnit]);
+    return () => {
+      setSelectedUnit(null);
+      setSearchQuery("");
+    }
+  }, [setSelectedUnit, setSearchQuery]);
+
   const currentUser = useAuthStore((state) => state.user);
   const currentEmployeeId = currentUser?.employee_id;
 
@@ -90,6 +104,7 @@ const EmployeesPage = () => {
     undefined,
     filter,
   );
+
   const { data: summaryData, isLoading: isSummaryLoading } = useSummaryStats();
   const { data: vacanciesData, isLoading: isVacanciesLoading } =
     useGetVacancies({
@@ -113,7 +128,7 @@ const EmployeesPage = () => {
   const getActivePagination = () => {
     switch (activeTab) {
       case "employees":
-        return { totalCount: employeeTotalCount, hasData: !!listData };
+        return { totalCount: employeeTotalCount, hasData: !!listData && employeeTotalCount > 0};
       case "vacancies":
         return { totalCount: vacancyTotalCount, hasData: !!vacanciesData };
       case "favorites":
@@ -232,7 +247,11 @@ const EmployeesPage = () => {
           title="Книга сотрудников"
           stats={<span>{statsText}</span>}
           search={
-            <SearchInput placeholder="Поиск по ФИО, должности, тегам..." />
+            <SearchInput 
+              placeholder="Поиск по ФИО, должности, тегам..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           }
           birthday={<BirthdaysPopover />}
           user={<HeaderUserCard />}
@@ -243,44 +262,56 @@ const EmployeesPage = () => {
 
           <div className="space-y-3">
             <EmployeesFilterBar />
-            {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
-            <EmployeesList
-              activeTab={activeTab}
-              onActiveTabChange={handleActiveTabChange}
-              activeEntityTab={activeEntityTab}
-              onActiveEntityTabChange={setActiveEntityTab}
-              employees={employees}
-              vacancies={vacancies}
-              favoriteItems={favoriteItems}
-              employeesCount={employeeTotalCount}
-              vacanciesCount={vacancyTotalCount}
-              favoritesCount={favoriteTotalCount}
-              onUpdateEmployee={handlePatchEmployee}
-              onVacancyClick={(vacancy) => setSelectedVacancyId(vacancy.id)}
-              isLoading={isListLoading}
-              isVacanciesLoading={isVacanciesLoading}
-              isFavoritesLoading={isFavoritesLoading}
-              skeletonCount={paginationLimit}
-              vacancySkeletonCount={paginationLimit}
-              favoriteSkeletonCount={paginationLimit}
-            />
-            <div className="min-h-11">
-              {activePagination.hasData && (
-                <AppPagination
-                  page={paginationPage}
-                  limit={paginationLimit}
-                  totalCount={activePagination.totalCount}
-                  limitOptions={PAGINATION_LIMIT_OPTIONS}
-                  onPageChange={(nextPage) =>
-                    setPaginationOffset((nextPage - 1) * paginationLimit)
+                {/* TODO: Подумать над тем чтобы поменять структуру и запросы на получение данных и скелетон засунуть внутрь компонентов а не брать и отображать тут */}
+                <EmployeesList
+                  activeTab={activeTab}
+                  onActiveTabChange={handleActiveTabChange}
+                  activeEntityTab={activeEntityTab}
+                  onActiveEntityTabChange={setActiveEntityTab}
+                  employees={employees}
+                  vacancies={vacancies}
+                  favoriteItems={favoriteItems}
+                  employeesCount={employeeTotalCount}
+                  vacanciesCount={vacancyTotalCount}
+                  favoritesCount={favoriteTotalCount}
+                  onUpdateEmployee={handlePatchEmployee}
+                  onVacancyClick={(vacancy) => setSelectedVacancyId(vacancy.id)}
+                  isLoading={isListLoading}
+                  isVacanciesLoading={isVacanciesLoading}
+                  isFavoritesLoading={isFavoritesLoading}
+                  skeletonCount={paginationLimit}
+                  vacancySkeletonCount={paginationLimit}
+                  favoriteSkeletonCount={paginationLimit}
+                  employeesEmptyState={
+                    debouncedSearch.trim() ? (
+                      <EmployeeNotFound
+                        searchQuery={debouncedSearch.trim()}
+                        onClearSearch={() => setSearchQuery("")}
+                        onShowAll={() => {
+                          setSearchQuery("");
+                          setSelectedUnit(null);
+                        }}
+                      />
+                    ) : undefined
                   }
-                  onLimitChange={(nextLimit) => {
-                    setPaginationLimit(nextLimit);
-                    setPaginationOffset(0);
-                  }}
                 />
-              )}
-            </div>
+                <div className="min-h-11">
+                  {activePagination.hasData && (
+                    <AppPagination
+                      page={paginationPage}
+                      limit={paginationLimit}
+                      totalCount={activePagination.totalCount}
+                      limitOptions={PAGINATION_LIMIT_OPTIONS}
+                      onPageChange={(nextPage) =>
+                        setPaginationOffset((nextPage - 1) * paginationLimit)
+                      }
+                      onLimitChange={(nextLimit) => {
+                        setPaginationLimit(nextLimit);
+                        setPaginationOffset(0);
+                      }}
+                    />
+                  )}
+                </div>
           </div>
         </div>
       </div>

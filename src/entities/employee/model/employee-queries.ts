@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   getEmployeeDetailAdmin,
   getEmployeeDetailPublic,
@@ -24,6 +24,7 @@ export const useEmployeesList = (
       }
       return getEmployeesListPublic({ limit, offset, ...filter });
     },
+    placeholderData: keepPreviousData,
     select: (data) => ({
       ...data,
       results: data.results.map(mapEmployeeListResponse),
