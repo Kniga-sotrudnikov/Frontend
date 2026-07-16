@@ -1,8 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@ui/dialog";
 import { Button } from "@ui/button";
 import { SelectedEmployeesList } from "./selected-employees-list";
-import { useBulkAddTags } from "@/entities/tags";
-import { useNotificationStore } from "@/shared/model/stores";
 
 type Employee = {
   id: string;
@@ -21,58 +19,25 @@ type AddEmployeesToTagDialogProps = {
   onEmployeeToggle: (employeeId: string) => void;
   onClearEmployees: () => void;
   onAdd: () => void;
+  isPending?: boolean;
 };
 
 export const AddEmployeesToTagDialog = ({
   open,
   onOpenChange,
   tagLabel,
-  tagId,
   employees,
   selectedEmployees,
   onEmployeeToggle,
   onClearEmployees,
   onAdd,
+  isPending = false,
 }: AddEmployeesToTagDialogProps) => {
-  const addNotification = useNotificationStore((state) => state.add);
-  const bulkAddMutation = useBulkAddTags();
-
   const handleAdd = () => {
     if (selectedEmployees.length === 0) {
-      addNotification({
-        type: "error",
-        title: "Ошибка",
-        message: "Выберите хотя бы одного сотрудника",
-      });
       return;
     }
-
-    bulkAddMutation.mutate(
-      {
-        employee_ids: selectedEmployees.map((id) => Number(id)),
-        tag_ids: [tagId],
-      },
-      {
-        onSuccess: () => {
-          addNotification({
-            type: "success",
-            iconType: "success",
-            title: "Успешно",
-            message: `Сотрудники добавлены к тегу «${tagLabel}»`,
-          });
-          onAdd();
-          onOpenChange(false);
-        },
-        onError: (error) => {
-          addNotification({
-            type: "error",
-            title: "Ошибка",
-            message: "Не удалось добавить сотрудников к тегу",
-          });
-          console.error("Error adding employees to tag:", error);
-        },
-      }
-    );
+    onAdd();
   };
 
   return (
@@ -120,10 +85,10 @@ export const AddEmployeesToTagDialog = ({
           </Button>
           <Button
             onClick={handleAdd}
-            disabled={bulkAddMutation.isPending || selectedEmployees.length === 0}
+            disabled={isPending || selectedEmployees.length === 0}
             className="w-[98px] h-[33px] text-xs font-medium bg-purple-500 hover:bg-purple-600 text-white disabled:opacity-50"
           >
-            {bulkAddMutation.isPending ? "Добавление..." : "Добавить"}
+            {isPending ? "Добавление..." : "Добавить"}
           </Button>
         </div>
       </DialogContent>
