@@ -539,7 +539,7 @@ export const TagsManager = ({
                               </Button>
                             </div>
 
-                            <div className="flex flex-col gap-2 mt-1">
+                            <div className="flex flex-row flex-wrap gap-2 mt-1">
                               {getTagEmployees(editingTag.id)
                                 ?.slice(0, 3)
                                 .map((emp, idx) => (
