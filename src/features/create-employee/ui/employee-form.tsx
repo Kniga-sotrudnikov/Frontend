@@ -15,6 +15,7 @@ import { FormSelect } from "./form-select";
 import type { CreateEmployeeFormValues } from "../model/types";
 import type { ValidationErrors } from "../model/validation";
 import { useDepartmentsList } from "@/entities/org-structure/api/use-department-list";
+import { useEmployeesInfinite } from "@/entities/employee/model/employee-queries";
 
 const statusOptions = [
   {value: "working", label: "В работе"},
@@ -57,6 +58,12 @@ export const EmployeeForm = memo(function EmployeeForm({
   const RequiredMark = () => <span className="text-red-600 ml-0.5">*</span>;
 
   const { data } = useDepartmentsList();
+const {
+  data: infinityData,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useEmployeesInfinite();
 
   const departmentOptions =
     data?.results
@@ -65,6 +72,14 @@ export const EmployeeForm = memo(function EmployeeForm({
         value: dep.id.toString(),
         label: dep.name,
       })) ?? [];
+
+
+  const infinityOptions =   infinityData?.pages.flatMap((page) =>
+    page.results.map((employee) => ({
+      value: String(employee.id),
+      label: employee.full_name,
+    })),
+  ) ?? [];
 
   return (
     <>
@@ -283,6 +298,23 @@ export const EmployeeForm = memo(function EmployeeForm({
             {showError("position") && (
               <p className="text-xs text-red-600 mt-1">{errors.position}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label.Root className="text-xs font-normal text-black leading-5 tracking-[-0.5px]">
+              Руководитель
+            </Label.Root>
+            <FormSelect
+              value={values.leader}
+              onValueChange={(value) => onUpdate("leader", value)}
+              options={infinityOptions}
+              placeholder="Выберите руководителя"
+              onScrollEnd={() => {
+                if (hasNextPage && !isFetchingNextPage) {
+                  fetchNextPage();
+                }
+              }}
+            />
           </div>
 
           <div className="space-y-2">
