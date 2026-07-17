@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, useQuery, type InfiniteData } from "@tanstack/react-query";
 import {
   getEmployeeDetailAdmin,
   getEmployeeDetailPublic,
@@ -8,7 +8,7 @@ import {
   mapEmployeeListResponse,
 } from "@/entities/employee";
 import type { UserRole } from "@/entities/user";
-import type { EmployeesListFilter } from "@/entities/employee";
+import type { EmployeesListFilter, EmployeesListResponse } from "@/entities/employee";
 
 export const useEmployeesList = (
   limit = 20,
@@ -29,6 +29,46 @@ export const useEmployeesList = (
       ...data,
       results: data.results.map(mapEmployeeListResponse),
     }),
+  });
+};
+
+export const useEmployeesInfinite = (
+  limit = 20,
+  role: UserRole = "employee",
+  filter: EmployeesListFilter = {},
+) => {
+  return useInfiniteQuery<
+    EmployeesListResponse,            // TQueryFnData
+    Error,                            // TError
+    InfiniteData<EmployeesListResponse>, // TData
+    [string, UserRole, string],       // TQueryKey
+    number                            // TPageParam
+  >({
+    queryKey: ["employees-infinite", role, JSON.stringify(filter)],
+
+    initialPageParam: 0,
+
+    queryFn: ({ pageParam }) => {
+      const params = {
+        limit,
+        offset: pageParam,
+        ...filter,
+      };
+
+      return role === "hr_admin"
+        ? getEmployeesListAdmin(params)
+        : getEmployeesListPublic(params);
+    },
+
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.length * limit;
+
+      if (loaded < lastPage.count) {
+        return loaded;
+      }
+
+      return undefined;
+    },
   });
 };
 

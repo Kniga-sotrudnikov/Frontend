@@ -23,10 +23,6 @@ import { EmployeeForm } from "@/features/create-employee/ui/employee-form";
 import { format } from "date-fns";
 import { usePatchEmployeePhoto } from "@/entities/employee/model/employee-mutations";
 import { mapEmployeeToForm } from "../model/mapper";
-// import {
-//   mapEmployeeToFormValues,
-//   mapStatusBack,
-// } from "@/features/create-employee/utils";
 
 interface EditEmployeeDialogProps {
   open: boolean;
@@ -86,6 +82,9 @@ const buildPatchPayload = (
 
   if (current.socialNetworkLink !== initial.socialNetworkLink)
     patch.social_network = current.socialNetworkLink;
+
+  if (current.leader !== initial.leader)
+    patch.supervisor = Number(current.leader);
 
   //TODO: От сервера пока не поступают личная почта, личный телефон
   //Пока не передаются теги

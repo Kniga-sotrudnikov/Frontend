@@ -9,6 +9,7 @@ interface FormSelectProps {
   options: { value: string; label: string }[];
   placeholder: string;
   error?: boolean;
+  onScrollEnd?: () => void;
 }
 
 export const FormSelect = ({
@@ -17,6 +18,7 @@ export const FormSelect = ({
   options,
   placeholder,
   error,
+  onScrollEnd,
 }: FormSelectProps) => (
   <Select.Root value={value} onValueChange={onValueChange}>
     <Select.Trigger
@@ -34,8 +36,16 @@ export const FormSelect = ({
       </Select.Icon>
     </Select.Trigger>
     <Select.Portal>
-      <Select.Content className="z-50 max-h-96 min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md">
-        <Select.Viewport className="p-1">
+      <Select.Content position="popper" sideOffset={4} align="start" avoidCollisions collisionPadding={8} className="z-50 max-h-96 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md">
+        <Select.Viewport className={"p-1 overflow-y-auto max-h-60"} onScroll={(e) => {
+    const target = e.currentTarget;
+
+    const isNearBottom = target.scrollTop + target.clientHeight >= target.scrollHeight - 20;
+
+    if (isNearBottom) {
+      onScrollEnd?.();
+    }
+  }}>
           {options.map((option) => (
             <Select.Item
               key={option.value}
