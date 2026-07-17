@@ -54,7 +54,7 @@ export const getEmployeeColumns = (
             onToggleFavorite(row.original.id);
           }}
           className={cn(
-            isFavorite ? "text-accent" : "text-gray-300",
+            isFavorite ? "fill-current text-accent" : "text-gray-300",
             isPending && "opacity-50 pointer-events-none",
           )}
         />

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, type ReactNode } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { cn } from "@/shared/lib";
 import { useShallow } from "zustand/react/shallow";
@@ -34,6 +34,8 @@ interface EmployeesListProps {
   favoriteItems: EmployeesListType[];
   activeTab: EmployeesListTab;
   onActiveTabChange: (tab: EmployeesListTab) => void;
+  activeEntityTab: EmployeesListEntityTab;
+  onActiveEntityTabChange: (tab: EmployeesListEntityTab) => void;
   employeesCount?: number;
   vacanciesCount?: number;
   favoritesCount?: number;
@@ -45,6 +47,7 @@ interface EmployeesListProps {
   skeletonCount?: number;
   vacancySkeletonCount?: number;
   favoriteSkeletonCount?: number;
+  employeesEmptyState?: ReactNode;
 }
 
 export const EmployeesList = ({
@@ -53,6 +56,8 @@ export const EmployeesList = ({
   favoriteItems,
   activeTab,
   onActiveTabChange,
+  activeEntityTab,
+  onActiveEntityTabChange,
   employeesCount,
   vacanciesCount,
   favoritesCount,
@@ -64,8 +69,8 @@ export const EmployeesList = ({
   skeletonCount = 6,
   vacancySkeletonCount = skeletonCount,
   favoriteSkeletonCount = skeletonCount,
+  employeesEmptyState,
 }: EmployeesListProps) => {
-  const [activeEntityTab, setActiveEntityTab] = useState<EmployeesListEntityTab>("employees");
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeData | null>(
     null,
   );
@@ -140,6 +145,7 @@ export const EmployeesList = ({
     (item): item is NormalizedVacancy =>
       "profession" in item && "position" in item,
   );
+  const favoriteEmployeesCount = favoritesCount ?? favoriteEmployees.length;
 
   const archivedEmployees = filteredEmployees.filter(
     (emp) => emp.isArchived === true,
@@ -153,6 +159,12 @@ export const EmployeesList = ({
     favorites: favoriteItems,
     archive: allArchived,
   };
+
+  const showEmployeesEmptyState =
+    !!employeesEmptyState &&
+    activeTab === "employees" &&
+    !isLoading &&
+    tabContentMap.employees.length === 0;
 
   const nestedTabContentMap = {
     favorites: {
@@ -334,7 +346,7 @@ export const EmployeesList = ({
           <Tabs
             value={activeEntityTab}
             onValueChange={(value) => {
-              setActiveEntityTab(value as "employees" | "vacancies");
+              onActiveEntityTabChange(value as EmployeesListEntityTab);
             }}
           >
             <TabsList className="gap-1 p-0 bg-transparent">
@@ -345,7 +357,7 @@ export const EmployeesList = ({
                 Сотрудники
                 <span className="inline-flex items-center justify-center size-5.5 bg-gray-100 text-black rounded-4 body-overline font-medium">
                   {activeTab === "favorites"
-                    ? favoriteEmployees.length
+                    ? favoriteEmployeesCount
                     : archivedEmployees.length}
                 </span>
               </TabsTrigger>
@@ -365,7 +377,8 @@ export const EmployeesList = ({
           </Tabs>
         )}
 
-      {viewType === "list" && activeTab === "employees" ? (
+      { showEmployeesEmptyState ? ( employeesEmptyState )
+      : viewType === "list" && activeTab === "employees" ? (
         <DataTable
           columns={getEmployeeColumns(
             favoriteIds,

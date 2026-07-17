@@ -35,6 +35,7 @@ type AddTagDialogProps = {
   onClearEmployees?: () => void;
   onAdd: () => void;
   onSave: () => void;
+  isPending?: boolean;
 };
 
 export const AddTagDialog = ({
@@ -51,6 +52,7 @@ export const AddTagDialog = ({
   onClearEmployees,
   onAdd,
   onSave,
+  isPending = false,
 }: AddTagDialogProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const preventDialogClose = usePreventDialogClose();
@@ -194,10 +196,10 @@ export const AddTagDialog = ({
                 </Button>
                 <Button
                   onClick={handleAdd}
-                  disabled={isAddDisabled}
+                  disabled={isAddDisabled || isPending}
                   className="w-[118px] h-6 text-[14px] font-medium bg-purple-500 hover:bg-purple-600 text-white rounded-[8px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Добавить
+                  {isPending ? "Добавление..." : "Добавить"}
                 </Button>
               </div>
             </div>

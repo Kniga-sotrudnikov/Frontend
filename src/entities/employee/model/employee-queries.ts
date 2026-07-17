@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery, type InfiniteData } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery, useQuery, type InfiniteData } from "@tanstack/react-query";
 import {
   getEmployeeDetailAdmin,
   getEmployeeDetailPublic,
@@ -24,6 +24,7 @@ export const useEmployeesList = (
       }
       return getEmployeesListPublic({ limit, offset, ...filter });
     },
+    placeholderData: keepPreviousData,
     select: (data) => ({
       ...data,
       results: data.results.map(mapEmployeeListResponse),
@@ -68,20 +69,6 @@ export const useEmployeesInfinite = (
 
       return undefined;
     },
-
-/*     select: (data) => ({
-      ...data, // ❗ ОБЯЗАТЕЛЬНО, чтобы сохранить pageParams
-      pages: data.pages.map((page) => ({
-        ...page,
-        results: page.results.map(mapEmployeeListResponse),
-      })),
-    }), */
-
-  //   вместо селект вот это написать потом 
-  //   const employees =
-  // data?.pages.flatMap(page =>
-  //   page.results.map(mapEmployeeListResponse)
-  // ) ?? [];
   });
 };
 

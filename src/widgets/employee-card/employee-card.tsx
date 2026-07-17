@@ -46,6 +46,12 @@ export const EmployeeCard = ({
 }: EmployeeCardProps) => {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const addNotification = useNotificationStore((state) => state.add);
+  const cityValue = city.trim();
+  const linearManagerValue = linearManager.trim();
+  const isCityMissing = cityValue.length === 0;
+  const isLinearManagerMissing = linearManagerValue.length === 0;
+  const displayCity = cityValue || "город не указан";
+  const displayLinearManager = linearManagerValue || "руководитель не указан";
 
   // Дефолтные обработчики с уведомлениями
   const handleFavoriteDefault = () => {
@@ -92,8 +98,13 @@ export const EmployeeCard = ({
       className="flex flex-col p-5.75 border border-gray-200 rounded-8 bg-white cursor-pointer"
     >
       <div className="flex items-center justify-between mb-4">
-        <span className="body-overline text-gray-600 wrap-break-word">
-          {city}
+        <span
+          className={cn(
+            "body-overline wrap-break-word",
+            isCityMissing ? "text-gray-300" : "text-gray-600",
+          )}
+        >
+          {displayCity}
         </span>
         <div
           onClick={(e) => {
@@ -182,8 +193,13 @@ export const EmployeeCard = ({
           <span className="body-overline-semibold text-black">
             Линейный рук.:
           </span>
-          <span className="body-overline text-black wrap-break-word">
-            {linearManager}
+          <span
+            className={cn(
+              "body-overline wrap-break-word",
+              isLinearManagerMissing ? "text-gray-300" : "text-black",
+            )}
+          >
+            {displayLinearManager}
           </span>
         </div>
       </div>

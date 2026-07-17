@@ -155,10 +155,12 @@ export interface EmployeesListResponse {
   results: EmployeeShortResponse[];
 }
 
+// Тип данных query-параметров для списка сотрудников
 export interface EmployeesListFilter {
   direction_id?: number;
   department_id?: number;
   direction?: boolean;
+  search?: string;
 }
 
 export interface SupervisorDetail {

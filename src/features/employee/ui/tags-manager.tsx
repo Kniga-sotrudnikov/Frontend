@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@ui/button";
 import {
   Dialog,
@@ -15,6 +16,7 @@ import {
   useCreateTag,
   useBulkAddTags,
   useBulkRemoveTags,
+  tagsKeys,
 } from "@/entities/tags";
 import PlusIcon from "@icons/plus.svg?react";
 import TrashIcon from "@icons/trash.svg?react";
@@ -68,6 +70,8 @@ export const TagsManager = ({
   getAllEmployees,
   onTagsUpdate,
 }: TagsManagerProps) => {
+  const queryClient = useQueryClient();
+
   const [open, setOpen] = useState(false);
   const [editingTag, setEditingTag] = useState<EditingTag | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -98,7 +102,7 @@ export const TagsManager = ({
 
   const addNotification = useNotificationStore((state) => state.add);
 
-  const { data: tagsData, isLoading, refetch } = useTags({ limit: 100 });
+  const { data: tagsData, isLoading } = useTags({ limit: 100 });
 
   const tags = useMemo(() => tagsData?.results || [], [tagsData]);
 
@@ -107,6 +111,12 @@ export const TagsManager = ({
   const createTagMutation = useCreateTag();
   const bulkAddTagsMutation = useBulkAddTags();
   const bulkRemoveTagsMutation = useBulkRemoveTags();
+
+  const invalidateTags = () => {
+    queryClient.invalidateQueries({ queryKey: tagsKeys.lists() });
+    queryClient.invalidateQueries({ queryKey: ["employees-list"] });
+    queryClient.invalidateQueries({ queryKey: ["employees-raw"] });
+  };
 
   useEffect(() => {
     if (tags.length > 0 && groups.length > 0) {
@@ -141,35 +151,6 @@ export const TagsManager = ({
     setOpen(false);
   };
 
-  const addTag = (newName: string) => {
-    const trimmedName = newName.trim();
-    if (!trimmedName) return;
-
-    createTagMutation.mutate(
-      { name: trimmedName },
-      {
-        onSuccess: () => {
-          addNotification({
-            type: "success",
-            iconType: "success",
-            title: "Успешно",
-            message: `Тег «${trimmedName}» добавлен`,
-          });
-          setNewTagName("");
-          refetch();
-        },
-        onError: (error) => {
-          addNotification({
-            type: "error",
-            title: "Ошибка",
-            message: "Не удалось создать тег",
-          });
-          console.error("Error creating tag:", error);
-        },
-      },
-    );
-  };
-
   const deleteTag = (tagId: number) => {
     const usageCount = getTagUsageCount?.(tagId) ?? 0;
     if (usageCount > 0) {
@@ -189,7 +170,7 @@ export const TagsManager = ({
           title: "Успешно",
           message: "Тег удален",
         });
-        refetch();
+        invalidateTags();
       },
       onError: (error) => {
         addNotification({
@@ -235,7 +216,7 @@ export const TagsManager = ({
             message: `Тег обновлен`,
           });
           setEditingTag(null);
-          refetch();
+          invalidateTags();
         },
         onError: (error) => {
           addNotification({
@@ -278,15 +259,65 @@ export const TagsManager = ({
 
   const handleAddTag = () => {
     if (selectedGroupForNewTag && newTagName.trim()) {
-      addTag(newTagName);
-      if (selectedEmployeesForTag.length > 0) {
-        addNotification({
-          type: "success",
-          title: "Успешно",
-          message: `Сотрудники будут добавлены к тегу «${newTagName}»`,
-        });
-        setSelectedEmployeesForTag([]);
-      }
+      const trimmedName = newTagName.trim();
+
+      createTagMutation.mutate(
+        { name: trimmedName },
+        {
+          onSuccess: (newTag) => {
+            addNotification({
+              type: "success",
+              iconType: "success",
+              title: "Успешно",
+              message: `Тег «${trimmedName}» добавлен`,
+            });
+
+            if (selectedEmployeesForTag.length > 0) {
+              bulkAddTagsMutation.mutate(
+                {
+                  employee_ids: selectedEmployeesForTag.map((id) => Number(id)),
+                  tag_ids: [newTag.id],
+                },
+                {
+                  onSuccess: () => {
+                    addNotification({
+                      type: "success",
+                      iconType: "success",
+                      title: "Успешно",
+                      message: `${selectedEmployeesForTag.length} сотрудников добавлены к тегу`,
+                    });
+                    invalidateTags();
+                    setIsAddDialogOpen(false);
+                    setNewTagName("");
+                    setSelectedEmployeesForTag([]);
+                  },
+                  onError: (error) => {
+                    addNotification({
+                      type: "error",
+                      title: "Ошибка",
+                      message: "Не удалось добавить сотрудников к тегу",
+                    });
+                    console.error("Error adding employees to new tag:", error);
+                  },
+                },
+              );
+            } else {
+              invalidateTags();
+              setIsAddDialogOpen(false);
+              setNewTagName("");
+              setSelectedEmployeesForTag([]);
+            }
+          },
+          onError: (error) => {
+            addNotification({
+              type: "error",
+              title: "Ошибка",
+              message: "Не удалось создать тег",
+            });
+            console.error("Error creating tag:", error);
+          },
+        },
+      );
     }
   };
 
@@ -356,7 +387,7 @@ export const TagsManager = ({
             tagName: "",
           });
           setSelectedEmployeesForTag([]);
-          refetch();
+          invalidateTags();
         },
         onError: (error) => {
           addNotification({
@@ -389,7 +420,7 @@ export const TagsManager = ({
             title: "Успешно",
             message: `Сотрудник «${employeeName}» удалён из тега`,
           });
-          refetch();
+          invalidateTags();
         },
         onError: (error) => {
           addNotification({
@@ -508,7 +539,7 @@ export const TagsManager = ({
                               </Button>
                             </div>
 
-                            <div className="flex flex-col gap-2 mt-1">
+                            <div className="flex flex-row flex-wrap gap-2 mt-1">
                               {getTagEmployees(editingTag.id)
                                 ?.slice(0, 3)
                                 .map((emp, idx) => (
@@ -683,6 +714,7 @@ export const TagsManager = ({
         onClearEmployees={handleClearEmployees}
         onAdd={handleAddTag}
         onSave={handleSaveDialog}
+        isPending={createTagMutation.isPending || bulkAddTagsMutation.isPending}
       />
 
       <AddEmployeesToTagDialog
@@ -697,6 +729,7 @@ export const TagsManager = ({
         onEmployeeToggle={handleEmployeeToggle}
         onClearEmployees={handleClearEmployees}
         onAdd={handleAddEmployeesToTag}
+        isPending={bulkAddTagsMutation.isPending}
       />
 
       <EmployeesListDialog
