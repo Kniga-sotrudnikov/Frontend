@@ -4,6 +4,9 @@ React + Vite + TypeScript.
 Архитектура — [Feature-Sliced Design](https://feature-sliced.design/)
 (слои и правила импортов зафиксированы в ESLint).
 
+> Полная документация — в папке [docs/](docs/README.md)
+> (архитектура, роутинг, аутентификация, API, состояние, стили, деплой).
+
 ## Запуск
 
 Требования: **Node.js** и **npm**.
