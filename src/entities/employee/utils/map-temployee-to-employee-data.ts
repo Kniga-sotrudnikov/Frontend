@@ -81,6 +81,13 @@ export const mapEmployeeDetail = (
         }
       : undefined,
 
+    supervisorId:
+      data.supervisor_id != null
+        ? String(data.supervisor_id)
+        : data.supervisor_detail
+          ? String(data.supervisor_detail.id)
+          : "",
+
     // 👇 контакты
     emailCorporate: data.email ?? undefined,
     phoneCorporate: data.phone ?? undefined,

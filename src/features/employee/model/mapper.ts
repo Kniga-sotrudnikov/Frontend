@@ -8,7 +8,7 @@ export const mapEmployeeToForm = (
   fullName: employee.name,
   position: employee.position,
   department: employee.department,
-  leader: employee.linearManager,
+  leader: employee.supervisorId ?? "",
   emailCorporate: employee.emailCorporate ?? "",
   emailPersonal: employee.emailPersonal ?? "",
   phoneCorporate: employee.phoneCorporate ?? "",

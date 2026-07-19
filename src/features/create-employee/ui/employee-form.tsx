@@ -39,6 +39,8 @@ interface EmployeeFormProps {
   onCalendarOpenChange: (open: boolean) => void;
   touchedFields: Set<keyof CreateEmployeeFormValues>;
   firstInputRef?: RefObject<HTMLInputElement>;
+  /** Имя текущего руководителя — подставляется в селект, пока он не загружен бесконечным скроллом */
+  leaderLabel?: string;
 }
 
 export const EmployeeForm = memo(function EmployeeForm({
@@ -50,6 +52,7 @@ export const EmployeeForm = memo(function EmployeeForm({
   onCalendarOpenChange,
   touchedFields,
   firstInputRef,
+  leaderLabel,
 }: EmployeeFormProps) {
   const showError = (field: keyof CreateEmployeeFormValues) => {
     return touchedFields.has(field) && errors[field];
@@ -80,6 +83,15 @@ const {
       label: employee.full_name,
     })),
   ) ?? [];
+
+  // Если выбранный руководитель ещё не загружен бесконечным скроллом,
+  // добавляем его опцию вручную, чтобы в селекте отображалось имя, а не плейсхолдер
+  const leaderOptions =
+    values.leader &&
+    leaderLabel &&
+    !infinityOptions.some((option) => option.value === values.leader)
+      ? [{ value: values.leader, label: leaderLabel }, ...infinityOptions]
+      : infinityOptions;
 
   return (
     <>
@@ -307,7 +319,7 @@ const {
             <FormSelect
               value={values.leader}
               onValueChange={(value) => onUpdate("leader", value)}
-              options={infinityOptions}
+              options={leaderOptions}
               placeholder="Выберите руководителя"
               onScrollEnd={() => {
                 if (hasNextPage && !isFetchingNextPage) {
