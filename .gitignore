@@ -23,8 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-# Claude
+# AI
 CLAUDE.md
+AGENTS.md
 .claude
 
 .env
