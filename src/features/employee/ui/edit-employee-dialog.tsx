@@ -274,6 +274,7 @@ export const EditEmployeeDialog = ({
               onCalendarOpenChange={setCalendarOpen}
               touchedFields={touchedFields}
               firstInputRef={firstInputRef}
+              leaderLabel={data?.supervisor?.name}
             />
 
             {errors.general && (

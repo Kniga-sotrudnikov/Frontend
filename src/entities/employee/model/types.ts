@@ -60,6 +60,7 @@ export interface EmployeeData {
   tags?: string[];
   roles?: string[];
   supervisor?: EmployeeSupervisor;
+  supervisorId?: string;
   socialNetwork?: string;
   resumeLink?: string;
   crmProfile?: string;
