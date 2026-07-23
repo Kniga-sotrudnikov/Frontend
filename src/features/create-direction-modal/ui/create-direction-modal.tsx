@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
+import { Select } from "@/shared/ui/select";
 import { useNotificationStore } from "@/shared/model/stores";
-import {
-  EmployeeSelect,
-  shortEmployees as mockEmployees,
-} from "@/entities/employee";
+import { useEmployeesInfinite } from "@/entities/employee";
 import { DirectionFormFields } from "@/entities/org-structure";
 import { useCreateDepartment } from "@/entities/org-structure/api/use-department-mutations";
 import type { CreateDirectionModalProps } from "../model/types";
@@ -17,7 +15,6 @@ export function CreateDirectionModal({
   open: controlledOpen,
   onOpenChange: controlledOnOpenChange,
   entityType = "direction",
-  shortEmployees = mockEmployees,
   onCreate,
 }: CreateDirectionModalProps) {
   const [internalOpen, setInternalOpen] = useState(false);
@@ -39,6 +36,30 @@ export function CreateDirectionModal({
   const isDirection = entityType === "direction";
   const entityWord = isDirection ? "направление" : "СИС";
   const entityGenitive = isDirection ? "направления" : "службы";
+
+  const {
+    data: employeesData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useEmployeesInfinite();
+
+  const employeeOptions =
+    employeesData?.pages.flatMap((page) =>
+      page.results.map((employee) => ({
+        value: String(employee.id),
+        label: employee.full_name,
+      })),
+    ) ?? [];
+
+  const headValue = headId ? String(headId) : "";
+
+  const headOptions =
+    headId &&
+    headName &&
+    !employeeOptions.some((option) => option.value === headValue)
+      ? [{ value: headValue, label: headName }, ...employeeOptions]
+      : employeeOptions;
 
   const resetForm = () => {
     setName("");
@@ -64,21 +85,25 @@ export function CreateDirectionModal({
       return;
     }
 
-    createDepartment.mutate({
-      name: name.trim(),
-      type: isDirection ? "direction" : "sis",
-      description: description.trim() || undefined,
-      head_id: headId,
-    });
-
-    handleOpenChange(false);
-    
-    onCreate?.({
-      name,
-      headName,
-      headId,
-      description,
-    });
+    createDepartment.mutate(
+      {
+        name: name.trim(),
+        type: isDirection ? "direction" : "sis",
+        description: description.trim() || undefined,
+        head_id: headId,
+      },
+      {
+        onSuccess: () => {
+          handleOpenChange(false);
+          onCreate?.({
+            name,
+            headName,
+            headId,
+            description,
+          });
+        },
+      },
+    );
   };
 
   const handleNext = () => {
@@ -119,12 +144,21 @@ export function CreateDirectionModal({
               onNameChange={setName}
               headLabel="Руководитель"
               headSlot={
-                <EmployeeSelect
-                  value={headId}
-                  employees={shortEmployees}
-                  onSelect={(id, selectedName) => {
-                    setHeadId(id);
-                    setHeadName(selectedName);
+                <Select
+                  value={headValue}
+                  onValueChange={(value) => {
+                    const selectedOption = headOptions.find(
+                      (option) => option.value === value,
+                    );
+                    setHeadId(value ? Number(value) : null);
+                    setHeadName(selectedOption?.label ?? "");
+                  }}
+                  options={headOptions}
+                  placeholder="Выберите руководителя"
+                  onScrollEnd={() => {
+                    if (hasNextPage && !isFetchingNextPage) {
+                      fetchNextPage();
+                    }
                   }}
                 />
               }
