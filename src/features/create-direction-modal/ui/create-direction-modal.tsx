@@ -1,14 +1,25 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
-import { Select } from "@/shared/ui/select";
 import { useNotificationStore } from "@/shared/model/stores";
-import { useEmployeesInfinite } from "@/entities/employee";
-import { DirectionFormFields } from "@/entities/org-structure";
-import { useCreateDepartment } from "@/entities/org-structure/api/use-department-mutations";
+import {
+  DirectionFormFields,
+  OrgSection,
+  useCreateDepartment,
+  type OrgItemType,
+} from "@/entities/org-structure";
 import type { CreateDirectionModalProps } from "../model/types";
+import { EmployeeSelectField } from "./employee-select-field";
+import { DepartmentForm, type DepartmentFormData } from "./department-form";
 
 const TOTAL_STEPS = 2;
+
+const EMPTY_DRAFT: Omit<DepartmentFormData, "id"> = {
+  name: "",
+  headId: null,
+  headName: "",
+  employeeIds: [],
+};
 
 export function CreateDirectionModal({
   children,
@@ -29,37 +40,19 @@ export function CreateDirectionModal({
   const [headId, setHeadId] = useState<number | null>(null);
   const [description, setDescription] = useState("");
   const [step, setStep] = useState(1);
+  const [departments, setDepartments] = useState<DepartmentFormData[]>([]);
+  const [draft, setDraft] =
+    useState<Omit<DepartmentFormData, "id">>(EMPTY_DRAFT);
+  const [editingDepartmentId, setEditingDepartmentId] = useState<string | null>(
+    null,
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createDepartment = useCreateDepartment();
   const addNotification = useNotificationStore((state) => state.add);
 
   const isDirection = entityType === "direction";
-  const entityWord = isDirection ? "направление" : "СИС";
   const entityGenitive = isDirection ? "направления" : "службы";
-
-  const {
-    data: employeesData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useEmployeesInfinite();
-
-  const employeeOptions =
-    employeesData?.pages.flatMap((page) =>
-      page.results.map((employee) => ({
-        value: String(employee.id),
-        label: employee.full_name,
-      })),
-    ) ?? [];
-
-  const headValue = headId ? String(headId) : "";
-
-  const headOptions =
-    headId &&
-    headName &&
-    !employeeOptions.some((option) => option.value === headValue)
-      ? [{ value: headValue, label: headName }, ...employeeOptions]
-      : employeeOptions;
 
   const resetForm = () => {
     setName("");
@@ -67,43 +60,15 @@ export function CreateDirectionModal({
     setHeadId(null);
     setDescription("");
     setStep(1);
+    setDepartments([]);
+    setDraft(EMPTY_DRAFT);
+    setEditingDepartmentId(null);
+    setIsSubmitting(false);
   };
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) resetForm();
     setOpen(isOpen);
-  };
-
-  const handleCreate = () => {
-    if (!name.trim()) {
-      addNotification({
-        type: "error",
-        iconType: "error",
-        title: "Ошибка",
-        message: "Название обязательно для заполнения",
-      });
-      return;
-    }
-
-    createDepartment.mutate(
-      {
-        name: name.trim(),
-        type: isDirection ? "direction" : "sis",
-        description: description.trim() || undefined,
-        head_id: headId,
-      },
-      {
-        onSuccess: () => {
-          handleOpenChange(false);
-          onCreate?.({
-            name,
-            headName,
-            headId,
-            description,
-          });
-        },
-      },
-    );
   };
 
   const handleNext = () => {
@@ -119,8 +84,129 @@ export function CreateDirectionModal({
     setStep(2);
   };
 
+  const handleBack = () => {
+    setStep(1);
+  };
+
+  const handleFinish = async () => {
+    if (!name.trim()) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "Название обязательно для заполнения",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const directionResponse = await createDepartment.mutateAsync({
+        name: name.trim(),
+        type: isDirection ? "direction" : "sis",
+        description: description.trim() || undefined,
+        head_id: headId,
+      });
+
+      const directionId = directionResponse.data.id;
+
+      for (const department of departments) {
+        await createDepartment.mutateAsync({
+          name: department.name,
+          type: "department",
+          parent: directionId,
+          head_id: department.headId,
+        });
+      }
+
+      handleOpenChange(false);
+      onCreate?.({
+        name,
+        headName,
+        headId,
+        description,
+      });
+    } catch (error) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Не удалось создать направление",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDepartmentSave = (values: Omit<DepartmentFormData, "id">) => {
+    if (editingDepartmentId) {
+      setDepartments((prev) =>
+        prev.map((department) =>
+          department.id === editingDepartmentId
+            ? { ...department, ...values }
+            : department,
+        ),
+      );
+      setEditingDepartmentId(null);
+    } else {
+      setDepartments((prev) => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          ...values,
+        },
+      ]);
+    }
+    setDraft(EMPTY_DRAFT);
+  };
+
+  const handleDepartmentCancel = () => {
+    setDraft(EMPTY_DRAFT);
+    setEditingDepartmentId(null);
+  };
+
+  const handleDepartmentEdit = (item: OrgItemType) => {
+    const department = departments.find((d) => d.id === item.id);
+    if (!department) return;
+
+    setDraft({
+      name: department.name,
+      headId: department.headId,
+      headName: department.headName,
+      employeeIds: department.employeeIds,
+    });
+    setEditingDepartmentId(department.id);
+  };
+
+  const handleDepartmentDelete = (item: OrgItemType) => {
+    setDepartments((prev) =>
+      prev.filter((department) => department.id !== item.id),
+    );
+  };
+
+  const handleDepartmentReorder = (items: OrgItemType[]) => {
+    const orderMap = new Map(items.map((item, index) => [item.id, index]));
+    setDepartments((prev) =>
+      [...prev].sort((a, b) => {
+        const aIndex = orderMap.get(a.id) ?? 0;
+        const bIndex = orderMap.get(b.id) ?? 0;
+        return aIndex - bIndex;
+      }),
+    );
+  };
+
   const isNameValid = name.trim().length > 0;
   const title = isDirection ? "Создать направление" : "Создать СИС";
+
+  const orgSectionItems: OrgItemType[] = departments.map((department) => ({
+    id: department.id,
+    name: department.name,
+    headName: department.headName,
+  }));
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -144,22 +230,13 @@ export function CreateDirectionModal({
               onNameChange={setName}
               headLabel="Руководитель"
               headSlot={
-                <Select
-                  value={headValue}
-                  onValueChange={(value) => {
-                    const selectedOption = headOptions.find(
-                      (option) => option.value === value,
-                    );
-                    setHeadId(value ? Number(value) : null);
-                    setHeadName(selectedOption?.label ?? "");
+                <EmployeeSelectField
+                  value={headId}
+                  onChange={(id, selectedName) => {
+                    setHeadId(id);
+                    setHeadName(selectedName);
                   }}
-                  options={headOptions}
                   placeholder="Выберите руководителя"
-                  onScrollEnd={() => {
-                    if (hasNextPage && !isFetchingNextPage) {
-                      fetchNextPage();
-                    }
-                  }}
                 />
               }
               description={description}
@@ -167,11 +244,42 @@ export function CreateDirectionModal({
               descriptionPlaceholder={`Краткое описание ${entityGenitive}`}
             />
           ) : (
-            // TODO Шаг 2 - добавление отделов
-            <div className="flex flex-col items-center justify-center py-8">
-              <p className="text-center text-gray-500">
-                Шаг 2: Добавление отделов (в разработке)
-              </p>
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2 rounded-8 bg-gray-50 p-4">
+                <p className="body-s text-gray-900">
+                  Вы создаёте отделы для направления:{" "}
+                  <span className="body-s-semibold text-black">{name}</span>
+                </p>
+                <p className="body-s text-gray-900">
+                  Руководитель:{" "}
+                  <span className="body-s-semibold text-black">
+                    {headName || "Не выбран"}
+                  </span>
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <h3 className="body-m-semibold text-black">Отделы</h3>
+                <DepartmentForm
+                  initialValues={draft}
+                  isEditing={!!editingDepartmentId}
+                  onSave={handleDepartmentSave}
+                  onCancel={handleDepartmentCancel}
+                />
+              </div>
+
+              <OrgSection
+                title="Созданные отделы"
+                addButtonText="Добавить отдел"
+                items={orgSectionItems}
+                onAdd={() => {
+                  setDraft(EMPTY_DRAFT);
+                  setEditingDepartmentId(null);
+                }}
+                onEdit={handleDepartmentEdit}
+                onDelete={handleDepartmentDelete}
+                onReorder={handleDepartmentReorder}
+              />
             </div>
           )}
         </div>
@@ -182,42 +290,48 @@ export function CreateDirectionModal({
               variant="ghost"
               size="plain"
               className="button-small px-4 h-8"
-              disabled={createDepartment.isPending}
+              disabled={isSubmitting || createDepartment.isPending}
             >
               Отменить
             </Button>
           </DialogClose>
           {step === 1 ? (
+            <Button
+              variant="default"
+              size="plain"
+              className="button-small px-4 h-8"
+              disabled={
+                !isNameValid || isSubmitting || createDepartment.isPending
+              }
+              onClick={handleNext}
+            >
+              Далее
+            </Button>
+          ) : (
             <>
               <Button
                 variant="outline"
                 size="plain"
-                className="button-small px-4 h-8 border-primary text-black"
-                disabled={!isNameValid || createDepartment.isPending}
-                onClick={handleCreate}
+                className="button-small px-4 h-8"
+                disabled={isSubmitting || createDepartment.isPending}
+                onClick={handleBack}
               >
-                Сохранить {entityWord}
+                Назад
               </Button>
               <Button
                 variant="default"
                 size="plain"
                 className="button-small px-4 h-8"
-                disabled={!isNameValid || createDepartment.isPending}
-                onClick={handleNext}
+                disabled={
+                  !isNameValid || isSubmitting || createDepartment.isPending
+                }
+                onClick={handleFinish}
               >
-                Далее
+                {isSubmitting || createDepartment.isPending
+                  ? "Сохранение..."
+                  : "Завершить"}
               </Button>
             </>
-          ) : (
-            <Button
-              variant="default"
-              size="plain"
-              className="button-small px-4 h-8"
-              onClick={handleCreate}
-              disabled={createDepartment.isPending}
-            >
-              {createDepartment.isPending ? "Сохранение..." : "Завершить"}
-            </Button>
           )}
         </div>
       </DialogContent>
