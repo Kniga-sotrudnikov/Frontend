@@ -19,13 +19,9 @@ export { SelectedEmployee } from "./ui/selected-employee";
 export { EmployeeSelect } from "./ui/employee-select";
 export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-data";
 
-export {
-  usePublicBirthdays,
-} from "./model/birthday-queries";
+export { usePublicBirthdays } from "./model/birthday-queries";
 
-export {
-  getPublicBirthdaysApi,
-} from "./api/birthdays-api";
+export { getPublicBirthdaysApi } from "./api/birthdays-api";
 
 export {
   getEmployeesListAdmin,
@@ -42,7 +38,11 @@ export {
   usePatchEmployee,
   useDeleteEmployee,
 } from "./model/employee-mutations";
-export { useEmployeesList, useEmployeeDetail } from "./model/employee-queries";
+export {
+  useEmployeesList,
+  useEmployeeDetail,
+  useEmployeesInfinite,
+} from "./model/employee-queries";
 export {
   mapEmployeeListResponse,
   mapEmployeeDetail,

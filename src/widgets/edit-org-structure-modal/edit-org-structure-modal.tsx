@@ -64,7 +64,9 @@ export function EditOrgStructureModal({
 
   useEffect(() => {
     if (open) {
-      if (JSON.stringify(prevDirectionsRef.current) !== JSON.stringify(directions)) {
+      if (
+        JSON.stringify(prevDirectionsRef.current) !== JSON.stringify(directions)
+      ) {
         setLocalDirections(directions);
         prevDirectionsRef.current = directions;
       }
@@ -81,11 +83,13 @@ export function EditOrgStructureModal({
 
       if (!targetNode?.items) return [];
 
-      return targetNode.items.map((item: OrgUnit): Department => ({
-        id: String(item.id || ''),
-        name: item.name,
-        headName: item.headName || '',
-      }));
+      return targetNode.items.map(
+        (item: OrgUnit): Department => ({
+          id: String(item.id || ""),
+          name: item.name,
+          headName: item.headName || "",
+        }),
+      );
     };
   }, [tree]);
 
@@ -129,32 +133,24 @@ export function EditOrgStructureModal({
   };
 
   const handleEditDirection = (item: OrgItemType) => {
-    let departmentId: number | undefined;
-    const directionNode = tree.find(u => u.name === "Направления");
-    if (directionNode?.items) {
-      const found = directionNode.items.find((u: OrgUnit) => String(u.id) === item.id);
-      if (found?.id) departmentId = found.id;
-    }
+    const unit = tree.find((u) => String(u.id) === item.id);
 
-    setEditingDirection({ 
-      ...item, 
+    setEditingDirection({
+      ...item,
       entityType: "direction",
-      departmentId 
+      departmentId: unit?.id,
+      headId: unit?.headId ?? null,
     });
   };
 
   const handleEditSis = (item: OrgItemType) => {
-    let departmentId: number | undefined;
-    const sisNode = tree.find(u => u.name === "СИС");
-    if (sisNode?.items) {
-      const found = sisNode.items.find((u: OrgUnit) => String(u.id) === item.id);
-      if (found?.id) departmentId = found.id;
-    }
+    const unit = tree.find((u) => String(u.id) === item.id);
 
-    setEditingDirection({ 
-      ...item, 
+    setEditingDirection({
+      ...item,
       entityType: "sis",
-      departmentId 
+      departmentId: unit?.id,
+      headId: unit?.headId ?? null,
     });
   };
 
@@ -248,7 +244,7 @@ export function EditOrgStructureModal({
 
   const editingDepartments = useMemo(() => {
     if (!editingDirection) return [];
-    
+
     return getDepartmentsForEntity(editingDirection.id);
   }, [editingDirection, getDepartmentsForEntity]);
 
@@ -306,7 +302,7 @@ export function EditOrgStructureModal({
           </div>
         </DialogContent>
       </Dialog>
-      
+
       <EditDirectionModal
         key={editingDirection?.id ?? "none"}
         open={editingDirection !== null}
@@ -319,7 +315,7 @@ export function EditOrgStructureModal({
         departmentId={editingDirection?.departmentId}
         onSave={handleDirectionSave}
       />
-      
+
       <CreateDirectionModal
         key={creatingEntityType ?? "none-create"}
         open={creatingEntityType !== null}

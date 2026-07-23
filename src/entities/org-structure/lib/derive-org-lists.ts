@@ -4,7 +4,7 @@ import type { OrgItemType } from "../ui/org-item";
 const toOrgItem = (unit: OrgUnit): OrgItemType => ({
   id: String(unit.id ?? ""),
   name: unit.name,
-  headName: "",
+  headName: unit.headName ?? "",
 });
 
 export const getDirections = (tree: OrgUnit[]): OrgItemType[] =>

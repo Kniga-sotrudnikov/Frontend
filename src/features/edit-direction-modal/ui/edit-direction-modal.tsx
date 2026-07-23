@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
+import { Select } from "@/shared/ui/select";
 import { useNotificationStore } from "@/shared/model/stores";
-import {
-  EmployeeSelect,
-  shortEmployees as mockEmployees,
-} from "@/entities/employee";
+import { useEmployeesInfinite } from "@/entities/employee";
 import {
   OrgSection,
   DirectionFormFields,
@@ -21,7 +19,6 @@ export function EditDirectionModal({
   initialName = "",
   initialHeadName = "",
   initialHeadId = null,
-  shortEmployees = mockEmployees,
   initialDescription = "",
   departments: initialDepartments = [],
   onAddDepartment,
@@ -36,15 +33,40 @@ export function EditDirectionModal({
   const setOpen = isControlled
     ? (val: boolean) => controlledOnOpenChange?.(val)
     : setInternalOpen;
-  
+
   const [name, setName] = useState(initialName);
   const [headName, setHeadName] = useState(initialHeadName);
   const [headId, setHeadId] = useState<number | null>(initialHeadId);
   const [description, setDescription] = useState(initialDescription);
-  const [departments, setDepartments] = useState<Department[]>(initialDepartments);
+  const [departments, setDepartments] =
+    useState<Department[]>(initialDepartments);
 
   const updateDepartment = useUpdateDepartment();
   const addNotification = useNotificationStore((state) => state.add);
+
+  const {
+    data: employeesData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useEmployeesInfinite();
+
+  const employeeOptions =
+    employeesData?.pages.flatMap((page) =>
+      page.results.map((employee) => ({
+        value: String(employee.id),
+        label: employee.full_name,
+      })),
+    ) ?? [];
+
+  const headValue = headId ? String(headId) : "";
+
+  const headOptions =
+    headId &&
+    headName &&
+    !employeeOptions.some((option) => option.value === headValue)
+      ? [{ value: headValue, label: headName }, ...employeeOptions]
+      : employeeOptions;
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -78,18 +100,22 @@ export function EditDirectionModal({
       return;
     }
 
-    updateDepartment.mutate({
-      id: departmentId,
-      data: {
-        name: name.trim(),
-        description: description.trim() || undefined,
-        head_id: headId,
+    updateDepartment.mutate(
+      {
+        id: departmentId,
+        data: {
+          name: name.trim(),
+          description: description.trim() || undefined,
+          head_id: headId,
+        },
       },
-    });
-
-    handleOpenChange(false);
-    
-    onSave?.({ name, headName, description }, departments);
+      {
+        onSuccess: () => {
+          handleOpenChange(false);
+          onSave?.({ name, headName, description }, departments);
+        },
+      },
+    );
   };
 
   const handleAddDepartment = () => {
@@ -158,12 +184,21 @@ export function EditDirectionModal({
                 : "Руководитель службы"
             }
             headSlot={
-              <EmployeeSelect
-                value={headId}
-                employees={shortEmployees}
-                onSelect={(id, selectedName) => {
-                  setHeadId(id);
-                  setHeadName(selectedName);
+              <Select
+                value={headValue}
+                onValueChange={(value) => {
+                  const selectedOption = headOptions.find(
+                    (option) => option.value === value,
+                  );
+                  setHeadId(value ? Number(value) : null);
+                  setHeadName(selectedOption?.label ?? "");
+                }}
+                options={headOptions}
+                placeholder="Выберите руководителя"
+                onScrollEnd={() => {
+                  if (hasNextPage && !isFetchingNextPage) {
+                    fetchNextPage();
+                  }
                 }}
               />
             }
@@ -200,7 +235,9 @@ export function EditDirectionModal({
             onClick={handleSave}
             disabled={!isNameValid || updateDepartment.isPending}
           >
-            {updateDepartment.isPending ? "Сохранение..." : "Сохранить изменения"}
+            {updateDepartment.isPending
+              ? "Сохранение..."
+              : "Сохранить изменения"}
           </Button>
         </div>
       </DialogContent>
