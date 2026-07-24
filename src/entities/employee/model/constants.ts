@@ -7,6 +7,7 @@ import MaternityIcon from "@/shared/assets/icons/support.svg";
 
 export const statusIconMap: Record<TEmployeeStatus, string> = {
   working: WorkingIcon,
+  remote: WorkingIcon,
   business_trip: BizTripIcon,
   vacation: VacationIcon,
   sick_leave: SickIcon,
@@ -15,6 +16,7 @@ export const statusIconMap: Record<TEmployeeStatus, string> = {
 
 export const statusLabelMap: Record<TEmployeeStatus, string> = {
   working: "Работает",
+  remote: "На удалёнке",
   business_trip: "В командировке",
   vacation: "В отпуске",
   sick_leave: "На больничном",
