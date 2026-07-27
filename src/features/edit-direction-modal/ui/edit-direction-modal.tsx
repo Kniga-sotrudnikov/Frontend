@@ -1,13 +1,15 @@
 import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
-import { Select } from "@/shared/ui/select";
 import { useNotificationStore } from "@/shared/model/stores";
-import { useEmployeesInfinite } from "@/entities/employee";
+import { EmployeeSelectField, EmployeesMultiSelect } from "@/entities/employee";
 import {
   OrgSection,
   DirectionFormFields,
+  DepartmentForm,
   useUpdateDepartment,
+  useCreateDepartment,
+  type DepartmentFormData,
 } from "@/entities/org-structure";
 import type { EditDirectionModalProps, Department } from "../model/types";
 
@@ -40,33 +42,11 @@ export function EditDirectionModal({
   const [description, setDescription] = useState(initialDescription);
   const [departments, setDepartments] =
     useState<Department[]>(initialDepartments);
+  const [isDepartmentFormOpen, setIsDepartmentFormOpen] = useState(false);
 
   const updateDepartment = useUpdateDepartment();
+  const createDepartment = useCreateDepartment();
   const addNotification = useNotificationStore((state) => state.add);
-
-  const {
-    data: employeesData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useEmployeesInfinite();
-
-  const employeeOptions =
-    employeesData?.pages.flatMap((page) =>
-      page.results.map((employee) => ({
-        value: String(employee.id),
-        label: employee.full_name,
-      })),
-    ) ?? [];
-
-  const headValue = headId ? String(headId) : "";
-
-  const headOptions =
-    headId &&
-    headName &&
-    !employeeOptions.some((option) => option.value === headValue)
-      ? [{ value: headValue, label: headName }, ...employeeOptions]
-      : employeeOptions;
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -75,6 +55,7 @@ export function EditDirectionModal({
       setHeadId(initialHeadId);
       setDescription(initialDescription);
       setDepartments(initialDepartments);
+      setIsDepartmentFormOpen(false);
     }
     setOpen(isOpen);
   };
@@ -122,12 +103,43 @@ export function EditDirectionModal({
     if (onAddDepartment) {
       onAddDepartment();
     } else {
-      addNotification({
-        iconType: "success",
-        title: "В разработке",
-        message: "Функция будет доступна в ближайшее время",
-      });
+      setIsDepartmentFormOpen(true);
     }
+  };
+
+  const handleDepartmentFormSave = (values: Omit<DepartmentFormData, "id">) => {
+    if (!departmentId) {
+      addNotification({
+        type: "error",
+        iconType: "error",
+        title: "Ошибка",
+        message: "ID подразделения не указан",
+      });
+      return;
+    }
+
+    createDepartment.mutate(
+      {
+        name: values.name,
+        type: "department",
+        parent: departmentId,
+        head_id: values.headId,
+      },
+      {
+        onSuccess: (response) => {
+          const createdId = response?.data?.id;
+          setDepartments((prev) => [
+            ...prev,
+            {
+              id: String(createdId ?? crypto.randomUUID()),
+              name: values.name,
+              headName: values.headName,
+            },
+          ]);
+          setIsDepartmentFormOpen(false);
+        },
+      },
+    );
   };
 
   const handleEditDepartment = (dept: Department) => {
@@ -184,22 +196,14 @@ export function EditDirectionModal({
                 : "Руководитель службы"
             }
             headSlot={
-              <Select
-                value={headValue}
-                onValueChange={(value) => {
-                  const selectedOption = headOptions.find(
-                    (option) => option.value === value,
-                  );
-                  setHeadId(value ? Number(value) : null);
-                  setHeadName(selectedOption?.label ?? "");
+              <EmployeeSelectField
+                value={headId}
+                initialName={initialHeadName}
+                onChange={(id, selectedName) => {
+                  setHeadId(id);
+                  setHeadName(selectedName);
                 }}
-                options={headOptions}
                 placeholder="Выберите руководителя"
-                onScrollEnd={() => {
-                  if (hasNextPage && !isFetchingNextPage) {
-                    fetchNextPage();
-                  }
-                }}
               />
             }
             description={description}
@@ -214,7 +218,28 @@ export function EditDirectionModal({
             onEdit={handleEditDepartment}
             onDelete={handleDeleteDepartment}
             onReorder={setDepartments}
-          />
+          >
+            {isDepartmentFormOpen && (
+              <DepartmentForm
+                onSave={handleDepartmentFormSave}
+                onCancel={() => setIsDepartmentFormOpen(false)}
+                headSlot={({ value, onChange }) => (
+                  <EmployeeSelectField
+                    value={value}
+                    onChange={onChange}
+                    placeholder="Выберите руководителя"
+                  />
+                )}
+                employeesSlot={({ value, onChange }) => (
+                  <EmployeesMultiSelect
+                    value={value}
+                    onChange={onChange}
+                    placeholder="Выберите сотрудников"
+                  />
+                )}
+              />
+            )}
+          </OrgSection>
         </div>
 
         <div className="flex justify-end gap-3.75 shrink-0">

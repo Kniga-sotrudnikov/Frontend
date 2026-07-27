@@ -5,12 +5,13 @@ import { useNotificationStore } from "@/shared/model/stores";
 import {
   DirectionFormFields,
   OrgSection,
+  DepartmentForm,
   useCreateDepartment,
+  type DepartmentFormData,
   type OrgItemType,
 } from "@/entities/org-structure";
+import { EmployeeSelectField, EmployeesMultiSelect } from "@/entities/employee";
 import type { CreateDirectionModalProps } from "../model/types";
-import { EmployeeSelectField } from "./employee-select-field";
-import { DepartmentForm, type DepartmentFormData } from "./department-form";
 
 const TOTAL_STEPS = 2;
 
@@ -280,6 +281,20 @@ export function CreateDirectionModal({
                   isEditing={!!editingDepartmentId}
                   onSave={handleDepartmentSave}
                   onCancel={handleDepartmentCancel}
+                  headSlot={({ value, onChange }) => (
+                    <EmployeeSelectField
+                      value={value}
+                      onChange={onChange}
+                      placeholder="Выберите руководителя"
+                    />
+                  )}
+                  employeesSlot={({ value, onChange }) => (
+                    <EmployeesMultiSelect
+                      value={value}
+                      onChange={onChange}
+                      placeholder="Выберите сотрудников"
+                    />
+                  )}
                 />
               </OrgSection>
             </div>

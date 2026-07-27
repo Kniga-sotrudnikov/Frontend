@@ -17,6 +17,8 @@ export type { BirthdayPerson } from "./model/types";
 export { shortEmployees } from "./model/mock";
 export { SelectedEmployee } from "./ui/selected-employee";
 export { EmployeeSelect } from "./ui/employee-select";
+export { EmployeeSelectField } from "./ui/employee-select-field";
+export { EmployeesMultiSelect } from "./ui/employees-multi-select";
 export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-data";
 
 export { usePublicBirthdays } from "./model/birthday-queries";

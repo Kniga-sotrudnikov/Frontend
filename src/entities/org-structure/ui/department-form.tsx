@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import * as Label from "@radix-ui/react-label";
-import { EmployeeSelectField } from "./employee-select-field";
-import { EmployeesMultiSelect } from "./employees-multi-select";
 
 export interface DepartmentFormData {
   id: string;
@@ -13,11 +11,23 @@ export interface DepartmentFormData {
   employeeIds: number[];
 }
 
+interface HeadSlotProps {
+  value: number | null;
+  onChange: (id: number | null, name: string) => void;
+}
+
+interface EmployeesSlotProps {
+  value: number[];
+  onChange: (value: number[]) => void;
+}
+
 interface DepartmentFormProps {
   initialValues?: Partial<DepartmentFormData>;
   isEditing?: boolean;
   onSave: (values: Omit<DepartmentFormData, "id">) => void;
   onCancel: () => void;
+  headSlot: (props: HeadSlotProps) => React.ReactNode;
+  employeesSlot: (props: EmployeesSlotProps) => React.ReactNode;
 }
 
 export const DepartmentForm = ({
@@ -25,6 +35,8 @@ export const DepartmentForm = ({
   isEditing = false,
   onSave,
   onCancel,
+  headSlot,
+  employeesSlot,
 }: DepartmentFormProps) => {
   const [name, setName] = useState(initialValues?.name ?? "");
   const [headId, setHeadId] = useState<number | null>(
@@ -73,14 +85,13 @@ export const DepartmentForm = ({
           <Label.Root className="body-s-semibold text-muted-foreground">
             Руководитель
           </Label.Root>
-          <EmployeeSelectField
-            value={headId}
-            onChange={(id, selectedName) => {
+          {headSlot({
+            value: headId,
+            onChange: (id, selectedName) => {
               setHeadId(id);
               setHeadName(selectedName);
-            }}
-            placeholder="Выберите руководителя"
-          />
+            },
+          })}
         </div>
       </div>
 
@@ -88,11 +99,7 @@ export const DepartmentForm = ({
         <Label.Root className="body-s-semibold text-muted-foreground">
           Сотрудники
         </Label.Root>
-        <EmployeesMultiSelect
-          value={employeeIds}
-          onChange={setEmployeeIds}
-          placeholder="Выберите сотрудников"
-        />
+        {employeesSlot({ value: employeeIds, onChange: setEmployeeIds })}
       </div>
 
       <div className="flex justify-end gap-3 pt-2">

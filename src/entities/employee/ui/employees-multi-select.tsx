@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useEmployeesInfinite } from "@/entities/employee";
+import { useEmployeesInfinite } from "../model/employee-queries";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";

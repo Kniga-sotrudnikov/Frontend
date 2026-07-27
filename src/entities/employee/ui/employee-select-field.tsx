@@ -1,16 +1,18 @@
-import { useEmployeesInfinite } from "@/entities/employee";
+import { useEmployeesInfinite } from "../model/employee-queries";
 import { Select } from "@/shared/ui/select";
 
 interface EmployeeSelectFieldProps {
   value: number | null;
   onChange: (id: number | null, name: string) => void;
   placeholder?: string;
+  initialName?: string;
 }
 
 export const EmployeeSelectField = ({
   value,
   onChange,
   placeholder = "Выберите руководителя",
+  initialName = "",
 }: EmployeeSelectFieldProps) => {
   const {
     data: employeesData,
@@ -29,7 +31,8 @@ export const EmployeeSelectField = ({
 
   const stringValue = value ? String(value) : "";
   const selectedName =
-    employeeOptions.find((option) => option.value === stringValue)?.label ?? "";
+    employeeOptions.find((option) => option.value === stringValue)?.label ??
+    initialName;
 
   const options =
     value &&

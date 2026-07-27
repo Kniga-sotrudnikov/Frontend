@@ -1,6 +1,8 @@
 export { OrgItem } from "./ui/org-item";
 export { OrgSection } from "./ui/org-section";
 export { DirectionFormFields } from "./ui/direction-form-fields";
+export { DepartmentForm } from "./ui/department-form";
+export type { DepartmentFormData } from "./ui/department-form";
 export { OrgStructureChart } from "./ui/org-structure-chart";
 export type { OrgItemType } from "./ui/org-item";
 export type { OrgUnit } from "./model/types";
