@@ -1,5 +1,6 @@
 export type TEmployeeStatus =
   | "working"
+  | "remote"
   | "vacation"
   | "sick_leave"
   | "maternity_leave"
@@ -67,8 +68,6 @@ export interface EmployeeData {
   aboutMe?: string;
   role?: string;
 }
-
-
 
 export type StatusEnum = "active" | "archived";
 
