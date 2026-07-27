@@ -57,29 +57,31 @@ export const DepartmentForm = ({
 
   return (
     <div className="flex flex-col gap-3 rounded-8 border border-gray-200 bg-white p-4">
-      <div className="flex flex-col gap-1.5">
-        <Label.Root className="body-s-semibold text-muted-foreground">
-          Название отдела / команды
-        </Label.Root>
-        <Input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Введите название"
-        />
-      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-col gap-1.5">
+          <Label.Root className="body-s-semibold text-muted-foreground">
+            Название отдела / команды
+          </Label.Root>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Введите название"
+          />
+        </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Label.Root className="body-s-semibold text-muted-foreground">
-          Руководитель
-        </Label.Root>
-        <EmployeeSelectField
-          value={headId}
-          onChange={(id, selectedName) => {
-            setHeadId(id);
-            setHeadName(selectedName);
-          }}
-          placeholder="Выберите руководителя"
-        />
+        <div className="flex flex-col gap-1.5">
+          <Label.Root className="body-s-semibold text-muted-foreground">
+            Руководитель
+          </Label.Root>
+          <EmployeeSelectField
+            value={headId}
+            onChange={(id, selectedName) => {
+              setHeadId(id);
+              setHeadName(selectedName);
+            }}
+            placeholder="Выберите руководителя"
+          />
+        </div>
       </div>
 
       <div className="flex flex-col gap-1.5">

@@ -13,6 +13,7 @@ interface OrgSectionProps {
   onEdit: (item: OrgItemType) => void;
   onDelete: (item: OrgItemType) => void;
   onReorder?: (items: OrgItemType[]) => void;
+  children?: React.ReactNode;
 }
 
 export const OrgSection = ({
@@ -23,6 +24,7 @@ export const OrgSection = ({
   onEdit,
   onDelete,
   onReorder,
+  children,
 }: OrgSectionProps) => {
   const { orderedItems, handleDragEnd } = useDraggableList(items, onReorder);
 
@@ -39,6 +41,8 @@ export const OrgSection = ({
           <span className="button-small text-purple-400">{`+ ${addButtonText}`}</span>
         </Button>
       </div>
+
+      {children && <div className="mb-6">{children}</div>}
 
       <DraggableList items={orderedItems} onDragEnd={handleDragEnd}>
         <div className="space-y-3  flex-col fit-content overflow-y-hidden overflow-x-hidden">

@@ -200,7 +200,12 @@ export function CreateDirectionModal({
   };
 
   const isNameValid = name.trim().length > 0;
-  const title = isDirection ? "Создать направление" : "Создать СИС";
+  const title =
+    step === 2
+      ? "Добавить отделы"
+      : isDirection
+        ? "Создать направление"
+        : "Создать СИС";
 
   const orgSectionItems: OrgItemType[] = departments.map((department) => ({
     id: department.id,
@@ -258,18 +263,8 @@ export function CreateDirectionModal({
                 </p>
               </div>
 
-              <div className="flex flex-col gap-3">
-                <h3 className="body-m-semibold text-black">Отделы</h3>
-                <DepartmentForm
-                  initialValues={draft}
-                  isEditing={!!editingDepartmentId}
-                  onSave={handleDepartmentSave}
-                  onCancel={handleDepartmentCancel}
-                />
-              </div>
-
               <OrgSection
-                title="Созданные отделы"
+                title="Отделы"
                 addButtonText="Добавить отдел"
                 items={orgSectionItems}
                 onAdd={() => {
@@ -279,23 +274,43 @@ export function CreateDirectionModal({
                 onEdit={handleDepartmentEdit}
                 onDelete={handleDepartmentDelete}
                 onReorder={handleDepartmentReorder}
-              />
+              >
+                <DepartmentForm
+                  initialValues={draft}
+                  isEditing={!!editingDepartmentId}
+                  onSave={handleDepartmentSave}
+                  onCancel={handleDepartmentCancel}
+                />
+              </OrgSection>
             </div>
           )}
         </div>
 
-        <div className="flex justify-end gap-3.75 shrink-0">
-          <DialogClose variant="custom" asChild>
+        {step === 1 ? (
+          <div className="flex justify-end gap-3.75 shrink-0">
+            <DialogClose variant="custom" asChild>
+              <Button
+                variant="ghost"
+                size="plain"
+                className="button-small px-4 h-8"
+                disabled={isSubmitting || createDepartment.isPending}
+              >
+                Отменить
+              </Button>
+            </DialogClose>
             <Button
-              variant="ghost"
+              variant="outline"
               size="plain"
               className="button-small px-4 h-8"
-              disabled={isSubmitting || createDepartment.isPending}
+              disabled={
+                !isNameValid || isSubmitting || createDepartment.isPending
+              }
+              onClick={handleFinish}
             >
-              Отменить
+              {isSubmitting || createDepartment.isPending
+                ? "Сохранение..."
+                : `Сохранить ${isDirection ? "направление" : "СИС"}`}
             </Button>
-          </DialogClose>
-          {step === 1 ? (
             <Button
               variant="default"
               size="plain"
@@ -307,33 +322,33 @@ export function CreateDirectionModal({
             >
               Далее
             </Button>
-          ) : (
-            <>
-              <Button
-                variant="outline"
-                size="plain"
-                className="button-small px-4 h-8"
-                disabled={isSubmitting || createDepartment.isPending}
-                onClick={handleBack}
-              >
-                Назад
-              </Button>
-              <Button
-                variant="default"
-                size="plain"
-                className="button-small px-4 h-8"
-                disabled={
-                  !isNameValid || isSubmitting || createDepartment.isPending
-                }
-                onClick={handleFinish}
-              >
-                {isSubmitting || createDepartment.isPending
-                  ? "Сохранение..."
-                  : "Завершить"}
-              </Button>
-            </>
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex justify-between shrink-0">
+            <Button
+              variant="outline"
+              size="plain"
+              className="button-small px-4 h-8"
+              disabled={isSubmitting || createDepartment.isPending}
+              onClick={handleBack}
+            >
+              Назад
+            </Button>
+            <Button
+              variant="default"
+              size="plain"
+              className="button-small px-4 h-8"
+              disabled={
+                !isNameValid || isSubmitting || createDepartment.isPending
+              }
+              onClick={handleFinish}
+            >
+              {isSubmitting || createDepartment.isPending
+                ? "Сохранение..."
+                : "Готово"}
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
