@@ -240,10 +240,11 @@ const EmployeesPage = () => {
           title="Книга сотрудников"
           stats={<span>{statsText}</span>}
           search={
-            <SearchInput 
-              placeholder="Поиск по ФИО, должности, тегам..." 
+            <SearchInput
+              placeholder="Поиск по ФИО, должности, тегам..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onClear={() => setSearchQuery("")}
             />
           }
           birthday={<BirthdaysPopover />}
