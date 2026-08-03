@@ -207,6 +207,9 @@ export interface EmployeeDetailAdminResponse {
   email: string;
   phone: string;
 
+  personal_email: string | null;
+  personal_phone: string | null;
+
   interests: string;
 
   role_description: string[];

@@ -91,6 +91,8 @@ export const mapEmployeeDetail = (
     // 👇 контакты
     emailCorporate: data.email ?? undefined,
     phoneCorporate: data.phone ?? undefined,
+    emailPersonal: data.personal_email ?? undefined,
+    phonePersonal: data.personal_phone ?? undefined,
 
     // 👇 дата
     birthday: data.birthday,
@@ -108,10 +110,6 @@ export const mapEmployeeDetail = (
     crmProfile: data.crm_profile ?? undefined,
 
     aboutMe: data.interests ?? undefined,
-
-    // 👇 пока нет в API — оставляем как есть
-    emailPersonal: undefined,
-    phonePersonal: undefined,
 
     // 👇 архив (если появится статус — можно расширить)
     isArchived: false,
