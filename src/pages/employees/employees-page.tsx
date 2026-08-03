@@ -30,7 +30,6 @@ import {
 import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
 import { format } from "date-fns";
 import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
-import { useAuthStore } from "@/entities/user";
 import { pluralize, useLastDefinedValue, useDebounce } from "@/shared/lib";
 import { useGetFavorites } from "@/entities/favorites";
 import { EmployeeNotFound } from "@/widgets/employee-not-found";
@@ -95,9 +94,6 @@ const EmployeesPage = () => {
     }
   }, [setSelectedUnit, setSearchQuery]);
 
-  const currentUser = useAuthStore((state) => state.user);
-  const currentEmployeeId = currentUser?.employee_id;
-
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
     paginationLimit,
     paginationOffset,
@@ -118,10 +114,7 @@ const EmployeesPage = () => {
     });
   const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
 
-  const employeeCountFromData = listData
-    ? Math.max(listData.count - (currentEmployeeId ? 1 : 0), 0)
-    : undefined;
-  const employeeTotalCount = useLastDefinedValue(employeeCountFromData, 0);
+  const employeeTotalCount = useLastDefinedValue(listData?.count, 0);
   const vacancyTotalCount = useLastDefinedValue(vacanciesData?.count, 0);
   const favoriteTotalCount = useLastDefinedValue(favoritesData?.count, 0);
   const paginationPage = Math.floor(paginationOffset / paginationLimit) + 1;

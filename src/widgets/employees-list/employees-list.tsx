@@ -18,7 +18,7 @@ import {
   useEmployeeModalStore,
 } from "@/features/employee";
 import { EmployeeProfileDialog } from "@/widgets/employee-profile-dialog";
-import { useIsAdmin, useAuthStore } from "@/entities/user";
+import { useIsAdmin } from "@/entities/user";
 import { useGetFavorites, useToggleFavorite } from "@/entities/favorites";
 import { EmployeeCardsSkeleton } from "@/widgets/employee-card";
 import type { NormalizedVacancy } from "@/entities/vacancy";
@@ -79,20 +79,12 @@ export const EmployeesList = ({
 
   const isAdmin = useIsAdmin();
 
-  const currentUser = useAuthStore((state) => state.user);
-  const currentEmployeeId = currentUser?.employee_id;
-
   const { data: favoritesData } = useGetFavorites();
   const { toggleFavorite, isPending } = useToggleFavorite();
 
   const favoriteIds = useMemo(() => {
     return favoritesData?.results.map((favorite) => favorite.id) ?? [];
   }, [favoritesData]);
-
-  const filteredEmployees = useMemo(() => {
-    if (!currentEmployeeId) return employees;
-    return employees.filter((emp) => Number(emp.id) !== currentEmployeeId);
-  }, [employees, currentEmployeeId]);
 
   const { selectedEmployeeFromStore, openEmployeeModal, closeEmployeeModal } =
     useEmployeeModalStore(
@@ -147,14 +139,14 @@ export const EmployeesList = ({
   );
   const favoriteEmployeesCount = favoritesCount ?? favoriteEmployees.length;
 
-  const archivedEmployees = filteredEmployees.filter(
+  const archivedEmployees = employees.filter(
     (emp) => emp.isArchived === true,
   );
   const archivedVacancies = vacancies.filter((vac) => vac.isArchived === true);
   const allArchived = [...archivedEmployees, ...archivedVacancies];
 
   const tabContentMap = {
-    employees: filteredEmployees.filter((emp) => !emp.isArchived),
+    employees: employees.filter((emp) => !emp.isArchived),
     vacancies: vacancies.filter((vac) => !vac.isArchived),
     favorites: favoriteItems,
     archive: allArchived,
