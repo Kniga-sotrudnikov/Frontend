@@ -66,7 +66,7 @@ export const EmployeePdfContent = forwardRef<
     const hasLeader = leader !== null && leader !== undefined;
 
     return (
-      <div ref={ref} className="bg-white px-4 pb-8 max-w-[552px]">
+      <div ref={ref} className="bg-white px-4 pb-8 max-w-[552px] wrap-anywhere">
         <div className="mt-0">{primaryInfo}</div>
 
         {hasRoles && (

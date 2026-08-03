@@ -125,7 +125,7 @@ export const EmployeeProfileDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
-      <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md p-4 gap-4">
+      <DialogContent className="max-w-none w-[90vw] sm:max-w-[552px] rounded-md p-4 gap-4 wrap-anywhere">
         <div className="fixed top-0 left-[-9999px] w-[552px] bg-white">
           {employee && (
             <EmployeePdfContent
@@ -335,7 +335,7 @@ export const EmployeeProfileDialog = ({
             </div>
 
             {employee.aboutMe && (
-              <div className="p-3 bg-gray-50 rounded-lg my-0">
+              <div className="p-3 bg-gray-50 rounded-lg my-0 min-w-0">
                 <h3 className="text-[12px] body-overline-semibold text-black">
                   Обо мне
                 </h3>
