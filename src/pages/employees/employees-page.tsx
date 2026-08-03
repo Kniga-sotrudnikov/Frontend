@@ -241,6 +241,7 @@ const EmployeesPage = () => {
           stats={<span>{statsText}</span>}
           search={
             <SearchInput
+              wrapperClassName="focus-within:ring-0"
               placeholder="Поиск по ФИО, должности, тегам..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
