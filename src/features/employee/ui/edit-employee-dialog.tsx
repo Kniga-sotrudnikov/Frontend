@@ -86,8 +86,7 @@ const buildPatchPayload = (
   if (current.leader !== initial.leader)
     patch.supervisor = Number(current.leader);
 
-  //TODO: От сервера пока не поступают личная почта, личный телефон
-  //Пока не передаются теги
+  //TODO: Пока не передаются теги
 
   return patch as PatchEmployeeRequest;
 };
