@@ -30,7 +30,6 @@ import {
 import { selectedUnitToFilter } from "./lib/selected-unit-to-filter";
 import { format } from "date-fns";
 import { useGetVacancies, useGetVacancyDetail } from "@/entities/vacancy";
-import { useAuthStore } from "@/entities/user";
 import { pluralize, useLastDefinedValue, useDebounce } from "@/shared/lib";
 import { useGetFavorites } from "@/entities/favorites";
 import { EmployeeNotFound } from "@/widgets/employee-not-found";
@@ -76,6 +75,11 @@ const EmployeesPage = () => {
     (state) => state.setSelectedUnit,
   );
 
+  /* Разделы «УК» и «СИС» пока не поддерживаются бэкендом: данных по ним нет,
+  поэтому вместо списка сотрудников показываем заглушку */
+  const isUnsupportedUnit =
+    !!selectedUnit?.head && selectedUnit.name !== "Направления";
+
   const debouncedSearch = useDebounce(searchQuery);
   const filter = useMemo(() => {
     const unitFilter = selectedUnitToFilter(selectedUnit);
@@ -94,9 +98,6 @@ const EmployeesPage = () => {
       setSearchQuery("");
     }
   }, [setSelectedUnit, setSearchQuery]);
-
-  const currentUser = useAuthStore((state) => state.user);
-  const currentEmployeeId = currentUser?.employee_id;
 
   const { data: listData, isLoading: isListLoading } = useEmployeesList(
     paginationLimit,
@@ -118,10 +119,8 @@ const EmployeesPage = () => {
     });
   const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
 
-  const employeeCountFromData = listData
-    ? Math.max(listData.count - (currentEmployeeId ? 1 : 0), 0)
-    : undefined;
-  const employeeTotalCount = useLastDefinedValue(employeeCountFromData, 0);
+  const lastEmployeeCount = useLastDefinedValue(listData?.count, 0);
+  const employeeTotalCount = isUnsupportedUnit ? 0 : lastEmployeeCount;
   const vacancyTotalCount = useLastDefinedValue(vacanciesData?.count, 0);
   const favoriteTotalCount = useLastDefinedValue(favoritesData?.count, 0);
   const paginationPage = Math.floor(paginationOffset / paginationLimit) + 1;
@@ -144,8 +143,9 @@ const EmployeesPage = () => {
   const activePagination = getActivePagination();
 
   const employees = useMemo(() => {
+    if (isUnsupportedUnit) return [];
     return listData?.results ?? [];
-  }, [listData?.results]);
+  }, [listData?.results, isUnsupportedUnit]);
   const vacancies = useMemo(() => {
     return vacanciesData?.results ?? [];
   }, [vacanciesData?.results]);
@@ -247,10 +247,12 @@ const EmployeesPage = () => {
           title="Книга сотрудников"
           stats={<span>{statsText}</span>}
           search={
-            <SearchInput 
-              placeholder="Поиск по ФИО, должности, тегам..." 
+            <SearchInput
+              wrapperClassName="focus-within:ring-0"
+              placeholder="Поиск по ФИО, должности, тегам..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onClear={() => setSearchQuery("")}
             />
           }
           birthday={<BirthdaysPopover />}
@@ -276,14 +278,29 @@ const EmployeesPage = () => {
                   favoritesCount={favoriteTotalCount}
                   onUpdateEmployee={handlePatchEmployee}
                   onVacancyClick={(vacancy) => setSelectedVacancyId(vacancy.id)}
-                  isLoading={isListLoading}
+                  isLoading={isUnsupportedUnit ? false : isListLoading}
                   isVacanciesLoading={isVacanciesLoading}
                   isFavoritesLoading={isFavoritesLoading}
                   skeletonCount={paginationLimit}
                   vacancySkeletonCount={paginationLimit}
                   favoriteSkeletonCount={paginationLimit}
                   employeesEmptyState={
-                    debouncedSearch.trim() ? (
+                    isUnsupportedUnit ? (
+                      <EmployeeNotFound
+                        title="Раздел пока недоступен"
+                        description={
+                          <>
+                            Раздел «{selectedUnit?.name}» ещё не поддерживается:
+                            данные по нему не приходят с сервера.
+                          </>
+                        }
+                        showClearSearch={false}
+                        onShowAll={() => {
+                          setSearchQuery("");
+                          setSelectedUnit(null);
+                        }}
+                      />
+                    ) : debouncedSearch.trim() ? (
                       <EmployeeNotFound
                         searchQuery={debouncedSearch.trim()}
                         onClearSearch={() => setSearchQuery("")}
