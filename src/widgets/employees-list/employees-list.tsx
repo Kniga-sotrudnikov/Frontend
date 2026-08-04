@@ -170,7 +170,7 @@ export const EmployeesList = ({
   };
 
   const emptyTextMap = {
-    employees: "Нет активных сотрудников",
+    employees: "Сотрудник не найден",
     vacancies: "Нет активных вакансий",
 
     favorites: {
