@@ -12,6 +12,9 @@ export type {
   PatchEmployeeResponse,
   EmployeeDetailPublicResponse,
   EmployeeShortResponse,
+  BulkEmployeeActionRequest,
+  BulkEmployeeActionResponse,
+  BulkEmployeeActionError,
 } from "./model/types";
 export type { BirthdayPerson } from "./model/types";
 export { shortEmployees } from "./model/mock";
@@ -33,12 +36,14 @@ export {
   deleteEmployee,
   getEmployeesListPublic,
   getEmployeeDetailPublic,
+  bulkEmployeeAction,
 } from "./api/employee-api";
 
 export {
   useCreateEmployee,
   usePatchEmployee,
   useDeleteEmployee,
+  useBulkEmployeeAction,
 } from "./model/employee-mutations";
 export {
   useEmployeesList,

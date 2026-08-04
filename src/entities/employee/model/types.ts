@@ -229,3 +229,30 @@ export interface BirthdayPerson {
   date: string;
   fullDate: Date;
 }
+
+export type BulkEmployeeAction =
+  | "archive"
+  | "add_tag"
+  | "remove_tag"
+  | "change_department";
+
+export interface BulkEmployeeActionRequest {
+  employee_ids: number[];
+  action: BulkEmployeeAction;
+  params?: {
+    tag?: number;
+    department_id?: number;
+  };
+}
+
+export interface BulkEmployeeActionError {
+  employee_id: number;
+  error: string;
+}
+
+export interface BulkEmployeeActionResponse {
+  total: number;
+  success: number;
+  failed: number;
+  details: BulkEmployeeActionError[];
+}

@@ -8,6 +8,8 @@ import type {
   EmployeeDetailPublicResponse,
   EmployeesListResponse,
   EmployeesListFilter,
+  BulkEmployeeActionRequest,
+  BulkEmployeeActionResponse,
 } from "@/entities/employee";
 
 type EmployeesListParams = {
@@ -114,5 +116,15 @@ export const updateEmployeePhoto = async (
     }
   );
 
+  return response.data;
+};
+
+export const bulkEmployeeAction = async (
+  data: BulkEmployeeActionRequest,
+): Promise<BulkEmployeeActionResponse> => {
+  const response = await apiClient.post<BulkEmployeeActionResponse>(
+    "/admin/employees/bulk-action/",
+    data,
+  );
   return response.data;
 };

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
-import { EmployeeSelectField, EmployeesMultiSelect } from "@/entities/employee";
+import { EmployeeSelectField, EmployeesMultiSelect, useBulkEmployeeAction } from "@/entities/employee";
 import {
   OrgSection,
   DirectionFormFields,
@@ -46,6 +46,7 @@ export function EditDirectionModal({
 
   const updateDepartment = useUpdateDepartment();
   const createDepartment = useCreateDepartment();
+  const bulkEmployeeAction = useBulkEmployeeAction();
   const addNotification = useNotificationStore((state) => state.add);
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -128,6 +129,29 @@ export function EditDirectionModal({
       {
         onSuccess: (response) => {
           const createdId = response?.data?.id;
+
+          if (createdId && values.employeeIds.length > 0) {
+            bulkEmployeeAction.mutate(
+              {
+                employee_ids: values.employeeIds,
+                action: "change_department",
+                params: { department_id: createdId },
+              },
+              {
+                onSuccess: (result) => {
+                  if (result.failed > 0) {
+                    addNotification({
+                      type: "error",
+                      iconType: "error",
+                      title: "Частичная ошибка",
+                      message: `Не удалось добавить ${result.failed} из ${result.total} сотрудников в отдел «${values.name}»`,
+                    });
+                  }
+                },
+              },
+            );
+          }
+
           setDepartments((prev) => [
             ...prev,
             {

@@ -10,7 +10,7 @@ import {
   type DepartmentFormData,
   type OrgItemType,
 } from "@/entities/org-structure";
-import { EmployeeSelectField, EmployeesMultiSelect } from "@/entities/employee";
+import { EmployeeSelectField, EmployeesMultiSelect, useBulkEmployeeAction } from "@/entities/employee";
 import type { CreateDirectionModalProps } from "../model/types";
 
 const TOTAL_STEPS = 2;
@@ -50,6 +50,7 @@ export function CreateDirectionModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createDepartment = useCreateDepartment();
+  const bulkEmployeeAction = useBulkEmployeeAction();
   const addNotification = useNotificationStore((state) => state.add);
 
   const isDirection = entityType === "direction";
@@ -113,12 +114,29 @@ export function CreateDirectionModal({
       const directionId = directionResponse.data.id;
 
       for (const department of departments) {
-        await createDepartment.mutateAsync({
+        const departmentResponse = await createDepartment.mutateAsync({
           name: department.name,
           type: "department",
           parent: directionId,
           head_id: department.headId,
         });
+
+        if (department.employeeIds.length > 0) {
+          const result = await bulkEmployeeAction.mutateAsync({
+            employee_ids: department.employeeIds,
+            action: "change_department",
+            params: { department_id: departmentResponse.data.id },
+          });
+
+          if (result.failed > 0) {
+            addNotification({
+              type: "error",
+              iconType: "error",
+              title: "Частичная ошибка",
+              message: `Не удалось добавить ${result.failed} из ${result.total} сотрудников в отдел «${department.name}»`,
+            });
+          }
+        }
       }
 
       handleOpenChange(false);
