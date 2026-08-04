@@ -180,7 +180,7 @@ export function CreateDirectionModal({
         },
       ]);
     }
-    setDraft(EMPTY_DRAFT);
+    setDraft({ ...EMPTY_DRAFT });
   };
 
   const handleDepartmentCancel = () => {

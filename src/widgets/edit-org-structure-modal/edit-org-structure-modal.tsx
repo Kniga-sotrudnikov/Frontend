@@ -126,6 +126,7 @@ export function EditOrgStructureModal({
     }
 
     setCreatingEntityType(null);
+    setOpen(false);
     addNotification({
       iconType: "success",
       title: "Создано",
