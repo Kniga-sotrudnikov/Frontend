@@ -12,6 +12,7 @@ export interface OrgItemType {
   id: string;
   name: string;
   headName: string;
+  headId?: number | null;
 }
 
 interface OrgItemProps {

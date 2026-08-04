@@ -12,20 +12,21 @@ export type {
   PatchEmployeeResponse,
   EmployeeDetailPublicResponse,
   EmployeeShortResponse,
+  BulkEmployeeActionRequest,
+  BulkEmployeeActionResponse,
+  BulkEmployeeActionError,
 } from "./model/types";
 export type { BirthdayPerson } from "./model/types";
 export { shortEmployees } from "./model/mock";
 export { SelectedEmployee } from "./ui/selected-employee";
 export { EmployeeSelect } from "./ui/employee-select";
+export { EmployeeSelectField } from "./ui/employee-select-field";
+export { EmployeesMultiSelect } from "./ui/employees-multi-select";
 export { mapTEmployeeToEmployeeData } from "./utils/map-temployee-to-employee-data";
 
-export {
-  usePublicBirthdays,
-} from "./model/birthday-queries";
+export { usePublicBirthdays } from "./model/birthday-queries";
 
-export {
-  getPublicBirthdaysApi,
-} from "./api/birthdays-api";
+export { getPublicBirthdaysApi } from "./api/birthdays-api";
 
 export {
   getEmployeesListAdmin,
@@ -35,14 +36,20 @@ export {
   deleteEmployee,
   getEmployeesListPublic,
   getEmployeeDetailPublic,
+  bulkEmployeeAction,
 } from "./api/employee-api";
 
 export {
   useCreateEmployee,
   usePatchEmployee,
   useDeleteEmployee,
+  useBulkEmployeeAction,
 } from "./model/employee-mutations";
-export { useEmployeesList, useEmployeeDetail } from "./model/employee-queries";
+export {
+  useEmployeesList,
+  useEmployeeDetail,
+  useEmployeesInfinite,
+} from "./model/employee-queries";
 export {
   mapEmployeeListResponse,
   mapEmployeeDetail,

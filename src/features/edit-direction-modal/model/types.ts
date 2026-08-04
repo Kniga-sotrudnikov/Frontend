@@ -1,5 +1,4 @@
 import type { OrgItemType } from "@/entities/org-structure";
-import type { TShortEmployee } from "@/entities/employee";
 
 export type Department = OrgItemType;
 
@@ -12,12 +11,11 @@ export interface DirectionFormValues {
 export interface EditDirectionModalProps {
   children?: React.ReactNode;
   entityType?: "direction" | "sis";
-  shortEmployees?: TShortEmployee[];
-  initialHeadId?: number | null;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   initialName?: string;
   initialHeadName?: string;
+  initialHeadId?: number | null;
   initialDescription?: string;
   departments?: Department[];
   onAddDepartment?: () => void;

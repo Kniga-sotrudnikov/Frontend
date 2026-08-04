@@ -5,7 +5,13 @@ import {
   patchEmployee,
 } from "@/entities/employee";
 import { useNotificationStore } from "@/shared/model/stores";
-import { updateEmployeePhoto, uploadEmployeePhoto } from "../api/employee-api";
+import { handleHttpError } from "@/shared/api/client";
+import {
+  bulkEmployeeAction,
+  updateEmployeePhoto,
+  uploadEmployeePhoto,
+} from "../api/employee-api";
+import type { AxiosError } from "axios";
 
 export const useCreateEmployee = () => {
   const queryClient = useQueryClient();
@@ -77,6 +83,25 @@ export const useDeleteEmployee = () => {
         title: "Сотрудник архивирован",
         message: "Карточка сотрудника успешно архивирована",
       });
+    },
+  });
+};
+
+export const useBulkEmployeeAction = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: bulkEmployeeAction,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["employees-list"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["org-structure"],
+      });
+    },
+    onError: (error: AxiosError) => {
+      handleHttpError(error);
     },
   });
 };
