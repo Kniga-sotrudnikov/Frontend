@@ -88,6 +88,7 @@ export function EditOrgStructureModal({
           id: String(item.id || ""),
           name: item.name,
           headName: item.headName || "",
+          headId: item.headId ?? null,
         }),
       );
     };

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
-import { EmployeeSelectField, EmployeesMultiSelect, useBulkEmployeeAction } from "@/entities/employee";
+import { EmployeeSelectField, EmployeesMultiSelect, useBulkEmployeeAction, getEmployeesListPublic } from "@/entities/employee";
 import {
   OrgSection,
   DirectionFormFields,
@@ -43,6 +43,16 @@ export function EditDirectionModal({
   const [departments, setDepartments] =
     useState<Department[]>(initialDepartments);
   const [isDepartmentFormOpen, setIsDepartmentFormOpen] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState<Department | null>(
+    null,
+  );
+  const [editingDraft, setEditingDraft] = useState<Omit<
+    DepartmentFormData,
+    "id"
+  > | null>(null);
+  const [editingInitialEmployeeIds, setEditingInitialEmployeeIds] = useState<
+    number[]
+  >([]);
 
   const updateDepartment = useUpdateDepartment();
   const createDepartment = useCreateDepartment();
@@ -57,6 +67,9 @@ export function EditDirectionModal({
       setDescription(initialDescription);
       setDepartments(initialDepartments);
       setIsDepartmentFormOpen(false);
+      setEditingDepartment(null);
+      setEditingDraft(null);
+      setEditingInitialEmployeeIds([]);
     }
     setOpen(isOpen);
   };
@@ -104,6 +117,9 @@ export function EditDirectionModal({
     if (onAddDepartment) {
       onAddDepartment();
     } else {
+      setEditingDepartment(null);
+      setEditingDraft(null);
+      setEditingInitialEmployeeIds([]);
       setIsDepartmentFormOpen(true);
     }
   };
@@ -169,13 +185,100 @@ export function EditDirectionModal({
   const handleEditDepartment = (dept: Department) => {
     if (onEditDepartment) {
       onEditDepartment(dept);
-    } else {
-      addNotification({
-        iconType: "success",
-        title: "В разработке",
-        message: "Функция будет доступна в ближайшее время",
-      });
+      return;
     }
+
+    setIsDepartmentFormOpen(false);
+
+    getEmployeesListPublic({ department_id: Number(dept.id), limit: 1000 })
+      .then((response) => {
+        const employeeIds = response.results.map((employee) => employee.id);
+        setEditingInitialEmployeeIds(employeeIds);
+        setEditingDepartment(dept);
+        setEditingDraft({
+          name: dept.name,
+          headId: dept.headId ?? null,
+          headName: dept.headName,
+          employeeIds,
+        });
+      })
+      .catch(() => {
+        addNotification({
+          type: "error",
+          iconType: "error",
+          title: "Ошибка",
+          message: "Не удалось загрузить сотрудников отдела",
+        });
+      });
+  };
+
+  const handleEditDepartmentSave = (
+    values: Omit<DepartmentFormData, "id">,
+  ) => {
+    if (!editingDepartment) return;
+
+    const editingDepartmentId = Number(editingDepartment.id);
+
+    updateDepartment.mutate(
+      {
+        id: editingDepartmentId,
+        data: {
+          name: values.name,
+          head_id: values.headId,
+        },
+      },
+      {
+        onSuccess: () => {
+          const addedEmployeeIds = values.employeeIds.filter(
+            (id) => !editingInitialEmployeeIds.includes(id),
+          );
+
+          if (addedEmployeeIds.length > 0) {
+            bulkEmployeeAction.mutate(
+              {
+                employee_ids: addedEmployeeIds,
+                action: "change_department",
+                params: { department_id: editingDepartmentId },
+              },
+              {
+                onSuccess: (result) => {
+                  if (result.failed > 0) {
+                    addNotification({
+                      type: "error",
+                      iconType: "error",
+                      title: "Частичная ошибка",
+                      message: `Не удалось добавить ${result.failed} из ${result.total} сотрудников в отдел «${values.name}»`,
+                    });
+                  }
+                },
+              },
+            );
+          }
+
+          setDepartments((prev) =>
+            prev.map((department) =>
+              department.id === editingDepartment.id
+                ? {
+                    ...department,
+                    name: values.name,
+                    headName: values.headName,
+                    headId: values.headId,
+                  }
+                : department,
+            ),
+          );
+          setEditingDepartment(null);
+          setEditingDraft(null);
+          setEditingInitialEmployeeIds([]);
+        },
+      },
+    );
+  };
+
+  const handleEditDepartmentCancel = () => {
+    setEditingDepartment(null);
+    setEditingDraft(null);
+    setEditingInitialEmployeeIds([]);
   };
 
   const handleDeleteDepartment = (dept: Department) => {
@@ -250,6 +353,29 @@ export function EditDirectionModal({
                 headSlot={({ value, onChange }) => (
                   <EmployeeSelectField
                     value={value}
+                    onChange={onChange}
+                    placeholder="Выберите руководителя"
+                  />
+                )}
+                employeesSlot={({ value, onChange }) => (
+                  <EmployeesMultiSelect
+                    value={value}
+                    onChange={onChange}
+                    placeholder="Выберите сотрудников"
+                  />
+                )}
+              />
+            )}
+            {editingDepartment && editingDraft && (
+              <DepartmentForm
+                initialValues={editingDraft}
+                isEditing
+                onSave={handleEditDepartmentSave}
+                onCancel={handleEditDepartmentCancel}
+                headSlot={({ value, onChange }) => (
+                  <EmployeeSelectField
+                    value={value}
+                    initialName={editingDraft.headName}
                     onChange={onChange}
                     placeholder="Выберите руководителя"
                   />
