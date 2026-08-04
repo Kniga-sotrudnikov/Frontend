@@ -75,6 +75,11 @@ const EmployeesPage = () => {
     (state) => state.setSelectedUnit,
   );
 
+  /* Разделы «УК» и «СИС» пока не поддерживаются бэкендом: данных по ним нет,
+  поэтому вместо списка сотрудников показываем заглушку */
+  const isUnsupportedUnit =
+    !!selectedUnit?.head && selectedUnit.name !== "Направления";
+
   const debouncedSearch = useDebounce(searchQuery);
   const filter = useMemo(() => {
     const unitFilter = selectedUnitToFilter(selectedUnit);
@@ -114,7 +119,8 @@ const EmployeesPage = () => {
     });
   const { data: vacancyDetail } = useGetVacancyDetail(selectedVacancyId ?? 0);
 
-  const employeeTotalCount = useLastDefinedValue(listData?.count, 0);
+  const lastEmployeeCount = useLastDefinedValue(listData?.count, 0);
+  const employeeTotalCount = isUnsupportedUnit ? 0 : lastEmployeeCount;
   const vacancyTotalCount = useLastDefinedValue(vacanciesData?.count, 0);
   const favoriteTotalCount = useLastDefinedValue(favoritesData?.count, 0);
   const paginationPage = Math.floor(paginationOffset / paginationLimit) + 1;
@@ -137,8 +143,9 @@ const EmployeesPage = () => {
   const activePagination = getActivePagination();
 
   const employees = useMemo(() => {
+    if (isUnsupportedUnit) return [];
     return listData?.results ?? [];
-  }, [listData?.results]);
+  }, [listData?.results, isUnsupportedUnit]);
   const vacancies = useMemo(() => {
     return vacanciesData?.results ?? [];
   }, [vacanciesData?.results]);
@@ -271,14 +278,29 @@ const EmployeesPage = () => {
                   favoritesCount={favoriteTotalCount}
                   onUpdateEmployee={handlePatchEmployee}
                   onVacancyClick={(vacancy) => setSelectedVacancyId(vacancy.id)}
-                  isLoading={isListLoading}
+                  isLoading={isUnsupportedUnit ? false : isListLoading}
                   isVacanciesLoading={isVacanciesLoading}
                   isFavoritesLoading={isFavoritesLoading}
                   skeletonCount={paginationLimit}
                   vacancySkeletonCount={paginationLimit}
                   favoriteSkeletonCount={paginationLimit}
                   employeesEmptyState={
-                    debouncedSearch.trim() ? (
+                    isUnsupportedUnit ? (
+                      <EmployeeNotFound
+                        title="Раздел пока недоступен"
+                        description={
+                          <>
+                            Раздел «{selectedUnit?.name}» ещё не поддерживается:
+                            данные по нему не приходят с сервера.
+                          </>
+                        }
+                        showClearSearch={false}
+                        onShowAll={() => {
+                          setSearchQuery("");
+                          setSelectedUnit(null);
+                        }}
+                      />
+                    ) : debouncedSearch.trim() ? (
                       <EmployeeNotFound
                         searchQuery={debouncedSearch.trim()}
                         onClearSearch={() => setSearchQuery("")}

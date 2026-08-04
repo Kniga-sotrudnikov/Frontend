@@ -1,15 +1,22 @@
+import type { ReactNode } from "react";
 import { Button } from "@ui/button";
 import NotFoundImage from "@/shared/assets/images/search-employee-not-found.svg";
 import { useNotificationStore } from "@/shared/model/stores";
 
 interface EmployeeNotFoundProps {
   searchQuery?: string;
+  title?: string;
+  description?: ReactNode;
+  showClearSearch?: boolean;
   onClearSearch?: () => void;
   onShowAll?: () => void;
 }
 
 export const EmployeeNotFound = ({
   searchQuery = "Иванов Иван Иванович",
+  title = "Сотрудник не найден",
+  description,
+  showClearSearch = true,
   onClearSearch,
   onShowAll,
 }: EmployeeNotFoundProps) => {
@@ -26,27 +33,31 @@ export const EmployeeNotFound = ({
   return (
     <div className="flex flex-col items-center py-12 px-4">
       {/* Заголовок */}
-      <h3 className="h3 mb-2 text-center text-purple-400">
-        Сотрудник не найден
-      </h3>
+      <h3 className="h3 mb-2 text-center text-purple-400">{title}</h3>
 
       {/* Подзаголовок */}
       <p className="body-s mb-3 text-center text-gray-600">
-        По запросу "{searchQuery}" ничего не нашли.
-        <br />
-        Попробуйте изменить фильтры или запрос.
+        {description ?? (
+          <>
+            По запросу "{searchQuery}" ничего не нашли.
+            <br />
+            Попробуйте изменить фильтры или запрос.
+          </>
+        )}
       </p>
 
       {/* Кнопки */}
       <div className="flex flex-row items-center justify-center gap-[25px] mt-1">
-        <Button
-          variant="default"
-          size="default"
-          onClick={onClearSearch || handleNotification}
-          className="h-7 w-[150px] rounded-[8px] bg-purple-500 px-4 text-xs text-white hover:bg-purple-400"
-        >
-          Очистить поиск
-        </Button>
+        {showClearSearch && (
+          <Button
+            variant="default"
+            size="default"
+            onClick={onClearSearch || handleNotification}
+            className="h-7 w-[150px] rounded-[8px] bg-purple-500 px-4 text-xs text-white hover:bg-purple-400"
+          >
+            Очистить поиск
+          </Button>
+        )}
         <Button
           variant="outline"
           size="default"
