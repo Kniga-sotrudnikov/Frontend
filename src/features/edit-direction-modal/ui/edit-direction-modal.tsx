@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogTrigger, DialogClose } from "@ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { useNotificationStore } from "@/shared/model/stores";
+import { usePreventDialogCloseOnPassthrough } from "@/shared/lib/hooks/use-prevent-dialog-close-on-passthrough";
 import { EmployeeSelectField, EmployeesMultiSelect, useBulkEmployeeAction, getEmployeesListPublic } from "@/entities/employee";
 import {
   OrgSection,
@@ -58,6 +59,7 @@ export function EditDirectionModal({
   const createDepartment = useCreateDepartment();
   const bulkEmployeeAction = useBulkEmployeeAction();
   const addNotification = useNotificationStore((state) => state.add);
+  const preventPassthroughClose = usePreventDialogCloseOnPassthrough();
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
@@ -298,7 +300,10 @@ export function EditDirectionModal({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       {children && <DialogTrigger asChild>{children}</DialogTrigger>}
-      <DialogContent className="max-w-188! rounded-8 gap-6 px-7 py-8 flex flex-col h-auto">
+      <DialogContent
+        className="max-w-188! rounded-8 gap-6 px-7 py-8 flex flex-col h-auto"
+        onInteractOutside={preventPassthroughClose}
+      >
         <div className="flex items-center justify-between shrink-0">
           <h2 className="body-m-semibold text-black">
             {entityType === "direction"
