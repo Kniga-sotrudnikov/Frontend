@@ -10,6 +10,7 @@ import {
   bulkEmployeeAction,
   updateEmployeePhoto,
   uploadEmployeePhoto,
+  deleteEmployeePhoto,
 } from "../api/employee-api";
 import type { AxiosError } from "axios";
 
@@ -147,6 +148,28 @@ export const usePatchEmployeePhoto = () => {
         iconType: "success",
         title: "Фотография обновлена",
         message: "Фотография сотрудника успешно обновлена",
+      });
+    },
+  });
+};
+
+export const useDeleteEmployeePhoto = () => {
+  const queryClient = useQueryClient();
+  const addNotification = useNotificationStore((state) => state.add);
+  return useMutation({
+    mutationFn: (id: number) => deleteEmployeePhoto(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({
+        queryKey: ["employee-detail", id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["employees-list"],
+      });
+      addNotification({
+        type: "success",
+        iconType: "success",
+        title: "Фотография удалена",
+        message: "Фотография сотрудника успешно удалена",
       });
     },
   });

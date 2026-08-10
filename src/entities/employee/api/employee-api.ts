@@ -122,6 +122,10 @@ export const updateEmployeePhoto = async (
   return response.data;
 };
 
+export const deleteEmployeePhoto = async (id: number) => {
+  await apiClient.delete(`/admin/employees/${id}/photo/`);
+};
+
 export const bulkEmployeeAction = async (
   data: BulkEmployeeActionRequest,
 ): Promise<BulkEmployeeActionResponse> => {
