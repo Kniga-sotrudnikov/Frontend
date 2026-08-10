@@ -47,8 +47,11 @@ export const FilterCities = ({
     }
   };
 
+  // Бэкенд поддерживает фильтрацию только по одному городу,
+  // поэтому выбор одиночный: новая отметка заменяет предыдущую.
   const handleCheckboxChange = (nextValue: string[]) => {
-    setDraftValue(nextValue);
+    const added = nextValue.find((item) => !draftValue.includes(item));
+    setDraftValue(added ? [added] : nextValue);
   };
 
   const handleRemoveFilter = (filter: string) => {

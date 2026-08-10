@@ -162,6 +162,7 @@ export interface EmployeesListFilter {
   direction?: boolean;
   search?: string;
   employment_status?: TEmployeeStatus[];
+  city?: string;
 }
 
 export interface SupervisorDetail {
