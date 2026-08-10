@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { PageHeader } from "@/widgets/page-header";
-import { SearchInput } from "@/shared/ui/input";
+import { SearchSuggestInput } from "@/features/employee-search-suggest";
 import { HeaderUserCard } from "@/widgets/header-user-card";
 import { BirthdaysPopover } from "@/widgets/birthdays-popover";
 import { Navbar } from "@/widgets/navbar";
@@ -267,12 +267,13 @@ const EmployeesPage = () => {
           title="Книга сотрудников"
           stats={<span>{statsText}</span>}
           search={
-            <SearchInput
+            <SearchSuggestInput
               wrapperClassName="focus-within:ring-0"
               placeholder="Поиск по ФИО, должности, тегам..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onClear={() => setSearchQuery("")}
+              onSelect={(employee) => setSearchQuery(employee.name)}
             />
           }
           birthday={<BirthdaysPopover />}
