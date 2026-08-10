@@ -47,6 +47,15 @@ export const birthdaySchema = z
   .nullable()
   .refine((val) => val !== null, {
     message: "Обязательное поле",
+  })
+  .refine((val) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const birthday = new Date(val);
+    birthday.setHours(0, 0, 0, 0);
+    return birthday < today;
+  }, {
+    message: "Дата не может быть сегодня или в будущем",
   });
 
 export const urlSchema = z.string().refine(

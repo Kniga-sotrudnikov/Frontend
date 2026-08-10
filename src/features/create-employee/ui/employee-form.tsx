@@ -26,6 +26,8 @@ const statusOptions = [
 
 const minDate = new Date(1950, 0, 1);
 const maxDate = new Date(new Date().getFullYear() + 10, 11, 31);
+const yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
 
 interface EmployeeFormProps {
   values: CreateEmployeeFormValues;
@@ -224,6 +226,7 @@ const {
                   captionLayout="dropdown"
                   startMonth={minDate}
                   endMonth={maxDate}
+                  disabled={{ after: yesterday }}
                 />
               </PopoverContent>
             </Popover>
