@@ -1,17 +1,17 @@
 import { create } from "zustand";
 import type { TEmployeeStatus } from "@/entities/employee";
-import type { TExpertiseFilterValue } from "@/features/employee/model/types";
 
 interface EmployeesUIState {
   viewType: "grid" | "list";
   statusFilter: TEmployeeStatus[];
   citiesFilter: string[];
-  expertiseFilter: TExpertiseFilterValue;
+  /** Выбранные в фильтре «С чем обратиться» ID тегов (строками) */
+  expertiseFilter: string[];
   searchQuery: string;
   setViewType: (viewType: "grid" | "list") => void;
   setStatusFilter: (statuses: TEmployeeStatus[]) => void;
   setCitiesFilter: (cities: string[]) => void;
-  setExpertiseFilter: (value: TExpertiseFilterValue) => void;
+  setExpertiseFilter: (value: string[]) => void;
   setSearchQuery: (query: string) => void;
 }
 
@@ -19,7 +19,7 @@ export const useEmployeesPageStore = create<EmployeesUIState>((set) => ({
   viewType: "grid",
   statusFilter: [],
   citiesFilter: [],
-  expertiseFilter: {},
+  expertiseFilter: [],
   searchQuery: "",
   setViewType: (viewType) => set({ viewType }),
   setStatusFilter: (statusFilter) => set({ statusFilter }),

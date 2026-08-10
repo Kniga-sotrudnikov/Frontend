@@ -9,8 +9,6 @@ export type TExpertiseFilterGroup = {
   options: TExpertiseFilterOption[];
 };
 
-export type TExpertiseFilterValue = Record<string, string[]>;
-
 export type TCitiesFilterOption = {
   value: string;
   label: string;
