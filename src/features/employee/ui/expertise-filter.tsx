@@ -1,26 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@ui/button";
 import { FilterTrigger } from "@/features/employee/ui/filter-trigger";
 import { Popover, PopoverContent, PopoverTrigger } from "@ui/popover";
 import { CheckboxSelect } from "@ui/checkbox-select";
-import { DropdownMenuSeparator } from "@ui/dropdown-menu";
 import { SearchInput } from "@ui/input";
 import { FilterRemoveBadge } from "@/features/employee/ui/filter-remove-badge";
 import { TagsManager } from "./tags-manager";
 import { useTags } from "@/entities/tags";
-import type {
-  TExpertiseFilterGroup,
-  TExpertiseFilterValue,
-} from "@/features/employee/model/types";
+import type { TExpertiseFilterGroup } from "@/features/employee/model/types";
 import FilterIcon from "@icons/filter.svg?react";
 import EditIcon from "@icons/edit.svg?react";
 
+const EXPERTISE_GROUP_TITLE = "Навыки и компетенции";
+
 type TExpertiseFilterProps = {
-  groups: TExpertiseFilterGroup[];
-  value: TExpertiseFilterValue;
-  onApply: (value: TExpertiseFilterValue) => void;
+  /** Выбранные ID тегов (строками) */
+  value: string[];
+  onApply: (value: string[]) => void;
   isAdmin?: boolean;
-  onTagsUpdate?: (updatedGroups: TExpertiseFilterGroup[]) => void;
   getTagUsageCount?: (tagId: number) => number;
   getEmployeesByTag?: (
     tagId: number,
@@ -34,78 +31,40 @@ type TExpertiseFilterProps = {
 };
 
 export const ExpertiseFilter = ({
-  groups,
   value,
   onApply,
   isAdmin = true,
-  onTagsUpdate,
   getTagUsageCount,
   getEmployeesByTag,
   getAllEmployees,
 }: TExpertiseFilterProps) => {
   const [open, setOpen] = useState(false);
-  const [draftValue, setDraftValue] = useState<TExpertiseFilterValue>(value);
+  const [draftValue, setDraftValue] = useState<string[]>(value);
   const [searchValue, setSearchValue] = useState("");
-  const [currentGroups, setCurrentGroups] = useState<TExpertiseFilterGroup[]>(
-    groups,
-  );
 
   const { data: tagsData } = useTags({ limit: 100 });
 
-  useEffect(() => {
-    if (tagsData?.results && groups.length > 0) {
-      const updatedGroups = groups.map((group) => ({
-        ...group,
-        options: tagsData.results.map((tag) => ({
-          value: String(tag.id),
-          label: tag.name,
-        })),
-      }));
-      setCurrentGroups(updatedGroups);
-      onTagsUpdate?.(updatedGroups);
-    }
-  }, [tagsData, groups, onTagsUpdate]);
+  const options = (tagsData?.results ?? []).map((tag) => ({
+    value: String(tag.id),
+    label: tag.name,
+  }));
 
-  const displayGroups = currentGroups.length > 0 ? currentGroups : groups;
+  // TagsManager работает со структурой групп, поэтому отдаём ему
+  // единственную группу со всеми тегами
+  const managerGroups: TExpertiseFilterGroup[] = [
+    { key: "expertise", title: EXPERTISE_GROUP_TITLE, options },
+  ];
 
   const normalizedSearchValue = searchValue.trim().toLowerCase();
 
-  const filteredGroups = normalizedSearchValue
-    ? displayGroups
-        .map((group) => ({
-          ...group,
-          options: group.options.filter((option) =>
-            option.label.toLowerCase().includes(normalizedSearchValue),
-          ),
-        }))
-        .filter((group) => group.options.length > 0)
-    : displayGroups;
+  const filteredOptions = normalizedSearchValue
+    ? options.filter((option) =>
+        option.label.toLowerCase().includes(normalizedSearchValue),
+      )
+    : options;
 
-  const activeFilters = Object.entries(draftValue).flatMap(
-    ([groupKey, selectedValues]) => {
-      const group = displayGroups.find((group) => group.key === groupKey);
-      if (!group) return [];
-
-      return selectedValues.flatMap((selectedValue) => {
-        const option = group.options.find(
-          (option) => option.value === selectedValue,
-        );
-        if (!option) return [];
-
-        return [
-          {
-            groupKey,
-            value: option.value,
-            label: option.label,
-          },
-        ];
-      });
-    },
-  );
-
-  const selectedCount = Object.values(draftValue).reduce(
-    (count, groupValue) => count + groupValue.length,
-    0,
+  const activeFilters = options.filter((option) =>
+    draftValue.includes(option.value),
   );
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -116,25 +75,14 @@ export const ExpertiseFilter = ({
     }
   };
 
-  const handleRemoveFilter = (groupKey: string, optionValue: string) => {
-    setDraftValue((prevState) => {
-      const nextValue = { ...prevState };
-      const nextGroupValue = (nextValue[groupKey] ?? []).filter(
-        (value) => value !== optionValue,
-      );
-
-      if (nextGroupValue.length > 0) {
-        nextValue[groupKey] = nextGroupValue;
-      } else {
-        delete nextValue[groupKey];
-      }
-
-      return nextValue;
-    });
+  const handleRemoveFilter = (optionValue: string) => {
+    setDraftValue((prevState) =>
+      prevState.filter((item) => item !== optionValue),
+    );
   };
 
   const handleResetFilters = () => {
-    setDraftValue({});
+    setDraftValue([]);
   };
 
   const handleApplyFilters = () => {
@@ -143,29 +91,12 @@ export const ExpertiseFilter = ({
     setOpen(false);
   };
 
-  const handleGroupChange = (groupKey: string, groupValue: string[]) => {
-    setDraftValue((prevState) => {
-      const nextValue = { ...prevState };
-      if (groupValue.length > 0) {
-        nextValue[groupKey] = groupValue;
-      } else {
-        delete nextValue[groupKey];
-      }
-      return nextValue;
-    });
-  };
-
-  const handleTagsUpdate = (updatedGroups: TExpertiseFilterGroup[]) => {
-    setCurrentGroups(updatedGroups);
-    onTagsUpdate?.(updatedGroups);
-  };
-
   return (
     <div>
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <FilterTrigger
-            selectedCount={selectedCount}
+            selectedCount={draftValue.length}
             label="С чем обратиться"
             open={open}
           />
@@ -182,8 +113,8 @@ export const ExpertiseFilter = ({
                 <span className="body-m-semibold">Теги</span>
               </div>
               <TagsManager
-                groups={currentGroups}
-                onSave={handleTagsUpdate}
+                groups={managerGroups}
+                onSave={() => {}}
                 trigger={
                   <Button variant="ghost" size="icon-sm" className="h-6 w-6">
                     <EditIcon className="size-4" />
@@ -192,7 +123,6 @@ export const ExpertiseFilter = ({
                 getTagUsageCount={getTagUsageCount}
                 getEmployeesByTag={getEmployeesByTag}
                 getAllEmployees={getAllEmployees}
-                onTagsUpdate={handleTagsUpdate}
               />
             </div>
           )}
@@ -218,42 +148,33 @@ export const ExpertiseFilter = ({
 
           <ul className="flex flex-wrap gap-1 mb-2.5">
             {activeFilters.map((filter) => (
-              <li key={`${filter.groupKey}-${filter.value}`}>
+              <li key={filter.value}>
                 <FilterRemoveBadge
                   label={filter.label}
-                  onRemove={() =>
-                    handleRemoveFilter(filter.groupKey, filter.value)
-                  }
+                  onRemove={() => handleRemoveFilter(filter.value)}
                 />
               </li>
             ))}
           </ul>
 
-          {filteredGroups.length > 0 ? (
-            <ul className="overflow-y-auto overflow-x-hidden">
-              {filteredGroups.map((item) => (
-                <li key={item.key}>
-                  <CheckboxSelect
-                    title={item.title}
-                    options={item.options}
-                    value={draftValue[item.key] ?? []}
-                    onValueChange={(nextValue) =>
-                      handleGroupChange(item.key, nextValue)
-                    }
-                    visibleCount={
-                      normalizedSearchValue ? item.options.length : undefined
-                    }
-                    forceOpen={Boolean(normalizedSearchValue)}
-                  />
-                  <DropdownMenuSeparator className="my-4" />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div className="body-m text-(--color-gray-500) mb-5">
-              Ничего не найдено
-            </div>
-          )}
+          <div className="overflow-y-auto overflow-x-hidden">
+            {filteredOptions.length > 0 ? (
+              <CheckboxSelect
+                title={EXPERTISE_GROUP_TITLE}
+                options={filteredOptions}
+                value={draftValue}
+                onValueChange={setDraftValue}
+                visibleCount={
+                  normalizedSearchValue ? filteredOptions.length : undefined
+                }
+                forceOpen={Boolean(normalizedSearchValue)}
+              />
+            ) : (
+              <div className="body-m text-(--color-gray-500) mb-5">
+                Ничего не найдено
+              </div>
+            )}
+          </div>
 
           <div className="flex self-end gap-2">
             <Button

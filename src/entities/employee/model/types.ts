@@ -163,6 +163,8 @@ export interface EmployeesListFilter {
   search?: string;
   employment_status?: TEmployeeStatus[];
   city?: string;
+  /** ID тегов, сериализуются как ?tag=1&tag=2 */
+  tag?: number[];
 }
 
 export interface SupervisorDetail {

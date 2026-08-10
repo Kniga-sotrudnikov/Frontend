@@ -4,7 +4,6 @@ import {
   StatusFilter,
   FilterCities,
   ExpertiseFilter,
-  expertiseFilterGroups,
   citiesFilterOptions,
   useEmployeesPageStore,
 } from "@/features/employee";
@@ -111,7 +110,6 @@ export const EmployeesFilterBar = () => {
         onApply={setCitiesFilter}
       />
       <ExpertiseFilter
-        groups={expertiseFilterGroups}
         value={expertiseFilter}
         onApply={setExpertiseFilter}
         isAdmin={isAdmin}

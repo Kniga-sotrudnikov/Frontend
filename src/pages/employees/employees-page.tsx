@@ -50,14 +50,21 @@ const EmployeesPage = () => {
   const openEmployeeModal = useEmployeeModalStore(
     (state) => state.openEmployeeModal,
   );
-  const { viewType, searchQuery, setSearchQuery, statusFilter, citiesFilter } =
-    useEmployeesPageStore(
+  const {
+    viewType,
+    searchQuery,
+    setSearchQuery,
+    statusFilter,
+    citiesFilter,
+    expertiseFilter,
+  } = useEmployeesPageStore(
       useShallow((state) => ({
         viewType: state.viewType,
         searchQuery: state.searchQuery,
         setSearchQuery: state.setSearchQuery,
         statusFilter: state.statusFilter,
         citiesFilter: state.citiesFilter,
+        expertiseFilter: state.expertiseFilter,
       }))
     );
   
@@ -96,8 +103,9 @@ const EmployeesPage = () => {
       ...(search ? { search } : {}),
       ...(statusFilter.length ? { employment_status: statusFilter } : {}),
       ...(city ? { city } : {}),
+      ...(expertiseFilter.length ? { tag: expertiseFilter.map(Number) } : {}),
     };
-  }, [selectedUnit, debouncedSearch, statusFilter, citiesFilter]);
+  }, [selectedUnit, debouncedSearch, statusFilter, citiesFilter, expertiseFilter]);
 
   // при смене выбранного узла возвращаемся на первую страницу
   useEffect(() => {
