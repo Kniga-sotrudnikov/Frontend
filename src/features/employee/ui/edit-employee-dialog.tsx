@@ -21,7 +21,10 @@ import {
 } from "@/features/create-employee/model/validation";
 import { EmployeeForm } from "@/features/create-employee/ui/employee-form";
 import { format } from "date-fns";
-import { usePatchEmployeePhoto } from "@/entities/employee/model/employee-mutations";
+import {
+  usePatchEmployeePhoto,
+  useDeleteEmployeePhoto,
+} from "@/entities/employee/model/employee-mutations";
 import { mapEmployeeToForm } from "../model/mapper";
 
 interface EditEmployeeDialogProps {
@@ -103,6 +106,7 @@ export const EditEmployeeDialog = ({
   const { data, isLoading, error } = useEmployeeDetail(Number(employeeId));
   const { mutateAsync } = usePatchEmployee();
   const { mutateAsync: patchPhoto } = usePatchEmployeePhoto();
+  const { mutateAsync: deletePhoto } = useDeleteEmployeePhoto();
 
   const [values, setValues] = useState<CreateEmployeeFormValues | null>(null);
   const [initialValues, setInitialValues] =
@@ -205,6 +209,9 @@ export const EditEmployeeDialog = ({
             id: Number(employeeId),
             file: values.photo,
           });
+        } else if (initialValues.photo && !values.photo) {
+          // 3️⃣ DELETE фото (если удалили существующее)
+          await deletePhoto(Number(employeeId));
         }
 
         onOpenChange(false);
@@ -224,6 +231,7 @@ export const EditEmployeeDialog = ({
       validate,
       mutateAsync,
       patchPhoto,
+      deletePhoto,
       employeeId,
       onOpenChange,
     ],
