@@ -161,6 +161,7 @@ export interface EmployeesListFilter {
   department_id?: number;
   direction?: boolean;
   search?: string;
+  employment_status?: TEmployeeStatus[];
 }
 
 export interface SupervisorDetail {
