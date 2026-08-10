@@ -49,12 +49,13 @@ const EmployeesPage = () => {
   const openEmployeeModal = useEmployeeModalStore(
     (state) => state.openEmployeeModal,
   );
-  const { viewType, searchQuery, setSearchQuery } =
+  const { viewType, searchQuery, setSearchQuery, statusFilter } =
     useEmployeesPageStore(
       useShallow((state) => ({
         viewType: state.viewType,
         searchQuery: state.searchQuery,
         setSearchQuery: state.setSearchQuery,
+        statusFilter: state.statusFilter,
       }))
     );
   
@@ -84,8 +85,12 @@ const EmployeesPage = () => {
   const filter = useMemo(() => {
     const unitFilter = selectedUnitToFilter(selectedUnit);
     const search = debouncedSearch.trim();
-    return search ? { ...unitFilter, search } : unitFilter;
-  }, [selectedUnit, debouncedSearch]);
+    return {
+      ...unitFilter,
+      ...(search ? { search } : {}),
+      ...(statusFilter.length ? { employment_status: statusFilter } : {}),
+    };
+  }, [selectedUnit, debouncedSearch, statusFilter]);
 
   // при смене выбранного узла возвращаемся на первую страницу
   useEffect(() => {

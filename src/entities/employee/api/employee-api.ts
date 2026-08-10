@@ -22,7 +22,9 @@ export const getEmployeesListAdmin = async (
 ): Promise<EmployeesListResponse> => {
   const response = await apiClient.get<EmployeesListResponse>(
     "/admin/employees/",
-    { params },
+    // indexes: null — массивы сериализуются как повторяющиеся параметры
+    // (employment_status=working&employment_status=vacation), так их читает Django getlist()
+    { params, paramsSerializer: { indexes: null } },
   );
   return response.data;
 };
@@ -32,6 +34,7 @@ export const getEmployeesListPublic = async (
 ): Promise<EmployeesListResponse> => {
   const response = await apiClient.get<EmployeesListResponse>("/employees/", {
     params,
+    paramsSerializer: { indexes: null },
   });
   return response.data;
 };
