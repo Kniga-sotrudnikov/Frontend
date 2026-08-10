@@ -21,6 +21,7 @@ import {
 import {
   useEmployeeModalStore,
   useEmployeesPageStore,
+  citiesFilterOptions,
 } from "@/features/employee";
 import { AppPagination } from "@ui/pagination";
 import {
@@ -49,13 +50,14 @@ const EmployeesPage = () => {
   const openEmployeeModal = useEmployeeModalStore(
     (state) => state.openEmployeeModal,
   );
-  const { viewType, searchQuery, setSearchQuery, statusFilter } =
+  const { viewType, searchQuery, setSearchQuery, statusFilter, citiesFilter } =
     useEmployeesPageStore(
       useShallow((state) => ({
         viewType: state.viewType,
         searchQuery: state.searchQuery,
         setSearchQuery: state.setSearchQuery,
         statusFilter: state.statusFilter,
+        citiesFilter: state.citiesFilter,
       }))
     );
   
@@ -85,12 +87,17 @@ const EmployeesPage = () => {
   const filter = useMemo(() => {
     const unitFilter = selectedUnitToFilter(selectedUnit);
     const search = debouncedSearch.trim();
+    // в citiesFilter хранятся slug-значения опций, бэкенд ждёт название города
+    const city = citiesFilterOptions.find(
+      (option) => option.value === citiesFilter[0],
+    )?.label;
     return {
       ...unitFilter,
       ...(search ? { search } : {}),
       ...(statusFilter.length ? { employment_status: statusFilter } : {}),
+      ...(city ? { city } : {}),
     };
-  }, [selectedUnit, debouncedSearch, statusFilter]);
+  }, [selectedUnit, debouncedSearch, statusFilter, citiesFilter]);
 
   // при смене выбранного узла возвращаемся на первую страницу
   useEffect(() => {
