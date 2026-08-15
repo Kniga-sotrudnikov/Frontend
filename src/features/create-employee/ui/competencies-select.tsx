@@ -66,19 +66,19 @@ export const CompetenciesSelect = ({
     }
   };
 
-  const handleToggleCompetency = (competencyId: string) => {
+  const handleToggleCompetency = (competencyName: string) => {
     setTempValue((prev) =>
-      prev.includes(competencyId)
-        ? prev.filter((id) => id !== competencyId)
-        : [...prev, competencyId],
+      prev.includes(competencyName)
+        ? prev.filter((name) => name !== competencyName)
+        : [...prev, competencyName],
     );
   };
 
-  const handleFullToggleCompetency = (competencyId: string) => {
+  const handleFullToggleCompetency = (competencyName: string) => {
     setFullTempValue((prev) =>
-      prev.includes(competencyId)
-        ? prev.filter((id) => id !== competencyId)
-        : [...prev, competencyId],
+      prev.includes(competencyName)
+        ? prev.filter((name) => name !== competencyName)
+        : [...prev, competencyName],
     );
   };
 
@@ -100,8 +100,8 @@ export const CompetenciesSelect = ({
     setFullDialogOpen(false);
   };
 
-  const handleRemoveCompetency = (id: string) => {
-    const newValue = value.filter((v) => v !== id);
+  const handleRemoveCompetency = (name: string) => {
+    const newValue = value.filter((v) => v !== name);
     onChange(newValue);
   };
 
@@ -132,8 +132,8 @@ export const CompetenciesSelect = ({
         title: "Тег уже существует",
         message: `Тег «${trimmedName}» уже существует.`,
       });
-      if (!tempValue.includes(existingTag.id)) {
-        setTempValue((prev) => [...prev, existingTag.id]);
+      if (!tempValue.includes(existingTag.label)) {
+        setTempValue((prev) => [...prev, existingTag.label]);
       }
       return;
     }
@@ -149,16 +149,19 @@ export const CompetenciesSelect = ({
             message: `Тег «${trimmedName}» создан`,
           });
 
-          const newTagId = String(newTag.id);
+          const newTagName = newTag.name;
 
-          setOptions((prev) => [...prev, { id: newTagId, label: trimmedName }]);
-          setTempValue((prev) => [...prev, newTagId]);
+          setOptions((prev) => [
+            ...prev,
+            { id: String(newTag.id), label: newTagName },
+          ]);
+          setTempValue((prev) => [...prev, newTagName]);
 
           if (fullDialogOpen) {
-            setFullTempValue((prev) => [...prev, newTagId]);
+            setFullTempValue((prev) => [...prev, newTagName]);
           }
 
-          onChange([...value, newTagId]);
+          onChange([...value, newTagName]);
           setSearchQuery("");
           setFullSearchQuery("");
           refetch();
@@ -172,12 +175,6 @@ export const CompetenciesSelect = ({
         },
       },
     );
-  };
-
-  const getLabel = (id: string): string => {
-    const idStr = String(id);
-    const found = options.find((opt) => String(opt.id) === idStr);
-    return found?.label || idStr;
   };
 
   const filteredOptions = useMemo(() => {
@@ -201,7 +198,7 @@ export const CompetenciesSelect = ({
     : filteredOptions.slice(0, VISIBLE_COUNT);
   const hasMore = filteredOptions.length > VISIBLE_COUNT;
 
-  const selectedLabels = value.map((id) => getLabel(id));
+  const selectedLabels = value;
 
   return (
     <div className="flex flex-col gap-2">
@@ -218,18 +215,17 @@ export const CompetenciesSelect = ({
           >
             <div className="flex flex-nowrap items-center gap-1 flex-1 min-w-0 overflow-hidden">
               {selectedLabels.length > 0 ? (
-                selectedLabels.map((label, index) => {
-                  const id = value[index];
+                selectedLabels.map((label) => {
                   return (
                     <Badge
-                      key={id}
+                      key={label}
                       className="gap-1 bg-purple-50 text-purple-500 text-overline py-0.5 px-2 shrink-0"
                     >
                       {label}
                       <span
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleRemoveCompetency(id);
+                          handleRemoveCompetency(label);
                         }}
                         className="ml-1 rounded-full p-0.5 transition-all cursor-pointer hover:bg-purple-100 inline-flex items-center justify-center"
                         role="button"
@@ -237,7 +233,7 @@ export const CompetenciesSelect = ({
                         onKeyDown={(e) => {
                           if (e.key === "Enter" || e.key === " ") {
                             e.preventDefault();
-                            handleRemoveCompetency(id);
+                            handleRemoveCompetency(label);
                           }
                         }}
                       >

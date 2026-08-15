@@ -90,7 +90,7 @@ export const AddTagDialog = ({
         className="!w-[753px] !max-w-none !h-auto !p-5 !rounded-12 !border !border-gray-200 !bg-white overflow-hidden"
         onInteractOutside={preventDialogClose}
       >
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-4">
           <div className="flex justify-between items-center">
             <DialogHeader className="!p-0">
               <DialogTitle className="text-[16px] font-semibold text-[#1A1A1A] leading-[19px]">
@@ -101,7 +101,7 @@ export const AddTagDialog = ({
           </div>
 
           <div className="flex gap-4">
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <label className="block text-[14px] font-normal leading-5 tracking-[0.1px] text-[#141615]">
                 Категория
               </label>
@@ -113,7 +113,7 @@ export const AddTagDialog = ({
               />
             </div>
 
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <label className="block text-[14px] font-normal leading-5 tracking-[0.1px] text-[#141615]">
                 Название
               </label>
@@ -153,8 +153,8 @@ export const AddTagDialog = ({
                         onCheckedChange={() => onEmployeeToggle?.(employee.id)}
                         className="data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
                       />
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="w-6 h-6 rounded-full bg-gray-200 overflow-hidden">
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <div className="w-6 h-6 shrink-0 rounded-full bg-gray-200 overflow-hidden">
                           {employee.photo ? (
                             <img
                               src={employee.photo}
@@ -167,11 +167,11 @@ export const AddTagDialog = ({
                             </div>
                           )}
                         </div>
-                        <div>
-                          <div className="text-[14px] font-semibold leading-5 tracking-[0.1px] text-[#2C2A29]">
+                        <div className="min-w-0">
+                          <div className="truncate text-[14px] font-semibold leading-5 tracking-[0.1px] text-[#2C2A29]">
                             {employee.name}
                           </div>
-                          <div className="text-[12px] font-normal leading-[14px] text-gray-500">
+                          <div className="truncate text-[12px] font-normal leading-[14px] text-gray-500">
                             {employee.position}
                           </div>
                         </div>
