@@ -4,7 +4,7 @@ interface CompetenciesPopoverContentProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   tempValue: string[];
-  onToggleCompetency: (id: string) => void;
+  onToggleCompetency: (name: string) => void;
   displayedOptions: Array<{ id: string; label: string }>;
   onClear: () => void;
   onApply: () => void;

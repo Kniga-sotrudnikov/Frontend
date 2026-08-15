@@ -97,7 +97,7 @@ export const mapEmployeeDetail = (
     // 👇 дата
     birthday: data.birthday,
 
-    // 👇 компетенции
+    // 👇 компетенции (названия тегов — бэкенд принимает tags списком строк-названий)
     competencies: data.tags?.map((t: TTag) => t.name) ?? [],
 
     // 👇 роли / описание роли

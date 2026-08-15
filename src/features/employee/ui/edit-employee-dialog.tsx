@@ -89,7 +89,11 @@ const buildPatchPayload = (
   if (current.leader !== initial.leader)
     patch.supervisor = Number(current.leader);
 
-  //TODO: Пока не передаются теги
+  // Бэкенд принимает tags как список названий тегов (строк)
+  const currentTags = [...current.competencies].sort();
+  const initialTags = [...initial.competencies].sort();
+  if (currentTags.join() !== initialTags.join())
+    patch.tags = current.competencies;
 
   return patch as PatchEmployeeRequest;
 };

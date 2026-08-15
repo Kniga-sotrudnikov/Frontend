@@ -11,7 +11,7 @@ interface CompetenciesContentProps {
   searchQuery: string;
   onSearchChange: (value: string) => void;
   tempValue: string[];
-  onToggleCompetency: (id: string) => void;
+  onToggleCompetency: (name: string) => void;
   options: Array<{ id: string; label: string }>;
   onClear: () => void;
   onApply: () => void;
@@ -83,8 +83,8 @@ export const CompetenciesContent = ({
             )}
           >
             <Checkbox
-              checked={tempValue.includes(option.id)}
-              onCheckedChange={() => onToggleCompetency(option.id)}
+              checked={tempValue.includes(option.label)}
+              onCheckedChange={() => onToggleCompetency(option.label)}
             />
             <span className="text-xs text-black leading-5 tracking-[-0.5px] whitespace-nowrap">
               {option.label}
