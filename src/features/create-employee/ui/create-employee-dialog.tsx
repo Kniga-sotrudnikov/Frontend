@@ -137,12 +137,12 @@ export const CreateEmployeeDialog = ({
       setIsSubmitting(true);
       try {
         await onSubmit?.(values);
-        addNotification({
-          type: "success",
-          iconType: "success",
-          title: "В разработке",
-          message: "Создание карточек будет доступно в ближайшее время",
-        });
+//        addNotification({
+//          type: "success",
+//          iconType: "success",
+//          title: "В разработке",
+//          message: "Создание карточек будет доступно в ближайшее время",
+//        });
         onOpenChange(false);
       } catch (error) {
         console.error("Failed to create employee:", error);
